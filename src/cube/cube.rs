@@ -40,15 +40,26 @@ impl Cube {
     /// rotate - TODO
     ///
     /// TODO (jamesl33): The 180 degree turns can optimized into a single operation.
+    /// TODO (jamesl33): The 90 degree prime turns can optimized into a single operation.
     pub fn rotate(&mut self, m: cube::Rotation) {
         match m {
             cube::Rotation::F => self.rotate_front(),
             cube::Rotation::F2 => {
-                self.rotate_front() ;
-                self.rotate_front() ;
+                self.rotate_front();
+                self.rotate_front();
+            },
+            cube::Rotation::FP => {
+                self.rotate_front();
+                self.rotate_front();
+                self.rotate_front();
             },
             cube::Rotation::B => self.rotate_back(),
             cube::Rotation::B2 => {
+                self.rotate_back();
+                self.rotate_back();
+            },
+            cube::Rotation::BP => {
+                self.rotate_back();
                 self.rotate_back();
                 self.rotate_back();
             },
@@ -57,8 +68,18 @@ impl Cube {
                 self.rotate_left();
                 self.rotate_left();
             },
+            cube::Rotation::LP => {
+                self.rotate_left();
+                self.rotate_left();
+                self.rotate_left();
+            },
             cube::Rotation::R => self.rotate_right(),
             cube::Rotation::R2 => {
+                self.rotate_right();
+                self.rotate_right();
+            },
+            cube::Rotation::RP => {
+                self.rotate_right();
                 self.rotate_right();
                 self.rotate_right();
             },
@@ -67,12 +88,22 @@ impl Cube {
                 self.rotate_up();
                 self.rotate_up();
             },
+            cube::Rotation::UP => {
+                self.rotate_up();
+                self.rotate_up();
+                self.rotate_up();
+            },
             cube::Rotation::D => self.rotate_down(),
             cube::Rotation::D2 => {
                 self.rotate_down();
                 self.rotate_down();
             },
-        }
+            cube::Rotation::DP => {
+                self.rotate_down();
+                self.rotate_down();
+                self.rotate_down();
+            },
+        };
     }
 
     /// rotate_front - TODO
