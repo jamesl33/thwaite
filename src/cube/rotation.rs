@@ -1,4 +1,5 @@
 /// Rotation - TODO
+#[derive(Debug)]
 pub enum Rotation {
     /// F - TODO
     F,
