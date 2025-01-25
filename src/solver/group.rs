@@ -2,10 +2,10 @@ use crate::cube::Rotation;
 
 /// Group - TODO
 pub enum Group {
+    Zero,
     One,
     Two,
     Three,
-    Four,
 }
 
 impl Group {
@@ -14,7 +14,7 @@ impl Group {
     /// TODO (jamesl33) Add support for rejecting duplicate moves.
     pub fn moves(self) -> Vec<Rotation> {
         match self {
-            Group::One => vec![
+            Group::Zero => vec![
                 Rotation::F,
                 Rotation::F2,
                 Rotation::FP,
@@ -34,7 +34,7 @@ impl Group {
                 Rotation::D2,
                 Rotation::DP,
             ],
-            Group::Two=> vec![
+            Group::One=> vec![
                 Rotation::F,
                 Rotation::F2,
                 Rotation::FP,
@@ -50,7 +50,7 @@ impl Group {
                 Rotation::U2,
                 Rotation::D2,
             ],
-            Group::Three=> vec![
+            Group::Two=> vec![
                 Rotation::F2,
                 Rotation::B2,
                 Rotation::L,
@@ -62,7 +62,7 @@ impl Group {
                 Rotation::U2,
                 Rotation::D2,
             ],
-            Group::Four=> vec![
+            Group::Three=> vec![
                 Rotation::F2,
                 Rotation::B2,
                 Rotation::L2,
