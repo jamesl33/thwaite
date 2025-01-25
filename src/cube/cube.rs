@@ -37,22 +37,22 @@ impl Cube {
         }
     }
 
-    // corner_permutations - TODO
+    /// corner_permutations - TODO
     pub fn corner_permutations(&self) -> &[isize; NUM_CORNERS] {
         return &self.cperms;
     }
 
-    // corner_orientations - TODO
+    /// corner_orientations - TODO
     pub fn corner_orientations(&self) -> &[isize; NUM_CORNERS] {
         return &self.corien;
     }
 
-    // edge_permutations - TODO
+    /// edge_permutations - TODO
     pub fn edge_permutations(&self) -> &[isize; NUM_EDGES] {
         return &self.eperms;
     }
 
-    // edge_orientations - TODO
+    /// edge_orientations - TODO
     pub fn edge_orientations(&self) -> &[isize; NUM_EDGES] {
         return &self.eorien;
     }

@@ -19,7 +19,7 @@ impl Table {
     }
 }
 
-// g0 - TODO
+/// g0 - TODO
 fn g0() -> Table {
     /// DEPTH - TODO
     const DEPTH: usize = 7;
