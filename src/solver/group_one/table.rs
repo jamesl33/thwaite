@@ -24,7 +24,7 @@ fn g0() -> Table {
     /// DEPTH - TODO
     const DEPTH: usize = 7;
 
-    let mut tab: Table = Table { data: [7; SIZE] };
+    let mut tab: Table = Table { data: [DEPTH; SIZE] };
 
     let mut parents: VecDeque<Cube> = VecDeque::from(vec![Cube::new(); 1]);
 
