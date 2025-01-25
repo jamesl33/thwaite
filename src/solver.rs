@@ -1,5 +1,5 @@
-pub mod thistlethwaite;
-pub use thistlethwaite::*;
+pub mod solver;
+pub use solver::*;
 
 mod group;
 use group::*;
