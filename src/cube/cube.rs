@@ -1,6 +1,6 @@
-use crate::cube;
 use crate::cube::orientations::*;
 use crate::cube::permutations::*;
+use crate::cube::Rotation;
 
 /// NUM_CORNERS - TODO
 pub const NUM_CORNERS: usize = 8;
@@ -61,64 +61,64 @@ impl Cube {
     ///
     /// TODO (jamesl33): The 180 degree turns can optimized into a single operation.
     /// TODO (jamesl33): The 90 degree prime turns can optimized into a single operation.
-    pub fn rotate(&mut self, m: cube::Rotation) {
+    pub fn rotate(&mut self, m: Rotation) {
         match m {
-            cube::Rotation::F => self.rotate_front(),
-            cube::Rotation::F2 => {
+            Rotation::F => self.rotate_front(),
+            Rotation::F2 => {
                 self.rotate_front();
                 self.rotate_front();
             }
-            cube::Rotation::FP => {
+            Rotation::FP => {
                 self.rotate_front();
                 self.rotate_front();
                 self.rotate_front();
             }
-            cube::Rotation::B => self.rotate_back(),
-            cube::Rotation::B2 => {
+            Rotation::B => self.rotate_back(),
+            Rotation::B2 => {
                 self.rotate_back();
                 self.rotate_back();
             }
-            cube::Rotation::BP => {
+            Rotation::BP => {
                 self.rotate_back();
                 self.rotate_back();
                 self.rotate_back();
             }
-            cube::Rotation::L => self.rotate_left(),
-            cube::Rotation::L2 => {
+            Rotation::L => self.rotate_left(),
+            Rotation::L2 => {
                 self.rotate_left();
                 self.rotate_left();
             }
-            cube::Rotation::LP => {
+            Rotation::LP => {
                 self.rotate_left();
                 self.rotate_left();
                 self.rotate_left();
             }
-            cube::Rotation::R => self.rotate_right(),
-            cube::Rotation::R2 => {
+            Rotation::R => self.rotate_right(),
+            Rotation::R2 => {
                 self.rotate_right();
                 self.rotate_right();
             }
-            cube::Rotation::RP => {
+            Rotation::RP => {
                 self.rotate_right();
                 self.rotate_right();
                 self.rotate_right();
             }
-            cube::Rotation::U => self.rotate_up(),
-            cube::Rotation::U2 => {
+            Rotation::U => self.rotate_up(),
+            Rotation::U2 => {
                 self.rotate_up();
                 self.rotate_up();
             }
-            cube::Rotation::UP => {
+            Rotation::UP => {
                 self.rotate_up();
                 self.rotate_up();
                 self.rotate_up();
             }
-            cube::Rotation::D => self.rotate_down(),
-            cube::Rotation::D2 => {
+            Rotation::D => self.rotate_down(),
+            Rotation::D2 => {
                 self.rotate_down();
                 self.rotate_down();
             }
-            cube::Rotation::DP => {
+            Rotation::DP => {
                 self.rotate_down();
                 self.rotate_down();
                 self.rotate_down();
