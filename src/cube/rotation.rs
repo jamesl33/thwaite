@@ -1,20 +1,20 @@
 /// Rotation - TODO
 pub enum Rotation {
-    /// Front - TODO
-    Front,
+    /// F - TODO
+    F,
 
-    /// Back - TODO
-    Back,
+    /// B - TODO
+    B,
 
-    /// Left - TODO
-    Left,
+    /// L - TODO
+    L,
 
-    /// Right - TODO
-    Right,
+    /// R - TODO
+    R,
 
-    /// Up - TODO
-    Up,
+    /// U - TODO
+    U,
 
-    /// Down - TODO
-    Down,
+    /// D - TODO
+    D,
 }

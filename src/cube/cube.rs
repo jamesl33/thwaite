@@ -40,12 +40,12 @@ impl Cube {
     /// rotate - TODO
     pub fn rotate(&mut self, m: cube::Rotation) {
         match m {
-            cube::Rotation::Front => self.rotate_front(),
-            cube::Rotation::Back => self.rotate_back(),
-            cube::Rotation::Left => self.rotate_left(),
-            cube::Rotation::Right => self.rotate_right(),
-            cube::Rotation::Up => self.rotate_up(),
-            cube::Rotation::Down => self.rotate_down(),
+            cube::Rotation::F => self.rotate_front(),
+            cube::Rotation::B => self.rotate_back(),
+            cube::Rotation::L => self.rotate_left(),
+            cube::Rotation::R => self.rotate_right(),
+            cube::Rotation::U => self.rotate_up(),
+            cube::Rotation::D => self.rotate_down(),
         }
     }
 
@@ -69,12 +69,14 @@ impl Cube {
     fn rotate_left(&mut self) {
         self.cperms = permute(self.cperms, PERMUTE_LEFT_CORNERS);
         self.eperms = permute(self.eperms, PERMUTE_LEFT_EDGES);
+        // No orientation required
     }
 
     /// rotate_right - TODO
     fn rotate_right(&mut self) {
         self.cperms = permute(self.cperms, PERMUTE_RIGHT_CORNERS);
         self.eperms = permute(self.eperms, PERMUTE_RIGHT_EDGES);
+        // No orientation required
     }
 
     /// rotate_up - TODO
