@@ -11,7 +11,7 @@ pub const NUM_EDGES: usize = 12;
 /// Cube - TODO
 ///
 /// TODO (jamesl33): Move this to a module.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Cube {
     /// cperms - TODO
     cperms: [isize; NUM_CORNERS],
@@ -37,6 +37,26 @@ impl Cube {
         }
     }
 
+    // corner_permutations - TODO
+    pub fn corner_permutations(&self) -> &[isize; NUM_CORNERS] {
+        return &self.cperms;
+    }
+
+    // corner_orientations - TODO
+    pub fn corner_orientations(&self) -> &[isize; NUM_CORNERS] {
+        return &self.corien;
+    }
+
+    // edge_permutations - TODO
+    pub fn edge_permutations(&self) -> &[isize; NUM_EDGES] {
+        return &self.eperms;
+    }
+
+    // edge_orientations - TODO
+    pub fn edge_orientations(&self) -> &[isize; NUM_EDGES] {
+        return &self.eorien;
+    }
+
     /// rotate - TODO
     ///
     /// TODO (jamesl33): The 180 degree turns can optimized into a single operation.
@@ -47,62 +67,62 @@ impl Cube {
             cube::Rotation::F2 => {
                 self.rotate_front();
                 self.rotate_front();
-            },
+            }
             cube::Rotation::FP => {
                 self.rotate_front();
                 self.rotate_front();
                 self.rotate_front();
-            },
+            }
             cube::Rotation::B => self.rotate_back(),
             cube::Rotation::B2 => {
                 self.rotate_back();
                 self.rotate_back();
-            },
+            }
             cube::Rotation::BP => {
                 self.rotate_back();
                 self.rotate_back();
                 self.rotate_back();
-            },
+            }
             cube::Rotation::L => self.rotate_left(),
             cube::Rotation::L2 => {
                 self.rotate_left();
                 self.rotate_left();
-            },
+            }
             cube::Rotation::LP => {
                 self.rotate_left();
                 self.rotate_left();
                 self.rotate_left();
-            },
+            }
             cube::Rotation::R => self.rotate_right(),
             cube::Rotation::R2 => {
                 self.rotate_right();
                 self.rotate_right();
-            },
+            }
             cube::Rotation::RP => {
                 self.rotate_right();
                 self.rotate_right();
                 self.rotate_right();
-            },
+            }
             cube::Rotation::U => self.rotate_up(),
             cube::Rotation::U2 => {
                 self.rotate_up();
                 self.rotate_up();
-            },
+            }
             cube::Rotation::UP => {
                 self.rotate_up();
                 self.rotate_up();
                 self.rotate_up();
-            },
+            }
             cube::Rotation::D => self.rotate_down(),
             cube::Rotation::D2 => {
                 self.rotate_down();
                 self.rotate_down();
-            },
+            }
             cube::Rotation::DP => {
                 self.rotate_down();
                 self.rotate_down();
                 self.rotate_down();
-            },
+            }
         };
     }
 
