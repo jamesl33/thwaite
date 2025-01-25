@@ -38,14 +38,40 @@ impl Cube {
     }
 
     /// rotate - TODO
+    ///
+    /// TODO (jamesl33): The 180 degree turns can optimized into a single operation.
     pub fn rotate(&mut self, m: cube::Rotation) {
         match m {
             cube::Rotation::F => self.rotate_front(),
+            cube::Rotation::F2 => {
+                self.rotate_front() ;
+                self.rotate_front() ;
+            },
             cube::Rotation::B => self.rotate_back(),
+            cube::Rotation::B2 => {
+                self.rotate_back();
+                self.rotate_back();
+            },
             cube::Rotation::L => self.rotate_left(),
+            cube::Rotation::L2 => {
+                self.rotate_left();
+                self.rotate_left();
+            },
             cube::Rotation::R => self.rotate_right(),
+            cube::Rotation::R2 => {
+                self.rotate_right();
+                self.rotate_right();
+            },
             cube::Rotation::U => self.rotate_up(),
+            cube::Rotation::U2 => {
+                self.rotate_up();
+                self.rotate_up();
+            },
             cube::Rotation::D => self.rotate_down(),
+            cube::Rotation::D2 => {
+                self.rotate_down();
+                self.rotate_down();
+            },
         }
     }
 
