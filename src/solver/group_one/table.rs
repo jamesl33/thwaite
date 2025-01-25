@@ -22,7 +22,7 @@ impl Table {
 // g0 - TODO
 fn g0() -> Table {
     /// DEPTH - TODO
-    const DEPTH: usize = 6;
+    const DEPTH: usize = 7;
 
     let mut tab: Table = Table { data: [7; SIZE] };
 
@@ -31,7 +31,7 @@ fn g0() -> Table {
     // TODO
     tab.data[0] = 0;
 
-    for depth in 0..DEPTH {
+    for depth in 1..DEPTH {
         parents = dfs(&mut tab, depth, &mut parents);
     }
 
@@ -40,7 +40,7 @@ fn g0() -> Table {
 
 /// dfs - TODO
 fn dfs(tab: &mut Table, depth: usize, parents: &mut VecDeque<Cube>) -> VecDeque<Cube> {
-    let mut children: VecDeque<Cube> = VecDeque::with_capacity((18 as usize).pow(1 + depth as u32));
+    let mut children: VecDeque<Cube> = VecDeque::with_capacity((18 as usize).pow(depth as u32));
 
     while let Some(cube) = parents.pop_front() {
         visit(depth, cube, tab, &mut children)
