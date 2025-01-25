@@ -63,7 +63,7 @@ fn visit(depth: usize, cube: Cube, tab: &mut Table, children: &mut VecDeque<Cube
     for mv in Group::Zero.moves() {
         let mut cube = cube;
 
-        cube.rotate(mv);
+        cube.rotate(*mv);
 
         let i = idx(cube.edge_orientations());
 
