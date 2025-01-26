@@ -1,3 +1,4 @@
+use std::cmp;
 use std::collections::VecDeque;
 
 use crate::cube::{Cube, NUM_EDGES};
@@ -27,39 +28,18 @@ fn g0() -> Table {
     // We initialize the pruning table at the max depth, and search for the cheaper distances
     let mut tab: Table = Table { data: [DEPTH; SIZE] };
 
-    // The first parent, is the solved cube
-    let mut parents: VecDeque<Cube> = VecDeque::from(vec![Cube::new(); 1]);
-
     // Which has a distance of zero
     tab.data[0] = 0;
 
-    // Apply 6 breadth first searches by applying turns to the cube, and recording the depth from the solved state, in
+    // Perform a depth first search by applying turns to the cube, and recording the depth from the solved state, in
     // the pruning table.
-    for depth in 1..DEPTH {
-        parents = bfs(&mut tab, depth, &mut parents);
-    }
+    dfs(&mut tab, 1, DEPTH - 1, Cube::new());
 
     tab
 }
 
-/// bfs - TODO
-fn bfs(tab: &mut Table, depth: usize, parents: &mut VecDeque<Cube>) -> VecDeque<Cube> {
-    // Retrieve the number of valid moves in this group
-    let valid = Group::Zero.moves().len();
-
-    // Preallocate enough space for all the possible turns, in G0 there's valid turns per-level
-    let mut children: VecDeque<Cube> = VecDeque::with_capacity(valid.pow(depth as u32));
-
-    // Go through all the parent cubes, and visit them
-    while let Some(cube) = parents.pop_front() {
-        visit(depth, cube, tab, &mut children)
-    }
-
-    children
-}
-
-/// visit - TODO
-fn visit(depth: usize, cube: Cube, tab: &mut Table, children: &mut VecDeque<Cube>) {
+/// dfs - TODO
+fn dfs(tab: &mut Table, depth: usize, limit: usize, cube: Cube) {
     for mv in Group::Zero.moves() {
         let mut cube = cube;
 
@@ -68,11 +48,14 @@ fn visit(depth: usize, cube: Cube, tab: &mut Table, children: &mut VecDeque<Cube
         let i = idx(cube.edge_orientations());
 
         // Only update the pruning table, if we've found a shorter path
-        if i != 0 && tab.data[i] > depth {
-            tab.data[i] = depth;
+        tab.data[i] = cmp::min(tab.data[i], depth);
+
+        // We've reached out limit, stop searching
+        if depth >= limit {
+            continue;
         }
 
-        children.push_front(cube);
+        dfs(tab, depth + 1, limit, cube)
     }
 }
 
