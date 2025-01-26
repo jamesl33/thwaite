@@ -15,6 +15,7 @@ pub struct Table {
 }
 
 impl Table {
+    /// new - TODO
     pub fn new() -> Table {
         g0()
     }
@@ -31,32 +32,20 @@ fn g0() -> Table {
     // Which has a distance of zero
     tab.data[0] = 0;
 
+    // We start searching from a solved cube
+    let start: Cube = Cube::new();
+
     // Perform a depth first search by applying turns to the cube, and recording the depth from the solved state, in
     // the pruning table.
-    dfs(&mut tab, 1, DEPTH - 1, Cube::new());
-
-    tab
-}
-
-/// dfs - TODO
-fn dfs(tab: &mut Table, depth: usize, limit: usize, cube: Cube) {
-    for mv in Group::Zero.moves() {
-        let mut cube = cube;
-
-        cube.rotate(*mv);
-
+    start.search(Group::Zero.moves(), DEPTH-1, &mut | cube, depth | {
+        // Calculate the index in the pruning table
         let i = idx(cube.edge_orientations());
 
         // Only update the pruning table, if we've found a shorter path
         tab.data[i] = cmp::min(tab.data[i], depth);
+    });
 
-        // We've reached out limit, stop searching
-        if depth >= limit {
-            continue;
-        }
-
-        dfs(tab, depth + 1, limit, cube)
-    }
+    tab
 }
 
 /// idx - TODO

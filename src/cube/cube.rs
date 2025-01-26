@@ -57,6 +57,14 @@ impl Cube {
         return &self.eorien;
     }
 
+    /// search - TODO
+    pub fn search<F>(&self, moves: &[Rotation], limit: usize, func: &mut F)
+    where
+        F: FnMut(&Cube, usize),
+    {
+        dfs(*self, moves, 1, limit, func);
+    }
+
     /// rotate - TODO
     ///
     /// TODO (jamesl33): The 180 degree turns can optimized into a single operation.
@@ -170,6 +178,27 @@ impl Cube {
         self.corien = orient(self.corien, self.cperms, ORIENT_DOWN_CORNERS, CORNER_ORIENTATIONS);
         self.eperms = permute(self.eperms, PERMUTE_DOWN_EDGES);
         self.eorien = orient(self.eorien, self.eperms, ORIENT_DOWN_EDGES, EDGE_ORIENTATIONS);
+    }
+}
+
+/// dfs - TODO
+fn dfs<F>(cube: Cube, moves: &[Rotation], depth: usize, limit: usize, func: &mut F)
+where
+    F: FnMut(&Cube, usize),
+{
+    for mv in moves {
+        let mut cube = cube;
+
+        cube.rotate(*mv);
+
+        func(&cube, depth);
+
+        // We've reached out limit, stop searching
+        if depth >= limit {
+            continue;
+        }
+
+        dfs(cube, moves, depth + 1, limit, func)
     }
 }
 
