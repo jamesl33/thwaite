@@ -31,8 +31,6 @@ impl Table {
     }
 }
 
-static mut C: usize = 0;
-
 /// g1 - TODO
 fn g1() -> Table {
     /// DEPTH - TODO
@@ -54,16 +52,8 @@ fn g1() -> Table {
         let oidx = otoidx(cube.corner_orientations());
         let pidx = ptoidx(cube.edge_permutations());
 
-        unsafe { C += 1 }
-
         // Only update the pruning table, if we've found a shorter path
         tab.data[pidx][oidx] = cmp::min(tab.data[pidx][oidx], depth);
-
-        unsafe {
-            if C % 100000 == 0 {
-                println!("{}", C);
-            }
-        }
     });
 
     tab
