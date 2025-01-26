@@ -1,5 +1,4 @@
 use std::cmp;
-use std::collections::VecDeque;
 
 use crate::cube::{Cube, NUM_EDGES};
 use crate::solver::group::Group;
@@ -37,7 +36,7 @@ fn g0() -> Table {
 
     // Perform a depth first search by applying turns to the cube, and recording the depth from the solved state, in
     // the pruning table.
-    start.search(Group::Zero.moves(), DEPTH-1, &mut | cube, depth | {
+    start.search(Group::Zero.moves(), DEPTH - 1, &mut |cube, depth| {
         // Calculate the index in the pruning table
         let i = idx(cube.edge_orientations());
 
