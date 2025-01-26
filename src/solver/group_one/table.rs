@@ -55,5 +55,8 @@ fn idx(eorien: &[isize; NUM_EDGES]) -> usize {
         dec += eorien[i] as usize * (2 as usize).pow(10 - i as u32)
     }
 
+    // TODO
+    debug_assert!(dec < SIZE);
+
     dec
 }

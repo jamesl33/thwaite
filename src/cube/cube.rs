@@ -198,7 +198,7 @@ where
             continue;
         }
 
-        dfs(cube, moves, depth + 1, limit, func)
+        dfs(cube, moves, depth + 1, limit, func);
     }
 }
 
