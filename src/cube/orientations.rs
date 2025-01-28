@@ -1,10 +1,10 @@
 use crate::cube;
 
 /// CORNER_ORIENTATIONS - TODO
-pub const CORNER_ORIENTATIONS: isize = 3;
+pub const CORNER_ORIENTATIONS: usize = 3;
 
 /// EDGE_ORIENTATIONS - TODO
-pub const EDGE_ORIENTATIONS: isize = 2;
+pub const EDGE_ORIENTATIONS: usize = 2;
 
 /// ORIENT_FRONT_CORNERS - TODO
 pub const ORIENT_FRONT_CORNERS: [isize; cube::NUM_CORNERS] = [0, 1, 0, 1, -1, 0, -1, 0];

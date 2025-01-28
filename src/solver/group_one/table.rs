@@ -48,11 +48,11 @@ fn g0() -> Table {
 }
 
 /// idx - TODO
-fn idx(eorien: &[isize; NUM_EDGES]) -> usize {
+fn idx(eorien: &[usize; NUM_EDGES]) -> usize {
     let mut dec = 0;
 
     for i in 0..NUM_EDGES - 1 {
-        dec += eorien[i] as usize * (2 as usize).pow(10 - i as u32)
+        dec += eorien[i] * (2 as usize).pow(10 - i as u32)
     }
 
     // TODO

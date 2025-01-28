@@ -76,7 +76,7 @@ pub enum Group {
 impl Group {
     /// from - TODO
     pub fn from(cube: &Cube) -> Group {
-        if cube.edge_orientations().iter().sum::<isize>() > 0 {
+        if cube.edge_orientations().iter().sum::<usize>() > 0 {
             return Group::Zero;
         }
 

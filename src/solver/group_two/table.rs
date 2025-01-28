@@ -89,11 +89,11 @@ const fn idx_lookup_table() -> [usize; IDX_LOOKUP_TABLE_SIZE] {
 }
 
 /// otoidx - TODO
-fn otoidx<const N: usize>(orien: &[isize; N]) -> usize {
+fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
     let mut idx: usize = 0;
 
     for i in 0..N - 1 {
-        idx = idx * 3 + orien[i] as usize;
+        idx = idx * 3 + orien[i]
     }
 
     // TODO
@@ -103,7 +103,7 @@ fn otoidx<const N: usize>(orien: &[isize; N]) -> usize {
 }
 
 /// ptoidx - TODO
-fn ptoidx(perms: &[isize; NUM_EDGES]) -> usize {
+fn ptoidx(perms: &[usize; NUM_EDGES]) -> usize {
     let mut dec = 0;
 
     for i in 0..NUM_EDGES - 1 {

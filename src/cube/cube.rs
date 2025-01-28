@@ -14,16 +14,16 @@ pub const NUM_EDGES: usize = 12;
 #[derive(Debug, Clone, Copy)]
 pub struct Cube {
     /// cperms - TODO
-    cperms: [isize; NUM_CORNERS],
+    cperms: [usize; NUM_CORNERS],
 
     /// corien - TODO
-    corien: [isize; NUM_CORNERS],
+    corien: [usize; NUM_CORNERS],
 
     /// eperms - TODO
-    eperms: [isize; NUM_EDGES],
+    eperms: [usize; NUM_EDGES],
 
     /// eorien - TODO
-    eorien: [isize; NUM_EDGES],
+    eorien: [usize; NUM_EDGES],
 
     // last - TODO
     last: Option<Rotation>
@@ -42,22 +42,22 @@ impl Cube {
     }
 
     /// corner_permutations - TODO
-    pub fn corner_permutations(&self) -> &[isize; NUM_CORNERS] {
+    pub fn corner_permutations(&self) -> &[usize; NUM_CORNERS] {
         return &self.cperms;
     }
 
     /// corner_orientations - TODO
-    pub fn corner_orientations(&self) -> &[isize; NUM_CORNERS] {
+    pub fn corner_orientations(&self) -> &[usize; NUM_CORNERS] {
         return &self.corien;
     }
 
     /// edge_permutations - TODO
-    pub fn edge_permutations(&self) -> &[isize; NUM_EDGES] {
+    pub fn edge_permutations(&self) -> &[usize; NUM_EDGES] {
         return &self.eperms;
     }
 
     /// edge_orientations - TODO
-    pub fn edge_orientations(&self) -> &[isize; NUM_EDGES] {
+    pub fn edge_orientations(&self) -> &[usize; NUM_EDGES] {
         return &self.eorien;
     }
 
@@ -222,27 +222,27 @@ where
 }
 
 /// permute - TODO
-fn permute<const N: usize>(src: [isize; N], rot: [usize; N]) -> [isize; N] {
-    let mut cop: [isize; N] = src;
+fn permute<const N: usize>(src: [usize; N], rot: [usize; N]) -> [usize; N] {
+    let mut cop: [usize; N] = src;
 
     for (i, v) in rot.iter().enumerate() {
         cop[i] = src[*v];
     }
 
-    debug_assert_eq!(cop.iter().sum::<isize>(), (0..N).sum::<usize>() as isize);
+    debug_assert_eq!(cop.iter().sum::<usize>(), (0..N).sum::<usize>());
 
     cop
 }
 
 /// orient - TODO
-fn orient<const N: usize>(orien: [isize; N], perms: [isize; N], rot: [isize; N], rem: isize) -> [isize; N] {
-    let mut cop: [isize; N] = orien;
+fn orient<const N: usize>(orien: [usize; N], perms: [usize; N], rot: [isize; N], rem: usize) -> [usize; N] {
+    let mut cop: [usize; N] = orien;
 
     for (i, v) in rot.iter().enumerate() {
-        cop[perms[i] as usize] = (cop[perms[i] as usize] + *v).rem_euclid(rem);
+        cop[perms[i]] = (cop[perms[i]] as isize + *v).rem_euclid(rem as isize) as usize;
     }
 
-    debug_assert_eq!(cop.iter().sum::<isize>().rem_euclid(rem), 0);
+    debug_assert_eq!(cop.iter().sum::<usize>().rem_euclid(rem), 0);
 
     cop
 }
