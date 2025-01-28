@@ -2,9 +2,7 @@ use std::cmp;
 
 use crate::cube::{Cube, NUM_EDGES};
 use crate::solver::group::Group;
-
-/// FACTORIAL - TODO
-const FACTORIALS: [usize; 13] = factorials();
+use crate::solver::maths::combinations;
 
 /// N_SIZE - TODO
 const N_SIZE: usize = combinations(NUM_EDGES, 4);
@@ -101,62 +99,4 @@ fn ptoidx(perms: &[usize; NUM_EDGES]) -> usize {
     debug_assert!(t < N_SIZE);
 
     t
-}
-
-/// comb - TODO
-const fn combinations(i: usize, r: usize) -> usize {
-    if i < r {
-        return 0;
-    }
-
-    if i == r {
-        return 1;
-    }
-
-    FACTORIALS[i] / (FACTORIALS[r] * FACTORIALS[i - r])
-}
-
-/// factorials - TODO
-const fn factorials<const N: usize>() -> [usize; N] {
-    let mut factorials = [0; N];
-    let mut i = 0;
-
-    loop {
-        if i == N {
-            break;
-        }
-
-        // TODO
-        factorials[i] = factorial(i);
-
-        // TODO
-        i += 1;
-    }
-
-    factorials
-}
-
-/// factorial - TODO
-const fn factorial(n: usize) -> usize {
-    // TODO
-    if n <= 1 {
-        return 1;
-    }
-
-    let mut a = 1;
-    let mut i = 1;
-
-    loop {
-        if i == n {
-            break;
-        }
-
-        // TODO
-        a *= i;
-
-        // TODO
-        i += 1;
-    }
-
-    return a;
 }
