@@ -7,9 +7,6 @@ use group::*;
 mod maths;
 use maths::*;
 
-mod indexing;
-use indexing::*;
-
 mod group_one;
 use group_one::*;
 

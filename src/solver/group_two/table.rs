@@ -1,9 +1,7 @@
 use std::cmp;
 
-use crate::cube::orientations::CORNER_ORIENTATIONS;
-use crate::cube::{Cube, NUM_CORNERS, NUM_EDGES};
+use crate::cube::{Cube, NUM_EDGES};
 use crate::solver::group::Group;
-use crate::solver::indexing::otoidx;
 use crate::solver::maths::combinations;
 
 /// N_SIZE - TODO
@@ -48,7 +46,7 @@ fn g1() -> Table {
     // TODO
     start.search(Group::One.moves(), DEPTH - 1, &mut |cube, depth| {
         // TODO
-        let oidx = otoidx::<NUM_CORNERS, CORNER_ORIENTATIONS>(cube.corner_orientations());
+        let oidx = otoidx(cube.corner_orientations());
 
         // TODO
         let pidx = ptoidx(cube.edge_permutations());
@@ -61,6 +59,20 @@ fn g1() -> Table {
     });
 
     tab
+}
+
+/// otoidx - TODO
+fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
+    let mut idx: usize = 0;
+
+    for i in 0..N - 1 {
+        idx = idx * 3 + orien[i]
+    }
+
+    // TODO
+    debug_assert!(idx < M_SIZE);
+
+    idx
 }
 
 /// ptoidx - TODO
