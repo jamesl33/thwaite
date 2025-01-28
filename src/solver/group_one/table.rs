@@ -1,7 +1,9 @@
 use std::cmp;
 
+use crate::cube::orientations::EDGE_ORIENTATIONS;
 use crate::cube::{Cube, NUM_EDGES};
 use crate::solver::group::Group;
+use crate::solver::indexing::otoidx;
 
 /// SIZE - TODO
 const SIZE: usize = 2048;
@@ -38,25 +40,11 @@ fn g0() -> Table {
     // the pruning table.
     start.search(Group::Zero.moves(), DEPTH - 1, &mut |cube, depth| {
         // Calculate the index in the pruning table
-        let i = idx(cube.edge_orientations());
+        let i = otoidx::<NUM_EDGES, EDGE_ORIENTATIONS>(cube.edge_orientations());
 
         // Only update the pruning table, if we've found a shorter path
         tab.data[i] = cmp::min(tab.data[i], depth);
     });
 
     tab
-}
-
-/// idx - TODO
-fn idx(eorien: &[usize; NUM_EDGES]) -> usize {
-    let mut dec = 0;
-
-    for i in 0..NUM_EDGES - 1 {
-        dec += eorien[i] * (2 as usize).pow(10 - i as u32)
-    }
-
-    // TODO
-    debug_assert!(dec < SIZE);
-
-    dec
 }
