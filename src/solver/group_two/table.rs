@@ -3,22 +3,17 @@ use std::cmp;
 use crate::cube::{Cube, NUM_EDGES};
 use crate::solver::group::Group;
 
+/// FACTORIAL - TODO
+const FACTORIALS: [usize; 13] = factorials();
+
 /// N_SIZE - TODO
-const N_SIZE: usize = 495;
+const N_SIZE: usize = combinations(NUM_EDGES, 4);
 
 /// M_SIZE - TODO
-const M_SIZE: usize = 2187;
+const M_SIZE: usize = usize::pow(3, 7);
 
 /// SIZE - TODO
 const SIZE: usize = N_SIZE * M_SIZE;
-
-/// IDX_LOOKUP_TABLE_SIZE - TODO
-const IDX_LOOKUP_TABLE_SIZE: usize = 2048;
-
-/// IDX_LOOKUP_TABLE - TODO
-///
-/// TODO (jamesl33): Converts a range from 2048, to 495.
-const IDX_LOOKUP_TABLE: [usize; IDX_LOOKUP_TABLE_SIZE] = idx_lookup_table();
 
 /// Table - TODO
 #[derive(Debug)]
@@ -68,26 +63,6 @@ fn g1() -> Table {
     tab
 }
 
-/// idx_lookup - TODO
-const fn idx_lookup_table() -> [usize; IDX_LOOKUP_TABLE_SIZE] {
-    let mut n: usize = 0;
-    let mut idx = 0;
-    let mut table = [0; IDX_LOOKUP_TABLE_SIZE];
-
-    while n < 2048 {
-        let c = n.count_ones();
-
-        if c == 3 || c == 4 {
-            table[n] = idx;
-            idx += 1;
-        }
-
-        n = n + 1;
-    }
-
-    table
-}
-
 /// otoidx - TODO
 fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
     let mut idx: usize = 0;
@@ -103,22 +78,85 @@ fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
 }
 
 /// ptoidx - TODO
+///
+/// https://www.jaapsch.net/puzzles/compindx.htm
 fn ptoidx(perms: &[usize; NUM_EDGES]) -> usize {
-    let mut dec = 0;
+    let mut t = 0;
+    let mut r = 4;
 
-    for i in 0..NUM_EDGES - 1 {
-        // We only care about the corners 9-12
+    for i in (0..NUM_EDGES).rev() {
+        // We only care about edges 8-12
         if perms[i] <= 7 {
             continue;
         }
 
-        dec += (2 as usize).pow(10 - i as u32)
+        // TODO
+        t += combinations(i, r);
+
+        // TODO
+        r -= 1;
     }
 
-    let idx = IDX_LOOKUP_TABLE[dec];
-
     // TODO
-    debug_assert!(idx < N_SIZE);
+    debug_assert!(t < N_SIZE);
 
-    idx
+    t
+}
+
+/// comb - TODO
+const fn combinations(i: usize, r: usize) -> usize {
+    if i < r {
+        return 0;
+    }
+
+    if i == r {
+        return 1;
+    }
+
+    FACTORIALS[i] / (FACTORIALS[r] * FACTORIALS[i - r])
+}
+
+/// factorials - TODO
+const fn factorials<const N: usize>() -> [usize; N] {
+    let mut factorials = [0; N];
+    let mut i = 0;
+
+    loop {
+        if i == N {
+            break
+        }
+
+        // TODO
+        factorials[i] = factorial(i);
+
+        // TODO
+        i += 1;
+    }
+
+    factorials
+}
+
+/// factorial - TODO
+const fn factorial(n: usize) -> usize {
+    // TODO
+    if n <= 1 {
+        return 1;
+    }
+
+    let mut a = 1;
+    let mut i = 1;
+
+    loop {
+        if i == n {
+            break
+        }
+
+        // TODO
+        a *= i;
+
+        // TODO
+        i += 1;
+    }
+
+    return a;
 }
