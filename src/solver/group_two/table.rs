@@ -123,7 +123,7 @@ const fn factorials<const N: usize>() -> [usize; N] {
 
     loop {
         if i == N {
-            break
+            break;
         }
 
         // TODO
@@ -148,7 +148,7 @@ const fn factorial(n: usize) -> usize {
 
     loop {
         if i == n {
-            break
+            break;
         }
 
         // TODO

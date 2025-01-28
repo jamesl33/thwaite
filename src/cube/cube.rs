@@ -26,7 +26,7 @@ pub struct Cube {
     eorien: [usize; NUM_EDGES],
 
     // last - TODO
-    last: Option<Rotation>
+    last: Option<Rotation>,
 }
 
 impl Cube {
@@ -143,7 +143,7 @@ impl Cube {
     /// redundant - TODO
     fn redundant(&self, m: &Rotation) -> bool {
         if let Some(last) = self.last {
-            return last.face() == m.face()
+            return last.face() == m.face();
         }
 
         false
@@ -203,7 +203,7 @@ where
 {
     for mv in moves {
         if cube.redundant(mv) {
-            continue
+            continue;
         }
 
         let mut cube = cube;
