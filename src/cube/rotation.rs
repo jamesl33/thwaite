@@ -55,3 +55,17 @@ pub enum Rotation {
     /// D2 - TODO
     D2,
 }
+
+impl Rotation {
+    /// face - TODO
+    pub fn face(&self) -> Rotation {
+        match self {
+            Rotation::F | Rotation::FP | Rotation::F2 => Rotation::F,
+            Rotation::B | Rotation::BP | Rotation::B2 => Rotation::B,
+            Rotation::L | Rotation::LP | Rotation::L2 => Rotation::L,
+            Rotation::R | Rotation::RP | Rotation::R2 => Rotation::R,
+            Rotation::U | Rotation::UP | Rotation::U2 => Rotation::U,
+            Rotation::D | Rotation::DP | Rotation::D2 => Rotation::D,
+        }
+    }
+}

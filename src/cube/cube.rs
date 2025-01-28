@@ -24,6 +24,9 @@ pub struct Cube {
 
     /// eorien - TODO
     eorien: [isize; NUM_EDGES],
+
+    // last - TODO
+    last: Option<Rotation>
 }
 
 impl Cube {
@@ -34,6 +37,7 @@ impl Cube {
             corien: [0, 0, 0, 0, 0, 0, 0, 0],
             eperms: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
             eorien: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            last: None,
         }
     }
 
@@ -132,6 +136,17 @@ impl Cube {
                 self.rotate_down();
             }
         };
+
+        self.last = Some(m);
+    }
+
+    /// redundant - TODO
+    fn redundant(&self, m: &Rotation) -> bool {
+        if let Some(last) = self.last {
+            return last.face() == m.face()
+        }
+
+        false
     }
 
     /// rotate_front - TODO
@@ -187,6 +202,10 @@ where
     F: FnMut(&Cube, usize),
 {
     for mv in moves {
+        if cube.redundant(mv) {
+            continue
+        }
+
         let mut cube = cube;
 
         cube.rotate(*mv);
