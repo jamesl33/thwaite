@@ -77,7 +77,7 @@ fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
 
 /// ptoidx - TODO
 ///
-/// https://www.jaapsch.net/puzzles/compindx.htm
+/// https://www.jaapsch.net/puzzles/compindx.htm#comb
 fn ptoidx(perms: &[usize; NUM_EDGES]) -> usize {
     let mut t = 0;
     let mut r = 4;

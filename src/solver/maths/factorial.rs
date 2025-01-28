@@ -14,7 +14,7 @@ const fn facts<const N: usize>() -> [usize; N] {
         }
 
         // TODO
-        factorials[i] = fact(i);
+        factorials[i] = fact(i + 1);
 
         // TODO
         i += 1;
