@@ -9,6 +9,9 @@ const N_SIZE: usize = 495;
 /// M_SIZE - TODO
 const M_SIZE: usize = 2187;
 
+/// SIZE - TODO
+const SIZE: usize = N_SIZE * M_SIZE;
+
 /// IDX_LOOKUP_TABLE_SIZE - TODO
 const IDX_LOOKUP_TABLE_SIZE: usize = 2048;
 
@@ -21,7 +24,7 @@ const IDX_LOOKUP_TABLE: [usize; IDX_LOOKUP_TABLE_SIZE] = idx_lookup_table();
 #[derive(Debug)]
 pub struct Table {
     /// data - TODO
-    data: Vec<[usize; M_SIZE]>,
+    data: Vec<usize>,
 }
 
 impl Table {
@@ -38,22 +41,28 @@ fn g1() -> Table {
 
     // // We initialize the pruning table at the max depth, and search for the cheaper distances
     let mut tab = Table {
-        data: vec![[DEPTH; M_SIZE]; N_SIZE],
+        data: vec![DEPTH; SIZE],
     };
 
     // Which has a distance of zero
-    tab.data[0][0] = 0;
+    tab.data[0] = 0;
 
     // TODO (jamesl33): This is the wrong starting state.
     let start: Cube = Cube::new();
 
     // TODO
     start.search(Group::One.moves(), DEPTH - 1, &mut |cube, depth| {
+        // TODO
         let oidx = otoidx(cube.corner_orientations());
+
+        // TODO
         let pidx = ptoidx(cube.edge_permutations());
 
+        // TODO
+        let idx = oidx * N_SIZE + pidx;
+
         // Only update the pruning table, if we've found a shorter path
-        tab.data[pidx][oidx] = cmp::min(tab.data[pidx][oidx], depth);
+        tab.data[idx] = cmp::min(tab.data[idx], depth);
     });
 
     tab
