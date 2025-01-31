@@ -1,4 +1,4 @@
-use crate::cube::{Cube, Rotation};
+use crate::cube::{Cube, Rotation, NUM_CORNERS};
 
 /// GROUP_ZERO_VALID_MOVES - TODO
 const GROUP_ZERO_VALID_MOVES: [Rotation; 18] = [
@@ -76,11 +76,58 @@ pub enum Group {
 impl Group {
     /// from - TODO
     pub fn from(cube: &Cube) -> Group {
+        // TODO
         if cube.edge_orientations().iter().sum::<usize>() > 0 {
             return Group::Zero;
         }
 
-        unimplemented!();
+        // TODO
+        if cube.corner_orientations().iter().sum::<usize>() > 0 {
+            return Group::One;
+        }
+
+        // TODO
+        if cube.edge_orientations()[8..=11].iter().any(|x| *x < 8) {
+            return Group::One;
+        }
+
+        // TODO
+        if cube.corner_permutations()[0..=3].iter().any(|x| *x > 3) {
+            return Group::Two;
+        }
+
+        // TODO
+        if cube.corner_permutations()[4..=7].iter().any(|x| *x < 4) {
+            return Group::Two;
+        }
+
+        // TODO
+        if cube.edge_permutations()[0..=3].iter().any(|x| *x > 3) {
+            return Group::Two;
+        }
+
+        // TODO
+        if cube.edge_permutations()[4..=7].iter().any(|x| *x < 4 || *x > 7) {
+            return Group::Two;
+        }
+
+        // TODO
+        let mut parity = 0;
+
+        for (i, c) in cube.corner_permutations().iter().enumerate() {
+            if i != *c {
+                continue;
+            }
+
+            parity += 1;
+        }
+
+        // TODO
+        if parity % 2 != 0 {
+            return Group::Two;
+        }
+
+        Group::Three
     }
 
     /// moves - TODO
