@@ -1,4 +1,8 @@
 #![allow(dead_code)]
+
+#[macro_use]
+extern crate arrayref;
+
 mod cube;
 use cube::*;
 

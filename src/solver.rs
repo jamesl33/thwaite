@@ -15,3 +15,6 @@ use group_one::*;
 
 mod group_two;
 use group_two::*;
+
+mod group_three;
+use group_three::*;
