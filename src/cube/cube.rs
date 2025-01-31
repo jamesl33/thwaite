@@ -61,6 +61,16 @@ impl Cube {
         return &self.eorien;
     }
 
+    /// solved - TODO
+    pub fn solved(&self) -> bool {
+        let eo = self.eorien == [0; NUM_EDGES];
+        let ep = monotonic(&self.eperms);
+        let co = self.corien == [0; NUM_CORNERS];
+        let cp = monotonic(&self.cperms);
+
+        eo && ep && co && cp
+    }
+
     /// search - TODO
     pub fn search<F>(&self, moves: &[Rotation], limit: usize, func: &mut F)
     where
@@ -245,4 +255,15 @@ fn orient<const N: usize>(orien: [usize; N], perms: [usize; N], rot: [isize; N],
     debug_assert_eq!(cop.iter().sum::<usize>().rem_euclid(rem), 0);
 
     cop
+}
+
+/// monotonic - TODO
+fn monotonic<const N: usize>(a: &[usize; N]) -> bool {
+    for i in 0..N {
+        if a[i] != i {
+            return false;
+        }
+    }
+
+    true
 }
