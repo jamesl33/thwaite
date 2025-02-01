@@ -24,7 +24,7 @@ impl Solver {
     ///
     /// TODO (jamesl33): Add an algorithm type to abstract a number of rotations (and perform basic reduction).
     pub fn solve(&mut self) -> Option<Vec<cube::Rotation>> {
-        let g0 = read_table::<solver::group_zero::Table>("./src/solver/group_zero/table.pdb").unwrap();
+        let g0 = read_table::<solver::group_zero::Table>("./src/solver/group_zero/table.db").unwrap();
 
         // TODO
         let zero = idas(self.cube, solver::Group::Zero.moves(), &|cube| g0.depth(cube))?;
@@ -32,7 +32,7 @@ impl Solver {
         self.apply(&zero);
 
         // TODO
-        let g1 = read_table::<solver::group_one::Table>("./src/solver/group_one/table.pdb").unwrap();
+        let g1 = read_table::<solver::group_one::Table>("./src/solver/group_one/table.db").unwrap();
 
         // TODO
         let one = idas(self.cube, solver::Group::One.moves(), &|cube| g1.depth(cube))?;
@@ -40,7 +40,7 @@ impl Solver {
         self.apply(&one);
 
         // TODO
-        let g2 = read_table::<solver::group_two::Table>("./src/solver/group_two/table.pdb").unwrap();
+        let g2 = read_table::<solver::group_two::Table>("./src/solver/group_two/table.db").unwrap();
 
         // TODO
         let two = idas(self.cube, solver::Group::Two.moves(), &|cube| g2.depth(cube))?;
@@ -48,7 +48,7 @@ impl Solver {
         self.apply(&two);
 
         // TODO
-        let g3 = read_table::<solver::group_three::Table>("./src/solver/group_three/table.pdb").unwrap();
+        let g3 = read_table::<solver::group_three::Table>("./src/solver/group_three/table.db").unwrap();
 
         // TODO
         let three = idas(self.cube, solver::Group::Three.moves(), &|cube| g3.depth(cube))?;

@@ -27,10 +27,10 @@ where
 }
 
 // fn main() -> std::io::Result<()> {
-//     write_table("./src/solver/group_zero/table.pdb", &solver::group_zero::Table::new())?;
-//     write_table("./src/solver/group_one/table.pdb", &solver::group_one::Table::new())?;
-//     write_table("./src/solver/group_two/table.pdb", &solver::group_two::Table::new())?;
-//     write_table("./src/solver/group_three/table.pdb", &solver::group_three::Table::new())?;
+//     write_table("./src/solver/group_zero/table.db", &solver::group_zero::Table::new())?;
+//     write_table("./src/solver/group_one/table.db", &solver::group_one::Table::new())?;
+//     write_table("./src/solver/group_two/table.db", &solver::group_two::Table::new())?;
+//     write_table("./src/solver/group_three/table.db", &solver::group_three::Table::new())?;
 //
 //     Ok(())
 // }
