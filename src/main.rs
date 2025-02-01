@@ -4,7 +4,7 @@
 extern crate arrayref;
 
 use std::fs::File;
-use std::io::{Read, Write};
+use std::io::Write;
 
 mod cube;
 use cube::*;

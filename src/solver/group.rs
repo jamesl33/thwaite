@@ -1,4 +1,4 @@
-use crate::cube::{Cube, Rotation, NUM_CORNERS};
+use crate::cube::Rotation;
 
 /// GROUP_ZERO_VALID_MOVES - TODO
 const GROUP_ZERO_VALID_MOVES: [Rotation; 18] = [

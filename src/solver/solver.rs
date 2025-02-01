@@ -1,13 +1,11 @@
 use std::cmp;
 use std::fs::File;
-use std::io::{Read, Write};
-use std::os::unix::thread::JoinHandleExt;
+use std::io::Read;
 use std::usize;
 
 use crate::cube;
 use crate::cube::{Cube, Rotation};
 use crate::solver;
-use crate::solver::group::Group;
 
 /// Solver - TODO
 #[derive(Debug)]

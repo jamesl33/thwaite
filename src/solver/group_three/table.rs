@@ -1,8 +1,8 @@
-use std::{array, cmp};
+use std::cmp;
 
 use serde::{Deserialize, Serialize};
 
-use crate::cube::{Cube, NUM_EDGES};
+use crate::cube::Cube;
 use crate::solver::group::Group;
 use crate::solver::maths::factorial;
 
