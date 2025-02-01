@@ -1,6 +1,8 @@
 use std::cmp;
 use std::collections::HashMap;
 
+use serde::{Deserialize, Serialize};
+
 use crate::cube::{Cube, NUM_CORNERS, NUM_EDGES};
 use crate::solver::group::Group;
 use crate::solver::maths::{combinations, factorial};
@@ -18,7 +20,7 @@ const M_SIZE: usize = combinations(8, 4);
 const SIZE: usize = N_SIZE * M_SIZE;
 
 /// Table - TODO
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// data - TODO
     data: Vec<usize>,

@@ -3,11 +3,37 @@
 #[macro_use]
 extern crate arrayref;
 
+use std::fs::File;
+use std::io::{Read, Write};
+
 mod cube;
 use cube::*;
 
 mod solver;
 use solver::*;
+
+/// write_table - TODO
+fn write_table<T: ?Sized>(path: &str, table: &T) -> std::io::Result<()>
+where
+    T: serde::Serialize,
+{
+    let file = File::create(path)?;
+    let encoded = bincode::serialize(&table).unwrap();
+    let mut compressor = snap::write::FrameEncoder::new(&file);
+
+    compressor.write_all(&encoded)?;
+
+    Ok(())
+}
+
+// fn main() -> std::io::Result<()> {
+//     write_table("./src/solver/group_zero/table.pdb", &solver::group_zero::Table::new())?;
+//     write_table("./src/solver/group_one/table.pdb", &solver::group_one::Table::new())?;
+//     write_table("./src/solver/group_two/table.pdb", &solver::group_two::Table::new())?;
+//     write_table("./src/solver/group_three/table.pdb", &solver::group_three::Table::new())?;
+//
+//     Ok(())
+// }
 
 fn main() {
     let mut c: Cube = Cube::new();

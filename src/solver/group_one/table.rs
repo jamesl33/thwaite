@@ -1,4 +1,8 @@
 use std::cmp;
+use std::fs::File;
+use std::io::Write;
+
+use serde::{Deserialize, Serialize};
 
 use crate::cube::{Cube, NUM_EDGES};
 use crate::solver::group::Group;
@@ -42,7 +46,7 @@ const fn idx_lookup_table() -> [usize; IDX_LOOKUP_TABLE_SIZE] {
 }
 
 /// Table - TODO
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// data - TODO
     data: Vec<usize>,

@@ -1,5 +1,7 @@
 use std::cmp;
 
+use serde::{Deserialize, Serialize};
+
 use crate::cube::{Cube, NUM_EDGES};
 use crate::solver::group::Group;
 
@@ -7,10 +9,10 @@ use crate::solver::group::Group;
 const SIZE: usize = 2048;
 
 /// Table - TODO
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// data - TODO
-    data: [usize; SIZE],
+    data: Vec<usize>,
 }
 
 impl Table {
@@ -31,7 +33,9 @@ fn g0() -> Table {
     const DEPTH: usize = 8;
 
     // We initialize the pruning table at the max depth, and search for the cheaper distances
-    let mut tab: Table = Table { data: [DEPTH; SIZE] };
+    let mut tab: Table = Table {
+        data: vec![DEPTH; SIZE],
+    };
 
     // Which has a distance of zero
     tab.data[0] = 0;

@@ -1,4 +1,6 @@
 use std::cmp;
+use std::fs::File;
+use std::io::{Read, Write};
 use std::os::unix::thread::JoinHandleExt;
 use std::usize;
 
@@ -24,7 +26,7 @@ impl Solver {
     ///
     /// TODO (jamesl33): Add an algorithm type to abstract a number of rotations (and perform basic reduction).
     pub fn solve(&mut self) -> Option<Vec<cube::Rotation>> {
-        let g0 = solver::group_zero::Table::new();
+        let g0 = read_table::<solver::group_zero::Table>("./src/solver/group_zero/table.pdb").unwrap();
 
         // TODO
         let zero = idas(self.cube, solver::Group::Zero.moves(), &|cube| g0.depth(cube))?;
@@ -32,7 +34,7 @@ impl Solver {
         self.apply(&zero);
 
         // TODO
-        let g1 = solver::group_one::Table::new();
+        let g1 = read_table::<solver::group_one::Table>("./src/solver/group_one/table.pdb").unwrap();
 
         // TODO
         let one = idas(self.cube, solver::Group::One.moves(), &|cube| g1.depth(cube))?;
@@ -40,7 +42,7 @@ impl Solver {
         self.apply(&one);
 
         // TODO
-        let g2 = solver::group_two::Table::new();
+        let g2 = read_table::<solver::group_two::Table>("./src/solver/group_two/table.pdb").unwrap();
 
         // TODO
         let two = idas(self.cube, solver::Group::Two.moves(), &|cube| g2.depth(cube))?;
@@ -48,7 +50,7 @@ impl Solver {
         self.apply(&two);
 
         // TODO
-        let g3 = solver::group_three::Table::new();
+        let g3 = read_table::<solver::group_three::Table>("./src/solver/group_three/table.pdb").unwrap();
 
         // TODO
         let three = idas(self.cube, solver::Group::Three.moves(), &|cube| g3.depth(cube))?;
@@ -125,4 +127,20 @@ where
     }
 
     (min, None)
+}
+
+/// read_table - TODO
+///
+/// TODO (jamesl33): Add a binary to generate these, and include them in the solver binary.
+fn read_table<'a, T: Sized>(path: &str) -> std::io::Result<T>
+where
+    T: serde::de::DeserializeOwned,
+{
+    let file = File::open(path)?;
+    let mut decoder = snap::read::FrameDecoder::new(&file);
+
+    let mut encoded = vec![];
+    decoder.read_to_end(&mut encoded)?;
+
+    Ok(bincode::deserialize::<T>(&encoded).unwrap())
 }

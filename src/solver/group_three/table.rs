@@ -1,5 +1,7 @@
 use std::{array, cmp};
 
+use serde::{Deserialize, Serialize};
+
 use crate::cube::{Cube, NUM_EDGES};
 use crate::solver::group::Group;
 use crate::solver::maths::factorial;
@@ -8,7 +10,7 @@ use crate::solver::maths::factorial;
 const SIZE: usize = 663552;
 
 /// Table - TODO
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// data - TODO
     data: Vec<usize>,
