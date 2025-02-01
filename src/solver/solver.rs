@@ -1,8 +1,5 @@
 use std::cmp;
-use std::io::Read;
 use std::usize;
-
-use bytes::Buf;
 
 use crate::cube;
 use crate::cube::{Cube, Rotation};
@@ -37,7 +34,7 @@ impl Solver {
     ///
     /// TODO (jamesl33): Add an algorithm type to abstract a number of rotations (and perform basic reduction).
     pub fn solve(&mut self) -> Option<Vec<cube::Rotation>> {
-        let g0 = read_table::<solver::group_zero::Table>(G0);
+        let g0 = solver::tables::read::<solver::group_zero::Table>(G0);
 
         // TODO
         let zero = idas(self.cube, solver::Group::Zero.moves(), &|cube| g0.depth(cube))?;
@@ -45,7 +42,7 @@ impl Solver {
         self.apply(&zero);
 
         // TODO
-        let g1 = read_table::<solver::group_one::Table>(G1);
+        let g1 = solver::tables::read::<solver::group_one::Table>(G1);
 
         // TODO
         let one = idas(self.cube, solver::Group::One.moves(), &|cube| g1.depth(cube))?;
@@ -53,7 +50,7 @@ impl Solver {
         self.apply(&one);
 
         // TODO
-        let g2 = read_table::<solver::group_two::Table>(G2);
+        let g2 = solver::tables::read::<solver::group_two::Table>(G2);
 
         // TODO
         let two = idas(self.cube, solver::Group::Two.moves(), &|cube| g2.depth(cube))?;
@@ -61,7 +58,7 @@ impl Solver {
         self.apply(&two);
 
         // TODO
-        let g3 = read_table::<solver::group_three::Table>(G3);
+        let g3 = solver::tables::read::<solver::group_three::Table>(G3);
 
         // TODO
         let three = idas(self.cube, solver::Group::Three.moves(), &|cube| g3.depth(cube))?;
@@ -138,26 +135,4 @@ where
     }
 
     (min, None)
-}
-
-/// read_table - TODO
-///
-/// TODO (jamesl33): Add a binary to generate these, and include them in the solver binary.
-fn read_table<'a, T: Sized>(table: &[u8]) -> T
-where
-    T: serde::de::DeserializeOwned,
-{
-    // TODO
-    let mut decoder = snap::read::FrameDecoder::new(table.reader());
-
-    // TODO
-    let mut encoded = vec![];
-
-    // TODO
-    decoder.read_to_end(&mut encoded).unwrap();
-
-    // TODO
-    let decoded = bincode::deserialize(&encoded).unwrap();
-
-    decoded
 }
