@@ -26,7 +26,7 @@ where
 
 
 /// write - TODO
-pub fn write_table<T: ?Sized>(path: &str, table: &T) -> std::io::Result<()>
+pub fn write<T: ?Sized>(path: &str, table: &T) -> std::io::Result<()>
 where
     T: serde::Serialize,
 {
