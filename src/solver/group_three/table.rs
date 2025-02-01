@@ -31,7 +31,7 @@ impl Table {
 /// g3 - TODO
 fn g3() -> Table {
     /// DEPTH - TODO
-    const DEPTH: usize = 10;
+    const DEPTH: usize = 15;
 
     // We initialize the pruning table at the max depth, and search for the cheaper distances
     let mut tab: Table = Table {

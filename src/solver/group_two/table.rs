@@ -43,9 +43,7 @@ impl Table {
 /// TODO (jamesl33): This search could be done in parallel.
 fn g2() -> Table {
     /// DEPTH - TODO
-    ///
-    /// TODO (jamesl33): This depth isn't enough, but DFS is slow without visited branch pruning (i.e. 96 cubes).
-    const DEPTH: usize = 8;
+    const DEPTH: usize = 10;
 
     // TODO
     let mut tab: Table = Table {

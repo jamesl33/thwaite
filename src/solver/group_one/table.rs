@@ -65,7 +65,7 @@ impl Table {
 /// g1 - TODO
 fn g1() -> Table {
     /// DEPTH - TODO
-    const DEPTH: usize = 8;
+    const DEPTH: usize = 10;
 
     // // We initialize the pruning table at the max depth, and search for the cheaper distances
     let mut tab = Table {
