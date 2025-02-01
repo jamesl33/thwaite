@@ -29,6 +29,11 @@ impl Table {
     pub fn new() -> Table {
         g2()
     }
+
+    /// depth - TODO
+    pub fn depth(&self, cube: &Cube) -> usize {
+        self.data[idx(cube)]
+    }
 }
 
 /// g2 - TODO
@@ -68,16 +73,22 @@ fn dfs(tab: &mut Table, cube: Cube, limit: usize) {
 /// update - TODO
 fn update(tab: &mut Table, cube: &Cube, depth: usize) {
     // TODO
+    let idx = idx(cube);
+
+    // Only update the pruning table, if we've found a shorter path
+    tab.data[idx] = cmp::min(tab.data[idx], depth);
+}
+
+/// idx - TODO
+fn idx(cube: &Cube) -> usize {
+    // TODO
     let cpidx = ptoidx(cube.corner_permutations());
 
     // TODO
     let epidx = pctoidx::<8>(cube.edge_permutations()[..NUM_EDGES - 4].try_into().unwrap());
 
     // TODO
-    let idx = cpidx * M_SIZE + epidx;
-
-    // Only update the pruning table, if we've found a shorter path
-    tab.data[idx] = cmp::min(tab.data[idx], depth);
+    cpidx * M_SIZE + epidx
 }
 
 /// initial - TODO

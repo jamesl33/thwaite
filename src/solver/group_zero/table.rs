@@ -18,12 +18,17 @@ impl Table {
     pub fn new() -> Table {
         g0()
     }
+
+    /// depth - TODO
+    pub fn depth(&self, cube: &Cube) -> usize {
+        self.data[idx(cube.edge_orientations())]
+    }
 }
 
 /// g0 - TODO
 fn g0() -> Table {
     /// DEPTH - TODO
-    const DEPTH: usize = 7;
+    const DEPTH: usize = 8;
 
     // We initialize the pruning table at the max depth, and search for the cheaper distances
     let mut tab: Table = Table { data: [DEPTH; SIZE] };

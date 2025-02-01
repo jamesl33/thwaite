@@ -13,6 +13,34 @@ const M_SIZE: usize = usize::pow(3, 7);
 /// SIZE - TODO
 const SIZE: usize = N_SIZE * M_SIZE;
 
+/// IDX_LOOKUP_TABLE_SIZE - TODO
+const IDX_LOOKUP_TABLE_SIZE: usize = 2048;
+
+/// IDX_LOOKUP_TABLE - TODO
+///
+/// TODO (jamesl33): Converts a range from 2048, to 495.
+const IDX_LOOKUP_TABLE: [usize; IDX_LOOKUP_TABLE_SIZE] = idx_lookup_table();
+
+/// idx_lookup - TODO
+const fn idx_lookup_table() -> [usize; IDX_LOOKUP_TABLE_SIZE] {
+    let mut n: usize = 0;
+    let mut idx = 0;
+    let mut table = [0; IDX_LOOKUP_TABLE_SIZE];
+
+    while n < 2048 {
+        let c = n.count_ones();
+
+        if c == 3 || c == 4 {
+            table[n] = idx;
+            idx += 1;
+        }
+
+        n = n + 1;
+    }
+
+    table
+}
+
 /// Table - TODO
 #[derive(Debug)]
 pub struct Table {
@@ -25,12 +53,17 @@ impl Table {
     pub fn new() -> Table {
         g1()
     }
+
+    /// depth - TODO
+    pub fn depth(&self, cube: &Cube) -> usize {
+        self.data[idx(cube)]
+    }
 }
 
 /// g1 - TODO
 fn g1() -> Table {
     /// DEPTH - TODO
-    const DEPTH: usize = 10;
+    const DEPTH: usize = 8;
 
     // // We initialize the pruning table at the max depth, and search for the cheaper distances
     let mut tab = Table {
@@ -46,19 +79,25 @@ fn g1() -> Table {
     // TODO
     start.search(Group::One.moves(), DEPTH - 1, &mut |cube, depth| {
         // TODO
-        let oidx = otoidx(cube.corner_orientations());
-
-        // TODO
-        let pidx = ptoidx(cube.edge_permutations());
-
-        // TODO
-        let idx = oidx * N_SIZE + pidx;
+        let idx = idx(cube);
 
         // Only update the pruning table, if we've found a shorter path
         tab.data[idx] = cmp::min(tab.data[idx], depth);
     });
 
     tab
+}
+
+/// idx - TODO
+fn idx(cube: &Cube) -> usize {
+    // TODO
+    let oidx = otoidx(cube.corner_orientations());
+
+    // TODO
+    let pidx = ptoidx(cube.edge_permutations());
+
+    // TODO
+    oidx * N_SIZE + pidx
 }
 
 /// otoidx - TODO
@@ -79,24 +118,17 @@ fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
 ///
 /// https://www.jaapsch.net/puzzles/compindx.htm#comb
 fn ptoidx(perms: &[usize; NUM_EDGES]) -> usize {
-    let mut t = 0;
-    let mut r = 4;
+    let mut dec = 0;
 
-    for i in (0..NUM_EDGES).rev() {
-        // We only care about edges 8-12
+    for i in 0..NUM_EDGES-1 {
         if perms[i] <= 7 {
-            continue;
+            continue
         }
 
-        // TODO
-        t += combinations(i, r);
-
-        // TODO
-        r -= 1;
+        dec += (2 as usize).pow(10 - i as u32);
     }
 
-    // TODO
-    debug_assert!(t < N_SIZE);
+    let idx = IDX_LOOKUP_TABLE[dec];
 
-    t
+    idx
 }

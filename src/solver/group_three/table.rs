@@ -17,14 +17,19 @@ pub struct Table {
 impl Table {
     /// new - TODO
     pub fn new() -> Table {
-        g0()
+        g3()
+    }
+
+    /// depth - TODO
+    pub fn depth(&self, cube: &Cube) -> usize {
+        self.data[idx(cube)]
     }
 }
 
-/// g0 - TODO
-fn g0() -> Table {
+/// g3 - TODO
+fn g3() -> Table {
     /// DEPTH - TODO
-    const DEPTH: usize = 12;
+    const DEPTH: usize = 10;
 
     // We initialize the pruning table at the max depth, and search for the cheaper distances
     let mut tab: Table = Table {
@@ -58,15 +63,15 @@ fn idx(cube: &Cube) -> usize {
     let cperms = cube.corner_permutations();
 
     // TODO
-    let mut e = *array_ref![eperms, 4, 4];
+    let mut e = *array_ref![eperms, 4, 2];
 
     // TODO
-    for i in 0..4 {
+    for i in 0..2 {
         e[i] &= 3;
     }
 
     // TODO
-    let mut m: [usize; 4] = *array_ref![eperms, 8, 4];
+    let mut m  = *array_ref![eperms, 8, 4];
 
     // TODO
     for i in 0..4 {
@@ -74,65 +79,58 @@ fn idx(cube: &Cube) -> usize {
     }
 
     // TODO
-    let s: [usize; 4] = *array_ref![eperms, 0, 4];
+    let mut s = *array_ref![eperms, 0, 4];
 
     // TODO
-    let c: [usize; 4] = *array_ref![cperms, 0, 4];
+    for i in 0..4 {
+        s[i] &= 3;
+    }
 
     // TODO
-    let cr = cube.corner_permutations()[4];
+    let mut c = *array_ref![cperms, 4, 4];
 
     // TODO
-    let sr = ctoidx::<4, 2>(&lehmer(&s));
+    for i in 0..4 {
+        c[i] &= 3;
+    }
 
     // TODO
-    let cidx = ptoidx(&lehmer(&c)) * 4 + (cr >> 1);
+    let mr = ptoidx(&m);
 
     // TODO
-    let eidx = ptoidx(&lehmer(&m)) * 288 + ptoidx(&lehmer(&e)) * 12 + sr;
+    let sr = ptoidx(&s);
+
+    // TODO
+    let er = ctoidx::<4, 2>(&e);
+
+    // TODO
+    let eidx = mr * 288 + sr * 12 + er;
+
+    // TODO
+    let cr = cperms[0];
+
+    // TODO
+    let cidx = ptoidx(&c) * 4 + (cr & 3);
 
     // TODO
     eidx * 96 + cidx
 }
 
-/// lehmer - TODO
-fn lehmer<const N: usize>(perms: &[usize; N]) -> [usize; N] {
+/// ctoidx - TODO
+fn ctoidx<const N: usize, const K: usize>(perms: &[usize; K]) -> usize {
     let mut lehmer = *perms;
 
-    for i in 1..N {
-        for j in (0..=i).rev() {
-            if perms[j] >= perms[i] {
-                continue;
+    for i in 1..K {
+        for j in (0..i).rev() {
+            if perms[j]  < perms[i] {
+                lehmer[i] -= 1;
             }
-
-            lehmer[i] -= 1;
         }
     }
 
-    return lehmer;
-}
-
-/// ptoidx - TODO
-fn ptoidx<const N: usize>(lehmer: &[usize; N]) -> usize {
     let mut idx = 0;
 
-    let mut i = 0;
-    let mut j = N - 1;
-
-    while i < N {
-        idx += lehmer[i] * factorial(j);
-        i += 1;
-        j -= 1;
-    }
-
-    idx
-}
-
-/// ctoidx - TODO
-fn ctoidx<const N: usize, const K: usize>(lehmer: &[usize; N]) -> usize {
-    let mut idx = 0;
-
-    for i in 0..N {
+    for i in 0..K {
         idx += lehmer[i] * comb(N - 1 - i, K - 1 - i);
     }
 
@@ -149,5 +147,35 @@ fn comb(n: usize, k: usize) -> usize {
         return 1;
     }
 
-    return factorial(n) / factorial(n - k);
+    factorial(n) / factorial(n - k)
+}
+
+/// ptoidx - TODO
+fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
+    let mut lehmer = *perms;
+
+    for i in 1..N {
+        for j in (0..i).rev() {
+            if perms[j]  < perms[i] {
+                lehmer[i] -= 1;
+            }
+        }
+    }
+
+    let mut idx = 0;
+
+    let mut i = 0;
+    let mut j = N-1;
+
+    while i < N && j > 0 {
+        idx += lehmer[i] * factorial(j);
+
+        // TODO
+        i += 1;
+
+        // TODO
+        j -= 1;
+    }
+
+    idx
 }

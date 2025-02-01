@@ -68,4 +68,16 @@ impl Rotation {
             Rotation::D | Rotation::DP | Rotation::D2 => Rotation::D,
         }
     }
+
+    /// opposite - TODO
+    pub fn opposite(&self) -> Rotation {
+        match self {
+            Rotation::F | Rotation::FP | Rotation::F2 => Rotation::B,
+            Rotation::B | Rotation::BP | Rotation::B2 => Rotation::F,
+            Rotation::L | Rotation::LP | Rotation::L2 => Rotation::R,
+            Rotation::R | Rotation::RP | Rotation::R2 => Rotation::L,
+            Rotation::U | Rotation::UP | Rotation::U2 => Rotation::D,
+            Rotation::D | Rotation::DP | Rotation::D2 => Rotation::U,
+        }
+    }
 }

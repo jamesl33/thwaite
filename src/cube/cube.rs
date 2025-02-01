@@ -151,9 +151,9 @@ impl Cube {
     }
 
     /// redundant - TODO
-    fn redundant(&self, m: &Rotation) -> bool {
+    pub fn redundant(&self, m: &Rotation) -> bool {
         if let Some(last) = self.last {
-            return last.face() == m.face();
+            return last.face() == m.face() || last.face() == m.opposite();
         }
 
         false
