@@ -21,22 +21,23 @@ use solver::*;
 fn main() {
     let mut c: Cube = Cube::new();
 
-    c.rotate(cube::Rotation::R);
-    c.rotate(cube::Rotation::U);
-    c.rotate(cube::Rotation::RP);
-    c.rotate(cube::Rotation::UP);
-    c.rotate(cube::Rotation::LP);
-    c.rotate(cube::Rotation::UP);
-    c.rotate(cube::Rotation::L);
-    c.rotate(cube::Rotation::U);
-    c.rotate(cube::Rotation::D2);
-    c.rotate(cube::Rotation::B2);
-    c.rotate(cube::Rotation::R2);
-    c.rotate(cube::Rotation::F);
-    c.rotate(cube::Rotation::L);
-    c.rotate(cube::Rotation::B);
+    let moves: Vec<Rotation> = rand::random_iter::<Rotation>().take(20).collect();
+
+    println!("Scramble: {:?}", moves);
+
+    for i in 0..moves.len() {
+        c.rotate(moves[i])
+    }
 
     let mut s: Solver = Solver::new(c);
 
-    println!("{:?}", s.solve());
+    let solution = s.solve().unwrap();
+
+    for i in 0..solution.len() {
+        c.rotate(solution[i]);
+    }
+
+    assert!(c.solved());
+
+    println!("Solution: {:?}", solution);
 }

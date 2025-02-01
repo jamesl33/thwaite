@@ -1,5 +1,11 @@
+
+use enum_utils::IterVariants;
+use rand::distr::{Distribution, StandardUniform};
+use rand::seq::IteratorRandom;
+use rand::Rng;
+
 /// Rotation - TODO
-#[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, IterVariants)]
 pub enum Rotation {
     /// F - TODO
     F,
@@ -79,5 +85,11 @@ impl Rotation {
             Rotation::U | Rotation::UP | Rotation::U2 => Rotation::D,
             Rotation::D | Rotation::DP | Rotation::D2 => Rotation::U,
         }
+    }
+}
+
+impl Distribution<Rotation> for StandardUniform {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Rotation {
+        Rotation::iter().choose(rng).unwrap()
     }
 }
