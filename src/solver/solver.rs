@@ -27,11 +27,7 @@ impl Solver {
         let g0 = solver::group_zero::Table::new();
 
         // TODO
-        let zero = idas(
-            self.cube,
-            solver::Group::Zero.moves(),
-            &| cube | g0.depth(cube)
-        )?;
+        let zero = idas(self.cube, solver::Group::Zero.moves(), &|cube| g0.depth(cube))?;
 
         self.apply(&zero);
 
@@ -39,11 +35,7 @@ impl Solver {
         let g1 = solver::group_one::Table::new();
 
         // TODO
-        let one = idas(
-            self.cube,
-            solver::Group::One.moves(),
-            &| cube | g1.depth(cube)
-        )?;
+        let one = idas(self.cube, solver::Group::One.moves(), &|cube| g1.depth(cube))?;
 
         self.apply(&one);
 
@@ -51,11 +43,7 @@ impl Solver {
         let g2 = solver::group_two::Table::new();
 
         // TODO
-        let two = idas(
-            self.cube,
-            solver::Group::Two.moves(),
-            &| cube | g2.depth(cube)
-        )?;
+        let two = idas(self.cube, solver::Group::Two.moves(), &|cube| g2.depth(cube))?;
 
         self.apply(&two);
 
@@ -63,11 +51,7 @@ impl Solver {
         let g3 = solver::group_three::Table::new();
 
         // TODO
-        let three = idas(
-            self.cube,
-            solver::Group::Three.moves(),
-            &| cube | g3.depth(cube)
-        )?;
+        let three = idas(self.cube, solver::Group::Three.moves(), &|cube| g3.depth(cube))?;
 
         self.apply(&three);
 
@@ -105,13 +89,7 @@ where
 }
 
 /// dfs - TODO
-fn dfs<F>(
-    cube: Cube,
-    g: usize,
-    limit: usize,
-    valid: &[Rotation],
-    hueristic: &F
-) -> (usize, Option<Vec<Rotation>>)
+fn dfs<F>(cube: Cube, g: usize, limit: usize, valid: &[Rotation], hueristic: &F) -> (usize, Option<Vec<Rotation>>)
 where
     F: Fn(&Cube) -> usize,
 {
@@ -140,7 +118,7 @@ where
         let (cost, path) = dfs(cube, g + 1, limit, valid, hueristic);
 
         if let Some(path) = path {
-            return (0, Some(vec![vec![*mv], path].concat()))
+            return (0, Some(vec![vec![*mv], path].concat()));
         }
 
         min = cmp::min(min, cost);

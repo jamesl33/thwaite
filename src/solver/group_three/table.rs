@@ -71,7 +71,7 @@ fn idx(cube: &Cube) -> usize {
     }
 
     // TODO
-    let mut m  = *array_ref![eperms, 8, 4];
+    let mut m = *array_ref![eperms, 8, 4];
 
     // TODO
     for i in 0..4 {
@@ -122,7 +122,7 @@ fn ctoidx<const N: usize, const K: usize>(perms: &[usize; K]) -> usize {
 
     for i in 1..K {
         for j in (0..i).rev() {
-            if perms[j]  < perms[i] {
+            if perms[j] < perms[i] {
                 lehmer[i] -= 1;
             }
         }
@@ -156,7 +156,7 @@ fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
 
     for i in 1..N {
         for j in (0..i).rev() {
-            if perms[j]  < perms[i] {
+            if perms[j] < perms[i] {
                 lehmer[i] -= 1;
             }
         }
@@ -165,7 +165,7 @@ fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
     let mut idx = 0;
 
     let mut i = 0;
-    let mut j = N-1;
+    let mut j = N - 1;
 
     while i < N && j > 0 {
         idx += lehmer[i] * factorial(j);

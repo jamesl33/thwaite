@@ -120,9 +120,9 @@ fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
 fn ptoidx(perms: &[usize; NUM_EDGES]) -> usize {
     let mut dec = 0;
 
-    for i in 0..NUM_EDGES-1 {
+    for i in 0..NUM_EDGES - 1 {
         if perms[i] <= 7 {
-            continue
+            continue;
         }
 
         dec += (2 as usize).pow(10 - i as u32);
