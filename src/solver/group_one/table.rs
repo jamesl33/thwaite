@@ -23,6 +23,25 @@ const IDX_LOOKUP_TABLE_SIZE: usize = 2048;
 /// TODO (jamesl33): Converts a range from 2048, to 495.
 const IDX_LOOKUP_TABLE: [usize; IDX_LOOKUP_TABLE_SIZE] = idx_lookup_table();
 
+/// Table - TODO
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Table {
+    /// data - TODO
+    data: Vec<usize>,
+}
+
+impl Table {
+    /// new - TODO
+    pub fn new() -> Table {
+        g1()
+    }
+
+    /// depth - TODO
+    pub fn depth(&self, cube: &Cube) -> usize {
+        self.data[idx(cube)]
+    }
+}
+
 /// idx_lookup - TODO
 const fn idx_lookup_table() -> [usize; IDX_LOOKUP_TABLE_SIZE] {
     let mut n: usize = 0;
@@ -41,25 +60,6 @@ const fn idx_lookup_table() -> [usize; IDX_LOOKUP_TABLE_SIZE] {
     }
 
     table
-}
-
-/// Table - TODO
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Table {
-    /// data - TODO
-    data: Vec<usize>,
-}
-
-impl Table {
-    /// new - TODO
-    pub fn new() -> Table {
-        g1()
-    }
-
-    /// depth - TODO
-    pub fn depth(&self, cube: &Cube) -> usize {
-        self.data[idx(cube)]
-    }
 }
 
 /// g1 - TODO

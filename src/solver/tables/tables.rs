@@ -1,44 +1,44 @@
 use std::fs::File;
-use std::io::Write;
 use std::io::Read;
+use std::io::Write;
 
 use bytes::Buf;
 
-/// read - TODO
+/// Inflates and decodes the given pattern database.
 pub fn read<'a, T: Sized>(table: &[u8]) -> T
 where
     T: serde::de::DeserializeOwned,
 {
-    // TODO
+    // Create a snappy decoder
     let mut decoder = snap::read::FrameDecoder::new(table.reader());
 
-    // TODO
-    let mut encoded = vec![];
+    // Allocate the space for the table
+    let mut encoded = Vec::with_capacity(snap::raw::decompress_len(&table).unwrap());
 
-    // TODO
+    // Inflate the compressed table
     decoder.read_to_end(&mut encoded).unwrap();
 
-    // TODO
+    // Decode the encoded table
     let decoded = bincode::deserialize(&encoded).unwrap();
 
     decoded
 }
 
-
-/// write - TODO
+/// Encodes, compresses and writes the given table to disk.
 pub fn write<T: ?Sized>(path: &str, table: &T) -> std::io::Result<()>
 where
     T: serde::Serialize,
 {
-    // TODO
+    // Open the target file path
     let file = File::create(path)?;
 
-    // TODO
+    // Serialize the table into binary data
     let encoded = bincode::serialize(&table).unwrap();
 
-    // TODO
+    // Compress the binary data
     let mut compressor = snap::write::FrameEncoder::new(&file);
 
+    // Write it out to disk
     compressor.write_all(&encoded)?;
 
     Ok(())

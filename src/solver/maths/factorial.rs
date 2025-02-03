@@ -1,9 +1,7 @@
-/// FACTORIAL - TODO
-///
-/// Arbitrary number, increase as required.
+/// An arbitrary number of pre-calculated factorials, increase as required.
 const FACTORIALS: [usize; 15] = facts();
 
-/// facts - TODO
+/// Calculates the factorials from zero to 'N'.
 const fn facts<const N: usize>() -> [usize; N] {
     let mut factorials = [0; N];
     let mut i = 0;
@@ -13,19 +11,18 @@ const fn facts<const N: usize>() -> [usize; N] {
             break;
         }
 
-        // TODO
+        // Populate the factorial, where the index maps to the numbers factorial
         factorials[i] = fact(i + 1);
 
-        // TODO
+        // Move onto the next integer
         i += 1;
     }
 
     factorials
 }
 
-/// fact - TODO
+/// Calculates the factorial of a given number.
 const fn fact(n: usize) -> usize {
-    // TODO
     if n <= 1 {
         return 1;
     }
@@ -38,17 +35,17 @@ const fn fact(n: usize) -> usize {
             break;
         }
 
-        // TODO
+        // Multiply the step
         a *= i;
 
-        // TODO
+        // Move onto the next step
         i += 1;
     }
 
     return a;
 }
 
-/// fact - TODO
+/// Returns the factorial of the given number, using a pre-calculated table of factorials.
 pub const fn factorial(n: usize) -> usize {
     FACTORIALS[n]
 }

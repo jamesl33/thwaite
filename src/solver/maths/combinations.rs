@@ -1,6 +1,6 @@
 use crate::solver::factorial;
 
-/// comb - TODO
+/// Returns the number of combinations of 'r' sub-pieces within 'i' pieces.
 pub const fn combinations(i: usize, r: usize) -> usize {
     if i < r {
         return 0;
