@@ -1,6 +1,6 @@
 use crate::cube::Rotation;
 
-/// GROUP_ZERO_VALID_MOVES - TODO
+/// The valid moves when in group-zero; all the moves, except slices and cube-rotations.
 const GROUP_ZERO_VALID_MOVES: [Rotation; 18] = [
     Rotation::F,
     Rotation::F2,
@@ -22,7 +22,7 @@ const GROUP_ZERO_VALID_MOVES: [Rotation; 18] = [
     Rotation::DP,
 ];
 
-/// GROUP_ONE_VALID_MOVES - TODO
+/// The valid moves when in group-one; removal of single turns of the U/D faces.
 const GROUP_ONE_VALID_MOVES: [Rotation; 14] = [
     Rotation::F,
     Rotation::F2,
@@ -40,7 +40,7 @@ const GROUP_ONE_VALID_MOVES: [Rotation; 14] = [
     Rotation::D2,
 ];
 
-/// GROUP_TWO_VALID_MOVES - TODO
+/// The valid moves when in group-two, removal of almost all the single face turns.
 const GROUP_TWO_VALID_MOVES: [Rotation; 10] = [
     Rotation::F2,
     Rotation::B2,
@@ -54,7 +54,7 @@ const GROUP_TWO_VALID_MOVES: [Rotation; 10] = [
     Rotation::D2,
 ];
 
-/// GROUP_THREE_VALID_MOVES - TODO
+/// The valid moves when in group-three; only 180 degree turns of all the faces.
 const GROUP_THREE_VALID_MOVES: [Rotation; 6] = [
     Rotation::F2,
     Rotation::B2,
@@ -64,7 +64,7 @@ const GROUP_THREE_VALID_MOVES: [Rotation; 6] = [
     Rotation::D2,
 ];
 
-/// Group - TODO
+/// A Thistlewate group where moves are progressively removed once certain criteria are met, to reduce the search space.
 #[derive(Debug, PartialEq, PartialOrd)]
 pub enum Group {
     Zero,
@@ -74,7 +74,7 @@ pub enum Group {
 }
 
 impl Group {
-    /// moves - TODO
+    /// Returns the valid moves for the group.
     pub fn moves(&self) -> &[Rotation] {
         match self {
             Group::Zero => &GROUP_ZERO_VALID_MOVES,

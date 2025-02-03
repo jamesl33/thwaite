@@ -85,66 +85,24 @@ impl Cube {
     /// TODO (jamesl33): The 90 degree prime turns can optimized into a single operation.
     pub fn rotate(&mut self, m: Rotation) {
         match m {
-            Rotation::F => self.rotate_front(),
-            Rotation::F2 => {
-                self.rotate_front();
-                self.rotate_front();
-            }
-            Rotation::FP => {
-                self.rotate_front();
-                self.rotate_front();
-                self.rotate_front();
-            }
-            Rotation::B => self.rotate_back(),
-            Rotation::B2 => {
-                self.rotate_back();
-                self.rotate_back();
-            }
-            Rotation::BP => {
-                self.rotate_back();
-                self.rotate_back();
-                self.rotate_back();
-            }
-            Rotation::L => self.rotate_left(),
-            Rotation::L2 => {
-                self.rotate_left();
-                self.rotate_left();
-            }
-            Rotation::LP => {
-                self.rotate_left();
-                self.rotate_left();
-                self.rotate_left();
-            }
-            Rotation::R => self.rotate_right(),
-            Rotation::R2 => {
-                self.rotate_right();
-                self.rotate_right();
-            }
-            Rotation::RP => {
-                self.rotate_right();
-                self.rotate_right();
-                self.rotate_right();
-            }
-            Rotation::U => self.rotate_up(),
-            Rotation::U2 => {
-                self.rotate_up();
-                self.rotate_up();
-            }
-            Rotation::UP => {
-                self.rotate_up();
-                self.rotate_up();
-                self.rotate_up();
-            }
-            Rotation::D => self.rotate_down(),
-            Rotation::D2 => {
-                self.rotate_down();
-                self.rotate_down();
-            }
-            Rotation::DP => {
-                self.rotate_down();
-                self.rotate_down();
-                self.rotate_down();
-            }
+            Rotation::F => rotate(self, &mut Self::rotate_front, 1),
+            Rotation::F2 => rotate(self, &mut Self::rotate_front, 2),
+            Rotation::FP => rotate(self, &mut Self::rotate_front, 3),
+            Rotation::B => rotate(self, &mut Self::rotate_back, 1),
+            Rotation::B2 => rotate(self, &mut Self::rotate_back, 2),
+            Rotation::BP => rotate(self, &mut Self::rotate_back, 3),
+            Rotation::L => rotate(self, &mut Self::rotate_left, 1),
+            Rotation::L2 => rotate(self, &mut Self::rotate_left, 2),
+            Rotation::LP => rotate(self, &mut Self::rotate_left, 3),
+            Rotation::R => rotate(self, &mut Self::rotate_right, 1),
+            Rotation::R2 => rotate(self, &mut Self::rotate_right, 2),
+            Rotation::RP => rotate(self, &mut Self::rotate_right, 3),
+            Rotation::U => rotate(self, &mut Self::rotate_up, 1),
+            Rotation::U2 => rotate(self, &mut Self::rotate_up, 2),
+            Rotation::UP => rotate(self, &mut Self::rotate_up, 3),
+            Rotation::D => rotate(self, &mut Self::rotate_up, 1),
+            Rotation::D2 => rotate(self, &mut Self::rotate_up, 2),
+            Rotation::DP => rotate(self, &mut Self::rotate_up, 3),
         };
 
         self.last = Some(m);
@@ -228,6 +186,16 @@ where
         }
 
         dfs(cube, moves, depth + 1, limit, func);
+    }
+}
+
+/// rotate - TODO
+fn rotate<F>(cube: &mut Cube, func: &mut F, n: usize)
+where
+    F: FnMut(&mut Cube),
+{
+    for _ in 0..n {
+        func(cube)
     }
 }
 
