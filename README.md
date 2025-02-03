@@ -100,7 +100,9 @@ The solving algorithm implemented in `thwaite` is [Thistlewaite 45](https://www.
 
 ## Group 0 (G0)
 
+<p align="center">
 $G0 = \{L,R,F,B,U,D\}$
+</p>
 
 The furthest group from a solution, where all $18$ moves are available[^1][^2] which has $4.33\times10^{19}$ valid states, and a pruning table with $2,048$ entries.
 
@@ -109,25 +111,33 @@ The furthest group from a solution, where all $18$ moves are available[^1][^2] w
 
 ## Group 1 (G1)
 
+<p align="center">
 $G1 = \{L,R,F,B,U2,D2\}$
+</p>
 
 The first group with move limitations, $14$ moves are not available; there are now $2.11\times10^{16}$ valid states, and a pruning table with $1,082,565$ entries.
 
 ## Group 2 (G2)
 
+<p align="center">
 $G2 = \{L,R,F2,B2,U2,D2\}$
+</p>
 
 The third group, now contains $10$ valid moves which has $1.95\times10^{10}$ valid states, and a pruning table with $2,822,400$ entries.
 
 ## Group 3 (G3)
 
+<p align="center">
 $G3 = \{L2,R2,F2,B2,U2,D2\}$
+</p>
 
 The final (non-solved) group, which restricts valid moves to only $180\degree$ moves which has $6.63\times1^{05}$ valid states, and a pruning table with $663,552$ entries.
 
 ## Group 4 (G4)
 
+<p align="center">
 $G4 = \{I\}$
+</p>
 
 The solved (identity) state, with only one valid state.
 
