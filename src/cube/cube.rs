@@ -100,9 +100,9 @@ impl Cube {
             Rotation::U => rotate(self, &mut Self::rotate_up, 1),
             Rotation::U2 => rotate(self, &mut Self::rotate_up, 2),
             Rotation::UP => rotate(self, &mut Self::rotate_up, 3),
-            Rotation::D => rotate(self, &mut Self::rotate_up, 1),
-            Rotation::D2 => rotate(self, &mut Self::rotate_up, 2),
-            Rotation::DP => rotate(self, &mut Self::rotate_up, 3),
+            Rotation::D => rotate(self, &mut Self::rotate_down, 1),
+            Rotation::D2 => rotate(self, &mut Self::rotate_down, 2),
+            Rotation::DP => rotate(self, &mut Self::rotate_down, 3),
         };
 
         self.last = Some(m);
