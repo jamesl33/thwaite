@@ -43,19 +43,31 @@ Each has is merits/use-case; this solver represents a Cube using the format desc
 
 The permutation of corner pieces can be represented as a 2x8 array, where the first row represents the corners 1-8; the second holding the actual positions of those pieces.
 
+<div align="center">
+
 | 0   | 1   | 2   | 3   | 4   | 5   | 6   | 7   |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0   | 1   | 2   | 3   | 4   | 5   | 6   | 7   |
+
+</div>
 
 With that in-mind, the first array may be omitted as it's static (implied) in future references.
 
+<div align="center">
+
 | 0   | 1   | 2   | 3   | 4   | 5   | 6   | 7   |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 
+</div>
+
 For example, the $U$ permutation, may be represented using the following array.
+
+<div align="center">
 
 | 4   | 1   | 2   | 7   | 3   | 5   | 6   | 0   |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+
+</div>
 
 The same theory applies to edges, except a 2x12 array is used instead.
 
@@ -63,9 +75,13 @@ The same theory applies to edges, except a 2x12 array is used instead.
 
 The orientation for corners can be represented as a 2x8 array, where the first row represents the corners 1-8; the second holding their orientations (0-3).
 
+<div align="center">
+
 | 0   | 1   | 2   | 3   | 4   | 5   | 6   | 7   |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0   | 0   | 0   | 0   | 0   | 0   | 0   | 0   |
+
+</div>
 
 - **0:** Correctly Oriented
 - **1:** Twisted Clockwise
@@ -73,13 +89,21 @@ The orientation for corners can be represented as a 2x8 array, where the first r
 
 As with permutations, the first array may be omitted; the first is implied.
 
+<div align="center">
+
 | 0   | 0   | 0   | 0   | 0   | 0   | 0   | 0   |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 
+</div>
+
 For example, the $U$ permutation, may be represented using the following array.
+
+<div align="center">
 
 | -1  | 0   | 0   | -1  | 1   | 0   | 0   | 1   |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+
+</div>
 
 The orientation of each piece then becomes $(cur[i] * rot[i]) \mod n$ where $n$ is the number of orientations; two for edges, three for corners.
 
