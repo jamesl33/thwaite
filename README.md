@@ -139,7 +139,7 @@ The solver utilises iterative deepening A\* (IDA\*) as described on [Wikipedia](
 
 The "depth" from the solved state, is pre-computed for each group and stored in a lookup table where the index represents a cube state[^3], and the value at the index, the depth.
 
-[^3] More accurately, a subset of the cube-state; only that which we care about to reach the goal state for the group.
+[^3]: More accurately, a subset of the cube-state; only that which we care about to reach the goal state for the group.
 
 ### Generation
 
