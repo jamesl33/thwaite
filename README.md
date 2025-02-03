@@ -171,6 +171,10 @@ With this implementation, I'm simply standing on the shoulders of giants; it wou
 
 A special mention to Joren Heit's paper "Building and Solving Rubik’s Cube in Mathworks R© Matlab R©." which is the basis for a huge amount of this work.
 
+# Honourable Mentions
+
+- https://github.com/jamesl33/pysolver
+
 # TODO
 
 - [ ] A CLI which allows inputting scrambled cubes
