@@ -25,8 +25,8 @@ I've not run into many cube states which take longer than $250ms$ to solve; I've
 ```
 $ hyperfine --warmup 5 --runs 250 ./target/release/thwaite
 Benchmark 1: ./target/release/thwaite
-  Time (mean ± σ):      98.3 ms ± 104.0 ms    [User: 88.0 ms, System: 9.1 ms]
-  Range (min … max):    39.5 ms … 1150.7 ms    250 runs
+  Time (mean ± σ):      70.3 ms ±  33.9 ms    [User: 60.1 ms, System: 9.1 ms]
+  Range (min … max):    37.8 ms … 222.0 ms    250 runs
 ```
 
 

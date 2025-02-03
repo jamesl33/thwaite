@@ -20,14 +20,25 @@ use solver::*;
 
 fn main() {
     let mut c: Cube = Cube::new();
+    let mut scramble: Vec<Rotation> = Vec::with_capacity(20);
 
-    let moves: Vec<Rotation> = rand::random_iter::<Rotation>().take(20).collect();
+    loop {
+        if scramble.len() >= 20 {
+            break;
+        }
 
-    println!("Scramble: {:?}", moves);
+        let mv: Rotation = rand::random();
 
-    for i in 0..moves.len() {
-        c.rotate(moves[i])
+        if c.redundant(&mv) {
+            continue;
+        }
+
+        c.rotate(mv);
+
+        scramble.push(mv);
     }
+
+    println!("Scramble: {:?}", scramble);
 
     let mut s: Solver = Solver::new(c);
 
