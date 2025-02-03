@@ -1,6 +1,6 @@
 # thwaite
 
-`thwaite` is a Rubik's Cube solver, written in rust named after a combination of **Thwaite**, beautiful a village in the Yorkshire Dales, on The Pennine Way and **Morwen Thistlethwaite** (the creator of the implemented solution methodology).
+`thwaite` is a Rubik's Cube solver, written in Rust named after a combination of **Thwaite**, beautiful a village in the Yorkshire Dales, on The Pennine Way and **Morwen Thistlethwaite** (the creator of the implemented solution methodology).
 
 # Usage
 
