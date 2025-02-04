@@ -5,70 +5,75 @@ use crate::cube;
 use crate::cube::{Cube, Rotation};
 use crate::solver;
 
-/// G0 - TODO
+/// The pre-compute pattern database for traversing to G1.
 static G0: &[u8] = include_bytes!("./group_zero/table.db");
 
-/// G1 - TODO
+/// The pre-compute pattern database for traversing to G2.
 static G1: &[u8] = include_bytes!("./group_one/table.db");
 
-/// G2 - TODO
+/// The pre-compute pattern database for traversing to G3.
 static G2: &[u8] = include_bytes!("./group_two/table.db");
 
-/// G3 - TODO
+/// The pre-compute pattern database for traversing to G4.
 static G3: &[u8] = include_bytes!("./group_three/table.db");
 
-/// Solver - TODO
+/// Exposes an API to solve the Rubik's Cube using the Thistlewaite-45 method.
 #[derive(Debug)]
 pub struct Solver {
-    /// cube - TODO
+    /// The cube being solved.
     cube: cube::Cube,
 }
 
 impl Solver {
-    /// new - TODO
+    /// Returns a new solver, which will solve the given cube.
     pub fn new(cube: cube::Cube) -> Solver {
         Solver { cube }
     }
 
-    /// solve - TODO
-    ///
-    /// TODO (jamesl33): Add an algorithm type to abstract a number of rotations (and perform basic reduction).
+    /// Returns a solution for the target cube, if one can be found.
     pub fn solve(&mut self) -> Option<Vec<cube::Rotation>> {
+        // Setup the G0 table
         let g0 = solver::tables::read::<solver::group_zero::Table>(G0);
 
-        // TODO
+        // Calculate the rotations to move to G1
         let zero = idas(self.cube, solver::Group::Zero.moves(), &|cube| g0.depth(cube))?;
 
+        // Apply those moves
         self.apply(&zero);
 
-        // TODO
+        // Setup the G1 table
         let g1 = solver::tables::read::<solver::group_one::Table>(G1);
 
-        // TODO
+        // Calculate the rotations to move to G1
         let one = idas(self.cube, solver::Group::One.moves(), &|cube| g1.depth(cube))?;
 
+        // Apply the moves
         self.apply(&one);
 
-        // TODO
+        // Setup the G2 table
         let g2 = solver::tables::read::<solver::group_two::Table>(G2);
 
-        // TODO
+        // Calculate the rotations to move to G2
         let two = idas(self.cube, solver::Group::Two.moves(), &|cube| g2.depth(cube))?;
 
+        // Apply the moves
         self.apply(&two);
 
-        // TODO
+        // Setup the G3 table
         let g3 = solver::tables::read::<solver::group_three::Table>(G3);
 
-        // TODO
+        // Calculate the rotations to move to G3
         let three = idas(self.cube, solver::Group::Three.moves(), &|cube| g3.depth(cube))?;
 
+        // Apply the moves
+        //
+        // NOTE: This is not strictly required, however, allows us to leave the cube in the solved state.
         self.apply(&three);
 
         Some(vec![zero, one, two, three].concat())
     }
 
-    /// apply - TODO
+    /// Applies the given moves to the cube.
     fn apply(&mut self, moves: &[Rotation]) {
         for i in 0..moves.len() {
             self.cube.rotate(moves[i]);
@@ -76,7 +81,7 @@ impl Solver {
     }
 }
 
-/// idas - TODO
+/// Perform an iterative depth first A* search, using the given heuristic.
 fn idas<F>(cube: Cube, moves: &[Rotation], hueristic: &F) -> Option<Vec<Rotation>>
 where
     F: Fn(&Cube) -> usize,
@@ -98,7 +103,8 @@ where
     }
 }
 
-/// dfs - TODO
+/// Perform a depth first search, using the given moves and heuristic returning the minimum cost branch and the moves
+/// that have been made to get there.
 fn dfs<F>(cube: Cube, g: usize, limit: usize, valid: &[Rotation], hueristic: &F) -> (usize, Option<Vec<Rotation>>)
 where
     F: Fn(&Cube) -> usize,

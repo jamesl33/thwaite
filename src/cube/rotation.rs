@@ -3,66 +3,66 @@ use rand::distr::{Distribution, StandardUniform};
 use rand::seq::IteratorRandom;
 use rand::Rng;
 
-/// Rotation - TODO
+/// Represents a rotation (move) that may be applied to the Rubik's Cube.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, IterVariants)]
 pub enum Rotation {
-    /// F - TODO
+    /// A clockwise 90 degree twist of the front face.
     F,
 
-    /// FP - TODO
+    /// A counter-clockwise 90 degree twist of the front face.
     FP,
 
-    /// F2 - TODO
+    /// A 180 degree twist of the front face.
     F2,
 
-    /// B - TODO
+    /// A clockwise 90 degree twist of the back face.
     B,
 
-    /// BP - TODO
+    /// A counter-clockwise 90 degree twist of the back face.
     BP,
 
-    /// B2 - TODO
+    /// A 180 degree twist of the back face.
     B2,
 
-    /// L - TODO
+    /// A clockwise 90 degree twist of the left face.
     L,
 
-    /// LP - TODO
+    /// A counter-clockwise 90 degree twist of the left face.
     LP,
 
-    /// L2 - TODO
+    /// A 180 degree twist of the left face.
     L2,
 
-    /// R - TODO
+    /// A clockwise 90 degree twist of the right face.
     R,
 
-    /// RP - TODO
+    /// A counter-clockwise 90 degree twist of the right face.
     RP,
 
-    /// R2 - TODO
+    /// A 180 degree twist of the right face.
     R2,
 
-    /// U - TODO
+    /// A clockwise 90 degree twist of the up face.
     U,
 
-    /// UP - TODO
+    /// A counter-clockwise 90 degree twist of the up face.
     UP,
 
-    /// U2 - TODO
+    /// A 180 degree twist of the up face.
     U2,
 
-    /// D - TODO
+    /// A clockwise 90 degree twist of the down face.
     D,
 
-    /// DP - TODO
+    /// A counter-clockwise 90 degree twist of the down face.
     DP,
 
-    /// D2 - TODO
+    /// A 180 degree twist of the down face.
     D2,
 }
 
 impl Rotation {
-    /// face - TODO
+    /// Returns the face being turned (e.g. front, back).
     pub fn face(&self) -> Rotation {
         match self {
             Rotation::F | Rotation::FP | Rotation::F2 => Rotation::F,
@@ -74,7 +74,7 @@ impl Rotation {
         }
     }
 
-    /// opposite - TODO
+    /// Returns opposite of the face being turned (e.g. front, back).
     pub fn opposite(&self) -> Rotation {
         match self {
             Rotation::F | Rotation::FP | Rotation::F2 => Rotation::B,
