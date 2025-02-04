@@ -1,6 +1,6 @@
 # thwaite
 
-`thwaite` is a Rubik's Cube solver, written in Rust named after a combination of **Thwaite**, beautiful a village in the Yorkshire Dales, on The Pennine Way and **Morwen Thistlethwaite** (the creator of the implemented solution methodology).
+`thwaite` is a Rubik's Cube solver, written in Rust named after a combination of **Thwaite**, a beautiful village in the Yorkshire Dales on The Pennine Way and **Morwen Thistlethwaite** (the creator of the implemented algorithm).
 
 # Usage
 
@@ -105,7 +105,7 @@ For example, the $U$ permutation, may be represented using the following array.
 
 </div>
 
-The orientation of each piece then becomes $(cur[i] * rot[i]) \mod n$ where $n$ is the number of orientations; two for edges, three for corners.
+The orientation of each piece then becomes $((cur[i] * rot[i]) \mod n)$ where $n$ is the number of orientations; two for edges, three for corners.
 
 ## Cube
 
