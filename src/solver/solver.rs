@@ -81,7 +81,7 @@ impl Solver {
     }
 }
 
-/// Perform an iterative depth first A* search, using the given heuristic.
+/// Perform an iterative deepening A* search, using the given heuristic.
 fn idas<F>(cube: Cube, moves: &[Rotation], hueristic: &F) -> Option<Vec<Rotation>>
 where
     F: Fn(&Cube) -> usize,
