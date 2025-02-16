@@ -2,47 +2,47 @@ use std::cmp;
 
 use serde::{Deserialize, Serialize};
 
-use crate::cube::{Cube, NUM_EDGES};
+use crate::cube::{Cube, CORNER_ORIENTATIONS, NUM_CORNERS, NUM_EDGES};
 use crate::solver::group::Group;
 use crate::solver::maths::combinations;
 
-/// N_SIZE - TODO
+/// The number of combinations of the four (LR slice) edge pieces that we're fixing in this group.
 const N_SIZE: usize = combinations(NUM_EDGES, 4);
 
-/// M_SIZE - TODO
-const M_SIZE: usize = usize::pow(3, 7);
+/// The number of states for the corner orientations, which are being fixed in this group.
+const M_SIZE: usize = usize::pow(CORNER_ORIENTATIONS, (NUM_CORNERS - 1) as u32);
 
-/// SIZE - TODO
+/// The size of the G1 pruning table, which is a flat two dimensional array.
 const SIZE: usize = N_SIZE * M_SIZE;
 
-/// IDX_LOOKUP_TABLE_SIZE - TODO
+/// The size of the lookup table for the edge permutations.
 const IDX_LOOKUP_TABLE_SIZE: usize = 2048;
 
-/// IDX_LOOKUP_TABLE - TODO
-///
-/// TODO (jamesl33): Converts a range from 2048, to 495.
+/// Is a lookup table which translates an index in the range 0-2048 into 0-495 allowing us to treat the (LR slice) edge
+/// permutations as a binary number.
 const IDX_LOOKUP_TABLE: [usize; IDX_LOOKUP_TABLE_SIZE] = idx_lookup_table();
 
-/// Table - TODO
+/// The pruning table for the G1.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
-    /// data - TODO
+    /// The underlying data, where each index represents a cube state and its depth from the solved state.
     data: Vec<usize>,
 }
 
 impl Table {
-    /// new - TODO
+    /// Calculates and returns a new G! pruning table.
     pub fn new() -> Table {
         g1()
     }
 
-    /// depth - TODO
+    /// Returns the number of moves the given cube is, from being in G1.
     pub fn depth(&self, cube: &Cube) -> usize {
         self.data[idx(cube)]
     }
 }
 
-/// idx_lookup - TODO
+/// Calculates the edge permutation lookup table, noting that there's 495 variations of eleven digit binary numbers
+/// where there's three/four ones.
 const fn idx_lookup_table() -> [usize; IDX_LOOKUP_TABLE_SIZE] {
     let mut n: usize = 0;
     let mut idx = 0;
@@ -62,25 +62,27 @@ const fn idx_lookup_table() -> [usize; IDX_LOOKUP_TABLE_SIZE] {
     table
 }
 
-/// g1 - TODO
+/// Creates a new pattern database for G1.
 fn g1() -> Table {
-    /// DEPTH - TODO
+    // As documented the max depth from G0 is ten.
+    //
+    // http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf
     const DEPTH: usize = 10;
 
-    // // We initialize the pruning table at the max depth, and search for the cheaper distances
+    // We initialize the pruning table at the max depth, then overwrite for cheaper distances
     let mut tab = Table {
         data: vec![DEPTH; SIZE],
     };
 
-    // Which has a distance of zero
+    // The zeroth index represents the solved state (e.g. in G1)
     tab.data[0] = 0;
 
-    // TODO (jamesl33): This is the wrong starting state.
+    // Start searching from the solved cube state
     let start: Cube = Cube::new();
 
-    // TODO
+    // Perform a depth first search, applying all the valid G1 moves and recording the depth from the solved state
     start.search(Group::One.moves(), DEPTH - 1, &mut |cube, depth| {
-        // TODO
+        // Calculate the index in the pruning table
         let idx = idx(cube);
 
         // Only update the pruning table, if we've found a shorter path
@@ -90,19 +92,21 @@ fn g1() -> Table {
     tab
 }
 
-/// idx - TODO
+/// Returns the index within the pruning table for the given cube.
 fn idx(cube: &Cube) -> usize {
-    // TODO
+    // Calculate the index for the corner orientations
     let oidx = otoidx(cube.corner_orientations());
 
-    // TODO
+    // Calculate the index for the edge permutations
     let pidx = ptoidx(cube.edge_permutations());
 
-    // TODO
+    // Calculate the offset in the flat backing array
     oidx * N_SIZE + pidx
 }
 
-/// otoidx - TODO
+/// Returns the index within the pruning table for the given corner orientations.
+///
+/// https://www.jaapsch.net/puzzles/compindx.htm#orient
 fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
     let mut idx: usize = 0;
 
@@ -110,15 +114,13 @@ fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
         idx = idx * 3 + orien[i]
     }
 
-    // TODO
     debug_assert!(idx < M_SIZE);
 
     idx
 }
 
-/// ptoidx - TODO
-///
-/// https://www.jaapsch.net/puzzles/compindx.htm#comb
+/// Returns the index within the pruning table for the LR slice edges, calculated by treating the permutations as a
+/// binary number (ignoring the last edge) then converting that into a number between 0-495 using a lookup table.
 fn ptoidx(perms: &[usize; NUM_EDGES]) -> usize {
     let mut dec = 0;
 
@@ -131,6 +133,8 @@ fn ptoidx(perms: &[usize; NUM_EDGES]) -> usize {
     }
 
     let idx = IDX_LOOKUP_TABLE[dec];
+
+    debug_assert!(idx < N_SIZE);
 
     idx
 }
