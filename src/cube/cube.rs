@@ -2,76 +2,77 @@ use crate::cube::orientations::*;
 use crate::cube::permutations::*;
 use crate::cube::Rotation;
 
-/// NUM_CORNERS - TODO
+/// The number of corners on a valid 3x3 cube.
 pub const NUM_CORNERS: usize = 8;
 
-/// NUM_EDGES - TODO
+/// The number of edges on a valid 3x3 cube.
 pub const NUM_EDGES: usize = 12;
 
-/// Cube - TODO
+/// Models a 3x3 Rubik's cube, exposing functionality required to produce pruning tables and search for solutions.
 ///
 /// TODO (jamesl33): Move this to a module.
 #[derive(Debug, Clone, Copy)]
 pub struct Cube {
-    /// cperms - TODO
+    /// Corner permutations.
     cperms: [usize; NUM_CORNERS],
 
-    /// corien - TODO
+    /// Corner orientations.
     corien: [usize; NUM_CORNERS],
 
-    /// eperms - TODO
+    /// Edge permutations.
     eperms: [usize; NUM_EDGES],
 
-    /// eorien - TODO
+    /// Edge orientations.
     eorien: [usize; NUM_EDGES],
 
-    // last - TODO
+    // The last move applied to the cube.
     last: Option<Rotation>,
 }
 
 impl Cube {
-    /// new - TODO
+    /// Returns a cube, in the solved state.
     pub fn new() -> Cube {
         Cube {
-            cperms: [0, 1, 2, 3, 4, 5, 6, 7],
-            corien: [0, 0, 0, 0, 0, 0, 0, 0],
-            eperms: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-            eorien: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            cperms: core::array::from_fn(|i| i),
+            corien: [0; NUM_CORNERS],
+            eperms: core::array::from_fn(|i| i),
+            eorien: [0; NUM_EDGES],
             last: None,
         }
     }
 
-    /// corner_permutations - TODO
+    /// Returns the cube corner permutations.
     pub fn corner_permutations(&self) -> &[usize; NUM_CORNERS] {
         &self.cperms
     }
 
-    /// corner_orientations - TODO
+    /// Returns the cube corner orientations.
     pub fn corner_orientations(&self) -> &[usize; NUM_CORNERS] {
         &self.corien
     }
 
-    /// edge_permutations - TODO
+    /// Returns the cube edge permutations.
     pub fn edge_permutations(&self) -> &[usize; NUM_EDGES] {
         &self.eperms
     }
 
-    /// edge_orientations - TODO
+    /// Returns the cube edge orientations.
     pub fn edge_orientations(&self) -> &[usize; NUM_EDGES] {
         &self.eorien
     }
 
-    /// solved - TODO
+    /// Returns a boolean indicating whether the cube is in the solved state.
     pub fn solved(&self) -> bool {
         let eo = self.eorien == [0; NUM_EDGES];
-        let ep = monotonic(&self.eperms);
+        let ep = self.eperms == core::array::from_fn(|i| i);
         let co = self.corien == [0; NUM_CORNERS];
-        let cp = monotonic(&self.cperms);
+        let cp = self.cperms == core::array::from_fn(|i| i);
 
         eo && ep && co && cp
     }
 
-    /// search - TODO
+    /// Performs a depth first search applying the given moves, until a limit is reached; runs the given callback for
+    /// each cube state visited.
     pub fn search<F>(&self, moves: &[Rotation], limit: usize, func: &mut F)
     where
         F: FnMut(&Cube, usize),
@@ -79,7 +80,7 @@ impl Cube {
         dfs(*self, moves, 1, limit, func);
     }
 
-    /// rotate - TODO
+    /// Applies the given rotations to the cube.
     ///
     /// TODO (jamesl33): The 180 degree turns can optimized into a single operation.
     /// TODO (jamesl33): The 90 degree prime turns can optimized into a single operation.
@@ -108,7 +109,7 @@ impl Cube {
         self.last = Some(m);
     }
 
-    /// redundant - TODO
+    /// Returns a boolean indicating whether the given move is redundant, based on the last move applied to the cube.
     pub fn redundant(&self, m: &Rotation) -> bool {
         if let Some(last) = self.last {
             return last.face() == m.face() || last.face() == m.opposite();
@@ -117,7 +118,7 @@ impl Cube {
         false
     }
 
-    /// rotate_front - TODO
+    /// Rotates the front face clockwise by 90 degrees.
     fn rotate_front(&mut self) {
         self.cperms = permute(self.cperms, PERMUTE_FRONT_CORNERS);
         self.corien = orient(self.corien, self.cperms, ORIENT_FRONT_CORNERS, CORNER_ORIENTATIONS);
@@ -125,7 +126,7 @@ impl Cube {
         // We omit orienting the front edges, as it's a no-op.
     }
 
-    /// rotate_back - TODO
+    /// Rotates the back face clockwise by 90 degrees.
     fn rotate_back(&mut self) {
         self.cperms = permute(self.cperms, PERMUTE_BACK_CORNERS);
         self.corien = orient(self.corien, self.cperms, ORIENT_BACK_CORNERS, CORNER_ORIENTATIONS);
@@ -133,21 +134,21 @@ impl Cube {
         // We omit orienting the back edges, as it's a no-op.
     }
 
-    /// rotate_left - TODO
+    /// Rotates the left face clockwise by 90 degrees.
     fn rotate_left(&mut self) {
         self.cperms = permute(self.cperms, PERMUTE_LEFT_CORNERS);
         self.eperms = permute(self.eperms, PERMUTE_LEFT_EDGES);
         // No orientation required
     }
 
-    /// rotate_right - TODO
+    /// Rotates the right face clockwise by 90 degrees.
     fn rotate_right(&mut self) {
         self.cperms = permute(self.cperms, PERMUTE_RIGHT_CORNERS);
         self.eperms = permute(self.eperms, PERMUTE_RIGHT_EDGES);
         // No orientation required
     }
 
-    /// rotate_up - TODO
+    /// Rotates the up face clockwise by 90 degrees.
     fn rotate_up(&mut self) {
         self.cperms = permute(self.cperms, PERMUTE_UP_CORNERS);
         self.corien = orient(self.corien, self.cperms, ORIENT_UP_CORNERS, CORNER_ORIENTATIONS);
@@ -155,7 +156,7 @@ impl Cube {
         self.eorien = orient(self.eorien, self.eperms, ORIENT_UP_EDGES, EDGE_ORIENTATIONS);
     }
 
-    /// rotate_down - TODO
+    /// Rotates the down face clockwise by 90 degrees.
     fn rotate_down(&mut self) {
         self.cperms = permute(self.cperms, PERMUTE_DOWN_CORNERS);
         self.corien = orient(self.corien, self.cperms, ORIENT_DOWN_CORNERS, CORNER_ORIENTATIONS);
@@ -164,7 +165,8 @@ impl Cube {
     }
 }
 
-/// dfs - TODO
+/// Performs a depth first search applying the given moves, until a limit is reached; runs the given callback for each
+/// cube state visited.
 fn dfs<F>(cube: Cube, moves: &[Rotation], depth: usize, limit: usize, func: &mut F)
 where
     F: FnMut(&Cube, usize),
@@ -189,7 +191,7 @@ where
     }
 }
 
-/// rotate - TODO
+/// Runs the given rotation `n` number of times.
 fn rotate<F>(cube: &mut Cube, func: &mut F, n: usize)
 where
     F: FnMut(&mut Cube),
@@ -199,7 +201,7 @@ where
     }
 }
 
-/// permute - TODO
+/// Permutes the given pieces using the provided rotation definition.
 fn permute<const N: usize>(src: [usize; N], rot: [usize; N]) -> [usize; N] {
     let mut cop: [usize; N] = src;
 
@@ -207,12 +209,13 @@ fn permute<const N: usize>(src: [usize; N], rot: [usize; N]) -> [usize; N] {
         cop[i] = src[*v];
     }
 
+    // The summation of the pieces should not have changed, they should have just been permuted
     debug_assert_eq!(cop.iter().sum::<usize>(), (0..N).sum::<usize>());
 
     cop
 }
 
-/// orient - TODO
+/// Orients the given pieces using the provided rotation definition.
 fn orient<const N: usize>(orien: [usize; N], perms: [usize; N], rot: [isize; N], rem: usize) -> [usize; N] {
     let mut cop: [usize; N] = orien;
 
@@ -220,18 +223,8 @@ fn orient<const N: usize>(orien: [usize; N], perms: [usize; N], rot: [isize; N],
         cop[perms[i]] = (cop[perms[i]] as isize + *v).rem_euclid(rem as isize) as usize;
     }
 
+    // The remainder of the summation of piece orientations should equal zero
     debug_assert_eq!(cop.iter().sum::<usize>().rem_euclid(rem), 0);
 
     cop
-}
-
-/// monotonic - TODO
-fn monotonic<const N: usize>(a: &[usize; N]) -> bool {
-    for i in 0..N {
-        if a[i] != i {
-            return false;
-        }
-    }
-
-    true
 }
