@@ -13,15 +13,15 @@ where
     let mut decoder = snap::read::FrameDecoder::new(table.reader());
 
     // Allocate the space for the table
-    let mut encoded = Vec::with_capacity(snap::raw::decompress_len(&table).unwrap());
+    let mut encoded = Vec::with_capacity(snap::raw::decompress_len(table).unwrap());
 
     // Inflate the compressed table
     decoder.read_to_end(&mut encoded).unwrap();
 
     // Decode the encoded table
-    let decoded = bincode::deserialize(&encoded).unwrap();
+    
 
-    decoded
+    bincode::deserialize(&encoded).unwrap()
 }
 
 /// Encodes, compresses and writes the given table to disk.

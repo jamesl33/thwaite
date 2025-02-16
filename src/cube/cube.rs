@@ -43,22 +43,22 @@ impl Cube {
 
     /// corner_permutations - TODO
     pub fn corner_permutations(&self) -> &[usize; NUM_CORNERS] {
-        return &self.cperms;
+        &self.cperms
     }
 
     /// corner_orientations - TODO
     pub fn corner_orientations(&self) -> &[usize; NUM_CORNERS] {
-        return &self.corien;
+        &self.corien
     }
 
     /// edge_permutations - TODO
     pub fn edge_permutations(&self) -> &[usize; NUM_EDGES] {
-        return &self.eperms;
+        &self.eperms
     }
 
     /// edge_orientations - TODO
     pub fn edge_orientations(&self) -> &[usize; NUM_EDGES] {
-        return &self.eorien;
+        &self.eorien
     }
 
     /// solved - TODO

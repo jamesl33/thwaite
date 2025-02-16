@@ -42,7 +42,7 @@ const fn fact(n: usize) -> usize {
         i += 1;
     }
 
-    return a;
+    a
 }
 
 /// Returns the factorial of the given number, using a pre-calculated table of factorials.

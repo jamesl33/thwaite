@@ -56,7 +56,7 @@ const fn idx_lookup_table() -> [usize; IDX_LOOKUP_TABLE_SIZE] {
             idx += 1;
         }
 
-        n = n + 1;
+        n += 1;
     }
 
     table
@@ -129,7 +129,7 @@ fn ptoidx(perms: &[usize; NUM_EDGES]) -> usize {
             continue;
         }
 
-        dec += (2 as usize).pow(10 - i as u32);
+        dec += 2_usize.pow(10 - i as u32);
     }
 
     let idx = IDX_LOOKUP_TABLE[dec];

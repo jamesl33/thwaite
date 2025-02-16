@@ -141,7 +141,7 @@ pub fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
     let mut t = 0;
 
     for i in 0..N - 1 {
-        t = t * (N - i);
+        t *= N - i;
 
         for j in i + 1..N {
             if perms[i] > perms[j] {

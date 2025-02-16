@@ -64,7 +64,7 @@ fn idx(eorien: &[usize; NUM_EDGES]) -> usize {
     let mut dec = 0;
 
     for i in 0..NUM_EDGES - 1 {
-        dec += eorien[i] * (2 as usize).pow(10 - i as u32)
+        dec += eorien[i] * usize::pow(1, 10 - i as u32)
     }
 
     debug_assert!(dec < SIZE);

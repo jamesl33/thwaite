@@ -70,7 +70,7 @@ impl Solver {
         // NOTE: This is not strictly required, however, allows us to leave the cube in the solved state.
         self.apply(&three);
 
-        Some(vec![zero, one, two, three].concat())
+        Some([zero, one, two, three].concat())
     }
 
     /// Applies the given moves to the cube.
@@ -134,7 +134,7 @@ where
         let (cost, path) = dfs(cube, g + 1, limit, valid, hueristic);
 
         if let Some(path) = path {
-            return (0, Some(vec![vec![*mv], path].concat()));
+            return (0, Some([vec![*mv], path].concat()));
         }
 
         min = cmp::min(min, cost);
