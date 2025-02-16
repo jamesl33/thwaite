@@ -191,7 +191,7 @@ With this implementation, I'm simply standing on the shoulders of giants; it wou
 
 - http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf
 - https://cube.stanford.edu/class/files/rokicki_cubecomp.pdf
-- https://en.wikipedia.org/wiki/Iterative_deepening_A*
+- https://en.wikipedia.org/wiki/Iterative_deepening_A\*
 - https://en.wikipedia.org/wiki/Optimal_solutions_for_the_Rubik%27s_Cube
 - https://explainextended.com/2022/12/31/happy-new-year-14
 - https://github.com/benbotto/rubiks-cube-cracker
