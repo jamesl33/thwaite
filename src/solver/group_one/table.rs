@@ -30,7 +30,7 @@ pub struct Table {
 }
 
 impl Table {
-    /// Calculates and returns a new G! pruning table.
+    /// Calculates and returns a new G1 pruning table.
     pub fn new() -> Table {
         g1()
     }

@@ -6,31 +6,33 @@ use crate::cube::Cube;
 use crate::solver::group::Group;
 use crate::solver::maths::factorial;
 
-/// SIZE - TODO
+/// The size of the G3 pruning table, which is a one dimensional array.
 const SIZE: usize = 663552;
 
-/// Table - TODO
+/// The pruning table for the G3.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
-    /// data - TODO
+    /// The underlying data, where each index represents a cube state and its depth from the solved state.
     data: Vec<usize>,
 }
 
 impl Table {
-    /// new - TODO
+    /// Calculates and returns a new G3 pruning table.
     pub fn new() -> Table {
         g3()
     }
 
-    /// depth - TODO
+    /// Returns the number of moves the given cube is, from being in G3.
     pub fn depth(&self, cube: &Cube) -> usize {
         self.data[idx(cube)]
     }
 }
 
-/// g3 - TODO
+/// Creates a new pattern database for G3.
 fn g3() -> Table {
-    /// DEPTH - TODO
+    // As documented the max depth from G3 is fifteen.
+    //
+    // http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf
     const DEPTH: usize = 15;
 
     // We initialize the pruning table at the max depth, and search for the cheaper distances
@@ -44,9 +46,9 @@ fn g3() -> Table {
     // We start searching from a solved cube
     let start: Cube = Cube::new();
 
-    // TODO
+    // Perform a depth first search, applying all the valid G3 moves and recording the depth from the solved state
     start.search(Group::Three.moves(), DEPTH - 1, &mut |cube, depth| {
-        // TODO
+        // Calculate the index in the pruning table
         let idx = idx(cube);
 
         // Only update the pruning table, if we've found a shorter path
@@ -56,7 +58,7 @@ fn g3() -> Table {
     tab
 }
 
-/// idx - TODO
+/// Returns the index within the pruning table for the given cube.
 fn idx(cube: &Cube) -> usize {
     // TODO
     let eperms = cube.edge_permutations();
