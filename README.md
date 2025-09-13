@@ -4,12 +4,20 @@
 
 # Usage
 
-In its current state, when build and run, `thwaite` will generate a scrambled Rubik's Cube, the immediately solve it; there's no method to input a pre-scrambled cube.
+In its current state, when built and run, `thwaite` supports two use-cases:
+
+1. Generating a random cube, then solving it
+2. Solving a provided cube
 
 ```
 $ cargo run --release
 Scramble: [BP, RP, RP, R2, D, U2, B, U, F2, F, B, U2, D, D, RP, F2, D, D, D, FP]
 Solution: [U, F2, R, B2, U, FP, L, U2, F, L, B2, U2, B2, L, F, L, F2, LP, F2, R2, F2, L, F2, L, U2, L2, U2, L2, U2, B2, R2, U2, L2, U2, L2, F2, L2]
+```
+
+```
+$ cargo run --release 'OOWYYBBWOBYGRROGGRROWGBBOYWGROYWRGRYYGWBOWYOYRGBBGWBWR'
+Solution: [BP, R2, U, L2, FP, U2, RP, D2, B, R2, F, L, F, LP, F2, L, B2, R, F2, R, F2, L, F2, D2, R2, B2, L2, U2, F2, L2, U2, F2, L2, U2]
 ```
 
 # Performance
