@@ -31,6 +31,11 @@ impl Solver {
 
     /// Returns a solution for the target cube, if one can be found.
     pub fn solve(&mut self) -> Option<Vec<cube::Rotation>> {
+        // Already solved, no moves required
+        if self.cube.solved() {
+            return Some(vec![]);
+        }
+
         // Setup the G0 table
         let g0 = solver::tables::read::<solver::group_zero::Table>(G0);
 
@@ -86,6 +91,11 @@ where
     F: Fn(&Cube) -> usize,
 {
     let mut limit = hueristic(&cube);
+
+    // Already in the target group, exit early
+    if limit == 0 {
+        return Some(vec![]);
+    }
 
     loop {
         let (t, path) = dfs(cube, 0, limit, moves, hueristic);
