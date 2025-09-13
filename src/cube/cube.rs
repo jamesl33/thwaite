@@ -1,6 +1,6 @@
 use crate::cube::orientations::*;
 use crate::cube::permutations::*;
-use crate::cube::Rotation;
+use crate::cube::{Axis, Color, Corner, Edge, Rotation, CORNERS, EDGES};
 
 /// The number of corners on a valid 3x3 cube.
 pub const NUM_CORNERS: usize = 8;
@@ -162,6 +162,148 @@ impl Cube {
         self.corien = orient(self.corien, self.cperms, ORIENT_DOWN_CORNERS, CORNER_ORIENTATIONS);
         self.eperms = permute(self.eperms, PERMUTE_DOWN_EDGES);
         self.eorien = orient(self.eorien, self.eperms, ORIENT_DOWN_EDGES, EDGE_ORIENTATIONS);
+    }
+}
+
+impl From<&str> for Cube {
+    /// Parses cube-state from a "cube string" (e.g. Y...R...B...W...O...G...).
+    fn from(cs: &str) -> Self {
+        // Convert the string into a vector
+        let cs = Vec::from(cs);
+
+        // Convert that into a vector of colors
+        let cs: Vec<Color> = cs.iter().map(|c| c.into()).collect();
+
+        // Convert that into a vector of the underlying faces
+        let cs: Vec<Vec<Color>> = cs.chunks(9).map(|s| s.into()).collect();
+
+        // Defer parsing to another implementation of 'from'
+        Cube::from(cs)
+    }
+}
+
+impl From<Vec<Vec<Color>>> for Cube {
+    /// Parses cube-state from a vector of faces, and their colors; the order is up, right, front, down, left and back.
+    fn from(cs: Vec<Vec<Color>>) -> Self {
+        // Create a new solved cube
+        let mut cube = Cube::new();
+
+        // Populate the edge permutations and orientations
+        edges_from_cs(&mut cube, &cs);
+
+        // Populate the corner permutations and orientations
+        corners_from_cs(&mut cube, &cs);
+
+        cube
+    }
+}
+
+/// Populates the given cubes edge state, using the provided vectorized cube-string representation.
+fn edges_from_cs(cube: &mut Cube, cs: &Vec<Vec<Color>>) {
+    // ed is the desired location for the edge (i.e. the solved position)
+    for (idx, ed) in EDGES.iter().enumerate() {
+        // ea is the edge that's actually in that position
+        let ea = Edge::new(cs[ed.a.face as usize][ed.a.idx], cs[ed.b.face as usize][ed.b.idx]);
+
+        // The identifier for the edge
+        let id = ea.id();
+
+        // Populate the permutation (i.e. edge ea is in the position ed)
+        cube.eperms[idx] = id;
+
+        // Grab the solved color for this face; it doesn't matter which, providing the following code using the same
+        let want = ea.a.face.color();
+
+        // Grab the color that's actually in that position
+        let facelet = if cs[ed.a.face as usize][ed.a.idx] == want {
+            ed.a
+        } else {
+            ed.b
+        };
+
+        // Check if they're both "blue", to determine if the orientation is "good" or "bad"
+        //
+        // https://stackoverflow.com/a/63640220
+        if ea.a.blue() == facelet.blue() {
+            continue;
+        }
+
+        // Mark the orientation as bad, as we're moving from blue to yellow or vice versa
+        cube.eorien[id] = 1;
+    }
+}
+
+/// Populates the given cubes corner orientation, using the provided vectorized cube-string representation.
+fn corners_from_cs(cube: &mut Cube, cs: &Vec<Vec<Color>>) {
+    // cd is the desired location for the corner (i.e. the solved position)
+    for (idx, cd) in CORNERS.iter().enumerate() {
+        // ca is the corner that's actually in that position
+        let ca = Corner::new(
+            cs[cd.a.face as usize][cd.a.idx],
+            cs[cd.b.face as usize][cd.b.idx],
+            cs[cd.c.face as usize][cd.c.idx],
+        );
+
+        // Get the id of the desired corner
+        let cd_id = cd.id();
+
+        // Get the id of the actual corner
+        let ca_id = ca.id();
+
+        // Populate the permutation (i.e. corner ca is in the position cd)
+        cube.cperms[idx] = ca_id;
+
+        // Get the faces in the x, y, z order
+        let axis = cd.axis();
+
+        // Extract the x axis
+        let x = axis[Axis::X as usize];
+
+        // Extract the y axis
+        let y = axis[Axis::Y as usize];
+
+        // Extract the z axis
+        let z = axis[Axis::Z as usize];
+
+        // Construct a vector of the actual colors in each axis
+        let colors = vec![
+            cs[x.face as usize][x.idx],
+            cs[y.face as usize][y.idx],
+            cs[z.face as usize][z.idx],
+        ];
+
+        // Rotate those colors clockwise
+        let mut colors_cw = colors.clone();
+        colors_cw.rotate_right(2);
+
+        // Rotate those colors anti-clockwise
+        let mut colors_acw = colors.clone();
+        colors_acw.rotate_right(1);
+
+        // Due to the geometry of the cube, we have to swap the rotations for half the corners
+        if cd_id >= 4 {
+            std::mem::swap(&mut colors_cw, &mut colors_acw);
+        }
+
+        // Returns a boolean indicating whether the orange or red face is in position x (i.e. is "good")
+        let or = |colors: Vec<Color>| {
+            return colors[Axis::X as usize] == Color::Orange || colors[Axis::X as usize] == Color::Red;
+        };
+
+        // The corner is good as it's touching the nearest left/right color
+        if or(colors) {
+            cube.corien[ca_id] = 0;
+        }
+
+        // The corner is twisted clockwise relative to the nearest left/right color
+        if or(colors_cw) {
+            cube.corien[ca_id] = 1;
+        }
+
+        // The corner is twisted anti-clockwise relative to the nearest left/right color
+        if or(colors_acw) {
+            cube.corien[ca_id] = 2;
+        }
     }
 }
 

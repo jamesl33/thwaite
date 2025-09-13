@@ -18,8 +18,10 @@ use solver::*;
 //     Ok(())
 // }
 
-fn main() {
+/// Returns a scrambled cube.
+fn scramble() -> Cube {
     let mut c: Cube = Cube::new();
+
     let mut scramble: Vec<Rotation> = Vec::with_capacity(20);
 
     loop {
@@ -39,6 +41,21 @@ fn main() {
     }
 
     println!("Scramble: {:?}", scramble);
+
+    c
+}
+
+/// Returns the cube to solve, which will be provided by the user or randomly scrambled.
+fn cube() -> Cube {
+    if let Some(state) = std::env::args().skip(1).next() {
+        return Cube::from(state.as_str());
+    }
+
+    scramble()
+}
+
+fn main() {
+    let mut c = cube();
 
     let mut s: Solver = Solver::new(c);
 
