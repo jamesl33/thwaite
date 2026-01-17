@@ -35,5 +35,5 @@ pub const PERMUTE_UP_EDGES: [usize; NUM_EDGES] = [8, 1, 11, 3, 4, 5, 6, 7, 2, 9,
 /// The rotation matrix for the down-face corners; where old[idx] and new[idx] are swapped.
 pub const PERMUTE_DOWN_CORNERS: [usize; NUM_CORNERS] = [0, 5, 6, 3, 4, 2, 1, 7];
 
-/// The rotation matrix for the down-face edges; where old[idx] and new[idx] are swapped.
-pub const ORIENT_DOWN_EDGES: [isize; NUM_EDGES] = [0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0];
+/// The rotation matrix for the down-face edges where rotation = old + new % orientations.
+pub const PERMUTE_DOWN_EDGES: [usize; NUM_EDGES] = [0, 10, 2, 9, 4, 5, 6, 7, 8, 1, 3, 11];

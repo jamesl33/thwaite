@@ -21,5 +21,5 @@ pub const ORIENT_UP_EDGES: [isize; NUM_EDGES] = [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0
 /// The rotation matrix for the down-face corners where rotation = old + new % orientations.
 pub const ORIENT_DOWN_CORNERS: [isize; NUM_CORNERS] = [0, -1, -1, 0, 0, 1, 1, 0];
 
-/// The rotation matrix for the down-face edges where rotation = old + new % orientations.
-pub const PERMUTE_DOWN_EDGES: [usize; NUM_EDGES] = [0, 10, 2, 9, 4, 5, 6, 7, 8, 1, 3, 11];
+/// The rotation matrix for the down-face edges; where old[idx] and new[idx] are swapped.
+pub const ORIENT_DOWN_EDGES: [isize; NUM_EDGES] = [0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0];
