@@ -59,68 +59,70 @@ fn g3() -> Table {
 }
 
 /// Returns the index within the pruning table for the given cube.
+///
+/// https://github.com/itaysadeh/rubiks-cube-solver/blob/b80fd03698055bd630067358c6175a240ecd64b1/Solver/Thistlethwaite/Databases/G3_G4_database.cpp#L3-L56.
 fn idx(cube: &Cube) -> usize {
-    // TODO
+    // Edge permutations
     let eperms = cube.edge_permutations();
 
-    // TODO
+    // Corner permutations
     let cperms = cube.corner_permutations();
 
-    // TODO
+    // E-slice edges
     let mut e = *array_ref![eperms, 4, 2];
 
-    // TODO
     for i in 0..2 {
         e[i] &= 3;
     }
 
-    // TODO
+    // M-slice edges
     let mut m = *array_ref![eperms, 8, 4];
 
-    // TODO
     for i in 0..4 {
         m[i] &= 3;
     }
 
-    // TODO
+    // S-slice edges
     let mut s = *array_ref![eperms, 0, 4];
 
-    // TODO
+    // Set the indices of the edge pieces to a value between 0 and 3
     for i in 0..4 {
         s[i] &= 3;
     }
 
-    // TODO
+    // Corners which are currently occupying which position in its tetrad
     let mut c = *array_ref![cperms, 4, 4];
 
-    // TODO
+    // Set the indices of the corners pieces to a value between 0 and 3
     for i in 0..4 {
         c[i] &= 3;
     }
 
-    // TODO
+    // M-slice rank
     let mr = ptoidx(&m);
 
-    // TODO
+    // S-slice rank
     let sr = ptoidx(&s);
 
-    // TODO
+    // E-slice rank
     let er = ctoidx::<4, 2>(&e);
 
-    // TODO
+    // Edges index
     let eidx = mr * 288 + sr * 12 + er;
 
-    // TODO
+    // Corner rank
     let cr = cperms[0];
 
-    // TODO
+    // Corner index
     let cidx = ptoidx(&c) * 4 + (cr & 3);
 
-    // TODO
+    // The combined E-C index
     eidx * 96 + cidx
 }
 
-/// ctoidx - TODO
+/// Returns the index as determined by the combination of the pieces positions.
+///
+/// https://github.com/itaysadeh/rubiks-cube-solver/blob/b80fd03698055bd630067358c6175a240ecd64b1/Util/indexer.h#L95-L120.
 fn ctoidx<const N: usize, const K: usize>(perms: &[usize; K]) -> usize {
     let mut lehmer = *perms;
 
@@ -141,7 +143,7 @@ fn ctoidx<const N: usize, const K: usize>(perms: &[usize; K]) -> usize {
     idx
 }
 
-/// comb - TODO
+/// Returns the number of combinations, for the given selection `k` from `n`.
 fn comb(n: usize, k: usize) -> usize {
     if n < k {
         return 0;
@@ -154,7 +156,9 @@ fn comb(n: usize, k: usize) -> usize {
     factorial(n) / factorial(n - k)
 }
 
-/// ptoidx - TODO
+/// Returns the index for the given piece permutations.
+///
+/// https://github.com/itaysadeh/rubiks-cube-solver/blob/b80fd03698055bd630067358c6175a240ecd64b1/Util/indexer.h#L52-L77.
 fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
     let mut lehmer = *perms;
 
@@ -174,10 +178,8 @@ fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
     while i < N && j > 0 {
         idx += lehmer[i] * factorial(j);
 
-        // TODO
         i += 1;
 
-        // TODO
         j -= 1;
     }
 
