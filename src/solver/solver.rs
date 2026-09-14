@@ -137,7 +137,8 @@ where
         }
 
         if f > limit {
-            return (f, None);
+            min = cmp::min(min, f);
+            continue;
         }
 
         let (cost, path) = dfs(cube, g + 1, limit, valid, hueristic);
