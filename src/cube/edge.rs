@@ -120,7 +120,9 @@ impl Edge {
             ])
         });
 
-        c2e.get(&key(a, b)).unwrap().to_owned()
+        *c2e
+            .get(&key(a, b))
+            .unwrap_or_else(|| panic!("invalid edge colors: {:?}, {:?}", a, b))
     }
 
     /// Returns the identifier for the current piece (i.e. its location).

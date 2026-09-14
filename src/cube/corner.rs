@@ -103,7 +103,9 @@ impl Corner {
             ])
         });
 
-        c2c.get(&key(a, b, c)).unwrap().to_owned()
+        *c2c
+            .get(&key(a, b, c))
+            .unwrap_or_else(|| panic!("invalid corner colors: {:?}, {:?}, {:?}", a, b, c))
     }
 
     /// Returns the identifier for the current piece (i.e. its location).
