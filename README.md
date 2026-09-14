@@ -45,7 +45,7 @@ Rubik's Cubes can be represented in many different ways; to name a few:
 - **Facelet:** A 1x54 array, manipulated manually.
 - **Coordinates:** $x$, $y$, $z$ coordinates that are manipulated using rotation matrices.
 
-Each has is merits/use-case; this solver represents a Cube using the format described in [this](http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf) paper.
+Each has is merits/use-case; this solver represents a Cube using the format described in [this](http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf) ([archived](https://web.archive.org/web/20240512092325/http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf)) paper.
 
 ## Permutations
 
@@ -214,7 +214,7 @@ Each group then combines the indices of the piece-state it fixes into a single f
 
 With this implementation, I'm simply standing on the shoulders of giants; it would not have been possible without a huge number of resources.
 
-- http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf
+- http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf (dead; archived: https://web.archive.org/web/20240512092325/http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf)
 - https://cube.stanford.edu/class/files/rokicki_cubecomp.pdf
 - https://en.wikipedia.org/wiki/Iterative_deepening_A%2A
 - https://en.wikipedia.org/wiki/Optimal_solutions_for_the_Rubik%27s_Cube
