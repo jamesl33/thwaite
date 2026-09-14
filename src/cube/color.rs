@@ -19,7 +19,7 @@ impl From<&u8> for Color {
             b'w' | b'W' => Color::White,
             b'o' | b'O' => Color::Orange,
             b'g' | b'G' => Color::Green,
-            _ => unimplemented!(),
+            _ => panic!("invalid color character: {}", *c as char),
         }
     }
 }
