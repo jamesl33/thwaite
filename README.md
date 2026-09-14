@@ -185,13 +185,30 @@ The "depth" from the solved state, is pre-computed for each group and stored in 
 
 ### Generation
 
-The generation for the pattern databases uses a limited depth first search (DFS) where for each group, a search is started, using the groups valid moves from the solved cube; the depth is then recorded in the lookup table.
+The generation for the pattern databases uses a limited depth first search (DFS) where for each group, a search is started, using the groups valid moves from the solved cube; the depth is then recorded in the lookup table. The DFS is depth-limited to the group's known max depth[^4], and only records a depth when it's cheaper than what's already stored at that index, guarding against a longer path overwriting a shorter one found earlier.
+
+G2's table is the exception: corner permutation parity isn't fully fixed by G0/G1, so a single DFS from the solved cube can't reach every reachable corner-permutation orbit within a sane depth limit. Instead, a shallow (depth $4$) search first collects $96$ distinct initial cube states (one per valid corner-permutation orbit, keyed by [`ptoidx`](#indexing)), then a full depth first search is run from each of those $96$ states, unioning the results into the same table.
+
+[^4]: Sourced from the same paper as the group descriptions above; G2's documented max depth of $13$ is truncated to $10$ in this implementation, since generating the full table takes prohibitively long. This is a known gap - see [TODO](#todo).
 
 ### Indexing
 
 By far the most complex (intricate) part of the solver, is the indexing of cube-state into the pattern databases; in most cases, the permutations (or orientations) of a subset of the cube pieces are turned into indices where a "depth" is stored.
 
 The complexity from indexing cube state can be somewhat side-stepped, by storing the entire cube state (e.g. as a string) with a depth, however, this will result in tables in the realms of tens of megabytes.
+
+Two indexing primitives are reused across groups:
+
+- **Orientation index:** treats the orientations of $n$ of a piece type's $n+1$ pieces (the last is implied by the others) as digits of a base-$k$ number, where $k$ is $2$ for edges, $3$ for corners.
+- **Permutation index:** ranks a permutation of $n$ pieces as a Lehmer code, i.e. its position (0-indexed) amongst all $n!$ orderings; used where a piece subset's exact arrangement matters (e.g. G2/G3 corner permutations).
+- **Combination index:** ranks which $k$ of $n$ positions a subset of pieces occupies (ignoring their order), amongst all $\binom{n}{k}$ selections; used where only which pieces have left/entered a set of positions matters (e.g. G1's LR-slice edges, G2's non-E-slice edge distribution).
+
+Each group then combines the indices of the piece-state it fixes into a single flat table offset (`major * minor_size + minor`, extended to as many dimensions as needed):
+
+- **G0:** Only edge orientations matter, encoded directly as an $11$-bit orientation index ($2^{11} = 2{,}048$ entries).
+- **G1:** A combination index over the LR-slice edge permutations ($\binom{12}{4} = 495$, via a precomputed $0..2048 \to 0..495$ lookup table) combined with a corner orientation index ($3^7 = 2{,}187$), for $495 \times 2{,}187 = 1{,}082{,}565$ entries.
+- **G2:** A permutation index over all corner permutations ($8! = 40{,}320$) combined with a combination index over the edge distribution across the $8$ non-E-slice positions ($\binom{8}{4} = 70$), for $40{,}320 \times 70 = 2{,}822{,}400$ entries.
+- **G3:** Permutation/combination indices over the M-slice, S-slice and E-slice edges and the corner tetrad are ranked separately (via Lehmer codes) then folded together into a single fixed-size ($663{,}552$ entry) index; see [`group_three/table.rs`](src/solver/group_three/table.rs) for the exact mixed-radix layout, which is adapted from [`itaysadeh/rubiks-cube-solver`](https://github.com/itaysadeh/rubiks-cube-solver).
 
 # References
 
@@ -221,4 +238,4 @@ A special mention to Joren Heit's paper "Building and Solving Rubik’s Cube in 
 
 - [ ] A CLI which allows inputting scrambled cubes
 - [ ] Turn the crate in a library, rather than a binary
-- [ ] Document in-detail, pruning table numbers, creation and indexing strategies
+- [ ] Generate G2's pruning table to its full documented depth ($13$, currently truncated to $10$)
