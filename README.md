@@ -33,8 +33,8 @@ I've not run into many cube states which take longer than $250ms$ to solve; I've
 ```
 $ hyperfine --warmup 5 --runs 250 ./target/release/thwaite
 Benchmark 1: ./target/release/thwaite
-  Time (mean ± σ):      70.3 ms ±  33.9 ms    [User: 60.1 ms, System: 9.1 ms]
-  Range (min … max):    37.8 ms … 222.0 ms    250 runs
+  Time (mean ± σ):      78.2 ms ±  20.7 ms    [User: 65.6 ms, System: 12.1 ms]
+  Range (min … max):    46.7 ms … 186.7 ms    250 runs
 ```
 
 
@@ -189,7 +189,7 @@ The generation for the pattern databases uses a limited depth first search (DFS)
 
 G2's table is the exception: corner permutation parity isn't fully fixed by G0/G1, so a single DFS from the solved cube can't reach every reachable corner-permutation orbit within a sane depth limit. Instead, a shallow (depth $4$) search first collects $96$ distinct initial cube states (one per valid corner-permutation orbit, keyed by [`ptoidx`](#indexing)), then a full depth first search is run from each of those $96$ states, unioning the results into the same table.
 
-[^4]: Sourced from the same paper as the group descriptions above; G2's documented max depth of $13$ is truncated to $10$ in this implementation, since generating the full table takes prohibitively long. This is a known gap - see [TODO](#todo).
+[^4]: Sourced from the same paper as the group descriptions above.
 
 ### Indexing
 
@@ -238,4 +238,3 @@ A special mention to Joren Heit's paper "Building and Solving Rubik’s Cube in 
 
 - [ ] A CLI which allows inputting scrambled cubes
 - [ ] Turn the crate in a library, rather than a binary
-- [ ] Generate G2's pruning table to its full documented depth ($13$, currently truncated to $10$)

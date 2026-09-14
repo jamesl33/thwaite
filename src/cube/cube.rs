@@ -109,6 +109,11 @@ impl Cube {
         self.last = Some(m);
     }
 
+    /// Returns the last move applied to the cube, if any.
+    pub fn last(&self) -> Option<Rotation> {
+        self.last
+    }
+
     /// Returns a boolean indicating whether the given move is redundant, based on the last move applied to the cube.
     pub fn redundant(&self, m: &Rotation) -> bool {
         if let Some(last) = self.last {

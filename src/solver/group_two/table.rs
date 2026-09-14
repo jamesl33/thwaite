@@ -1,9 +1,8 @@
-use std::cmp;
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::cube::{Cube, NUM_CORNERS, NUM_EDGES};
+use crate::cube::{Cube, Rotation, NUM_CORNERS, NUM_EDGES};
 use crate::solver::group::Group;
 use crate::solver::maths::{combinations, factorial};
 
@@ -38,48 +37,108 @@ impl Table {
     }
 }
 
-/// Creates a new pattern database for G2.
-///
-/// TODO (jamesl33): This search could be done in parallel.
-fn g2() -> Table {
-    // As documented the max depth from G2 is 13, however, this takes far too long to generate; 10 seems sufficient.
-    //
-    // http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf
-    const DEPTH: usize = 10;
+/// The number of distinct "last move face" variants a cube state can be found under: one for each of the six
+/// faces, plus one for "no last move" (the initial states).
+const VARIANTS: usize = 7;
 
-    // Create the pruning table, ready to be populated
+// As documented the max depth from G2 is thirteen.
+///
+/// http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf
+const DEPTH: usize = 13;
+
+/// Creates a new pattern database for G2.
+fn g2() -> Table {
     let mut tab: Table = Table {
         data: vec![DEPTH; SIZE],
     };
 
-    // Generate the 96 starting states
-    let cubes = initial();
+    // Tracks which (state, last move face) variants have already been expanded.
+    //
+    // `redundant` decides which moves are allowed next based on the face of the last move applied, not just the
+    // cube's state - so two paths that reach the same state via a different last move face can have different
+    // sets of moves available to them. Deduping purely on state (as opposed to `(state, last move face)`) would
+    // discard whichever variant arrives second, which can permanently cut off the shortest path to some
+    // descendant state. Expanding every variant once keeps the search exhaustive while still visiting each
+    // (state, last move face) pair at most once.
+    let mut visited = vec![false; SIZE * VARIANTS];
 
-    // Perform a depth first search for each starting state, applying all the valid G2 moves and recording the depth
-    // from the solved state.
-    for cube in cubes {
-        dfs(&mut tab, cube, DEPTH - 1)
+    // Generate the 96 starting states, one per corner-permutation orbit; these are our depth zero.
+    let mut frontier = initial();
+
+    for cube in &frontier {
+        tab.data[idx(cube)] = 0;
+        visited[variant(cube)] = true;
+    }
+
+    // Perform a breadth first search outward from the 96 starting states, applying all the valid G2 moves.
+    //
+    // A plain depth first search re-explores the same cube states through every move sequence that reaches
+    // them, which is exponential in the search depth. Since BFS visits states in non-decreasing depth order,
+    // the first time a state is reached is guaranteed to be its shortest depth, so each reachable state only
+    // needs to be expanded once - turning the search from exponential into roughly `states * branching factor`.
+    for depth in 1..=DEPTH - 1 {
+        let mut next = Vec::new();
+
+        for cube in &frontier {
+            expand(cube, depth, &mut tab, &mut visited, &mut next);
+        }
+
+        if next.is_empty() {
+            break;
+        }
+
+        frontier = next;
     }
 
     tab
 }
 
-/// Performs a depth first search from the given cube state.
-fn dfs(tab: &mut Table, cube: Cube, limit: usize) {
-    // The zeroth index represents the solved state (e.g. in G2)
-    update(tab, &cube, 0);
+/// Applies every valid G2 move to `cube`, recording newly discovered states at `depth` in `tab` and queuing them
+/// in `next`. Moves whose `(state, last move face)` variant was already visited are skipped.
+fn expand(cube: &Cube, depth: usize, tab: &mut Table, visited: &mut [bool], next: &mut Vec<Cube>) {
+    for mv in Group::Two.moves() {
+        if cube.redundant(mv) {
+            continue;
+        }
 
-    // Perform a depth first search, applying all the valid G2 moves and recording the depth from the solved state
-    cube.search(Group::Two.moves(), limit, &mut |cube, depth| update(tab, cube, depth));
+        let mut next_cube = *cube;
+        next_cube.rotate(*mv);
+
+        let v = variant(&next_cube);
+
+        if visited[v] {
+            continue;
+        }
+
+        visited[v] = true;
+
+        let idx = idx(&next_cube);
+
+        if tab.data[idx] == DEPTH {
+            tab.data[idx] = depth;
+        }
+
+        next.push(next_cube);
+    }
 }
 
-/// Populates the depth in the pruning table - if it's less that the existing depth - for the given cube.
-fn update(tab: &mut Table, cube: &Cube, depth: usize) {
-    // Calculate the index in the pruning table
-    let idx = idx(cube);
+/// Returns the `(state, last move face)` variant index for the given cube, for use with the `visited` array.
+fn variant(cube: &Cube) -> usize {
+    idx(cube) * VARIANTS + face(cube.last())
+}
 
-    // Only update the pruning table, if we've found a shorter path
-    tab.data[idx] = cmp::min(tab.data[idx], depth);
+/// Returns a stable index (`0..VARIANTS`) for the face of the given move, or the "no move" slot for `None`.
+fn face(mv: Option<Rotation>) -> usize {
+    match mv.map(|mv| mv.face()) {
+        None => 0,
+        Some(Rotation::U) => 1,
+        Some(Rotation::D) => 2,
+        Some(Rotation::L) => 3,
+        Some(Rotation::R) => 4,
+        Some(Rotation::F) => 5,
+        Some(Rotation::B) => 6,
+        Some(_) => unreachable!("Rotation::face() always returns a base face rotation"),
+    }
 }
 
 /// Returns the index in the pruning table for the given cube.
