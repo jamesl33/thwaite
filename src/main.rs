@@ -59,7 +59,7 @@ fn main() {
 
     let mut s: Solver = Solver::new(c);
 
-    let solution = s.solve().unwrap();
+    let solution = s.solve().expect("cube is not solvable; check the provided cube string");
 
     for i in 0..solution.len() {
         c.rotate(solution[i]);
