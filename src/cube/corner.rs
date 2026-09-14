@@ -1,5 +1,6 @@
 use crate::cube::{Axis, Color, Column, Face, Facelet, Row, NUM_CORNERS};
 use std::collections::HashMap;
+use std::sync::OnceLock;
 
 /// The first corner, in the ULB position.
 const C0: Corner = Corner {
@@ -60,6 +61,15 @@ const C7: Corner = Corner {
 /// The edge positions on the cube.
 pub const CORNERS: [Corner; NUM_CORNERS] = [C0, C1, C2, C3, C4, C5, C6, C7];
 
+/// Returns a canonical, order-independent key for the given color triplet.
+fn key(a: Color, b: Color, c: Color) -> String {
+    let mut colors = [a, b, c];
+
+    colors.sort();
+
+    format!("{:?}:{:?}:{:?}", colors[0], colors[1], colors[2])
+}
+
 /// Represents an corner piece on a cube, note this is positional information; the color isn't stored.
 ///
 /// NOTE: We don't store as x, y or z because it's dependent ant on the permutation/orientation.
@@ -78,24 +88,20 @@ pub struct Corner {
 impl Corner {
     /// Returns the corner for the given color triplet.
     pub fn new(a: Color, b: Color, c: Color) -> Self {
-        let key = |a, b, c| {
-            let mut colors = vec![a, b, c];
+        static C2C: OnceLock<HashMap<String, Corner>> = OnceLock::new();
 
-            colors.sort();
-
-            format!("{:?}:{:?}:{:?}", colors[0], colors[1], colors[2])
-        };
-
-        let c2c = HashMap::from([
-            (key(Color::Yellow, Color::Orange, Color::Green), C0),
-            (key(Color::White, Color::Orange, Color::Blue), C1),
-            (key(Color::Red, Color::White, Color::Green), C2),
-            (key(Color::Yellow, Color::Blue, Color::Red), C3),
-            (key(Color::Orange, Color::Blue, Color::Yellow), C4),
-            (key(Color::Orange, Color::White, Color::Green), C5),
-            (key(Color::Blue, Color::Red, Color::White), C6),
-            (key(Color::Yellow, Color::Green, Color::Red), C7),
-        ]);
+        let c2c = C2C.get_or_init(|| {
+            HashMap::from([
+                (key(Color::Yellow, Color::Orange, Color::Green), C0),
+                (key(Color::White, Color::Orange, Color::Blue), C1),
+                (key(Color::Red, Color::White, Color::Green), C2),
+                (key(Color::Yellow, Color::Blue, Color::Red), C3),
+                (key(Color::Orange, Color::Blue, Color::Yellow), C4),
+                (key(Color::Orange, Color::White, Color::Green), C5),
+                (key(Color::Blue, Color::Red, Color::White), C6),
+                (key(Color::Yellow, Color::Green, Color::Red), C7),
+            ])
+        });
 
         c2c.get(&key(a, b, c)).unwrap().to_owned()
     }
