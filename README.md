@@ -35,9 +35,9 @@ The `cargo bench` suite ([`benches/thistlewaite.rs`](./benches/thistlewaite.rs))
 ```
 $ cargo bench
 thistlewaite solve (seeded)
-                        time:   [72.418 ms 73.032 ms 73.672 ms]
+                        time:   [27.516 ms 27.966 ms 28.462 ms]
 thistlewaite solve (random)
-                        time:   [57.824 ms 60.561 ms 63.549 ms]
+                        time:   [18.817 ms 21.733 ms 24.953 ms]
 ```
 
 
