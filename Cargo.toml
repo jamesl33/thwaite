@@ -11,3 +11,10 @@ enum-utils = "0.1.2"
 rand = "0.9.0"
 serde = { version = "1.0.217", features = ["serde_derive"] }
 snap = "1.1.1"
+
+[dev-dependencies]
+criterion = { version = "0.8.2", features = ["html_reports"] }
+
+[[bench]]
+name = "solve"
+harness = false

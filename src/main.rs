@@ -1,13 +1,5 @@
-#![allow(dead_code)]
-
-#[macro_use]
-extern crate arrayref;
-
-mod cube;
-use cube::*;
-
-mod solver;
-use solver::*;
+use thwaite::cube::*;
+use thwaite::solver::*;
 
 // fn main() -> std::io::Result<()> {
 //     solver::tables::write("./src/solver/group_zero/table.db", &solver::group_zero::Table::new())?;

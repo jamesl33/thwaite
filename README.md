@@ -30,11 +30,14 @@ Solution: [BP, R2, U, L2, FP, U2, RP, D2, B, R2, F, L, F, LP, F2, L, B2, R, F2, 
 
 I've not run into many cube states which take longer than $250ms$ to solve; I've not generated the deepest possible tables though, so that may be a low-hanging fruit improvement.
 
+The `cargo bench` suite ([`benches/solve.rs`](./benches/solve.rs)) measures `ThistlewaiteSolver::solve` in isolation (table load included, process start-up excluded); once against a fixed (seeded) scramble for run-to-run comparability, and once against a fresh scramble per sample to capture variance across cube states:
+
 ```
-$ hyperfine --warmup 5 --runs 250 ./target/release/thwaite
-Benchmark 1: ./target/release/thwaite
-  Time (mean ± σ):      78.2 ms ±  20.7 ms    [User: 65.6 ms, System: 12.1 ms]
-  Range (min … max):    46.7 ms … 186.7 ms    250 runs
+$ cargo bench
+thistlewaite solve (seeded)
+                        time:   [72.418 ms 73.032 ms 73.672 ms]
+thistlewaite solve (random)
+                        time:   [57.824 ms 60.561 ms 63.549 ms]
 ```
 
 
