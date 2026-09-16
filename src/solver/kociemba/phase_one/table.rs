@@ -57,10 +57,19 @@ impl Table {
 }
 
 /// Creates a new pattern database for phase one.
+///
+/// CAUTION: `corner_idx` and `edge_idx` each combine an orientation coordinate with the LR slice edge combination;
+/// the orientation part isn't closed under the move action on its own - it depends on the matching permutation too
+/// (see `crate::cube::Cube::rotate_up`) - so this search can silently miss states (see
+/// `crate::solver::generate::bfs_from`'s doc comment). Pairing the search key with the matching permutation rank
+/// fixes this, but the resulting key space is large enough (corner permutation rank alone is 8! = 40320, crossed
+/// with ~1e6 `corner_idx` values) that it OOMs in practice; the same problem hit Thistlewaite's G1 (see
+/// `group_one::table::g1`, which uses an exhaustive depth first search instead). Left unfixed here since Kociemba's
+/// solver is still an unwired MVP.
 fn phase_one() -> Table {
     Table {
-        corner: bfs(&PHASE_ONE_VALID_MOVES, DEPTH, SIZE_CORNER, corner_idx),
-        edge: bfs(&PHASE_ONE_VALID_MOVES, DEPTH, SIZE_EDGE, edge_idx),
+        corner: bfs(&PHASE_ONE_VALID_MOVES, DEPTH, SIZE_CORNER, corner_idx, corner_idx),
+        edge: bfs(&PHASE_ONE_VALID_MOVES, DEPTH, SIZE_EDGE, edge_idx, edge_idx),
     }
 }
 

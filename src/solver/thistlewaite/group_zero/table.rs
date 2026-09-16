@@ -1,9 +1,9 @@
-use std::cmp;
-
 use serde::{Deserialize, Serialize};
 
 use crate::cube::{Cube, NUM_EDGES};
+use crate::solver::generate::bfs;
 use crate::solver::group::Group;
+use crate::solver::maths::ptoidx;
 
 /// The size of the pruning table for G0.
 const SIZE: usize = usize::pow(2, 11);
@@ -34,27 +34,19 @@ fn g0() -> Table {
     // http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf
     const DEPTH: usize = 7;
 
-    // We initialize the pruning table at the max depth, then overwrite for cheaper distances
-    let mut tab: Table = Table {
-        data: vec![DEPTH; SIZE],
-    };
-
-    // The zeroth index represents the solved state (e.g. in G0)
-    tab.data[0] = 0;
-
-    // Start searching from the solved cube state
-    let start: Cube = Cube::new();
-
-    // Perform a depth first search, applying all the valid G0 moves and recording the depth from the solved state
-    start.search(Group::Zero.moves(), DEPTH - 1, &mut |cube, depth| {
-        // Calculate the index in the pruning table
-        let i = idx(cube.edge_orientations());
-
-        // Only update the pruning table, if we've found a shorter path
-        tab.data[i] = cmp::min(tab.data[i], depth);
-    });
-
-    tab
+    // The edge orientation coordinate alone isn't closed under the move action - its evolution depends on the
+    // full edge permutation too (see `crate::cube::Cube::rotate_up`) - so the search key pairs it with the edge
+    // permutation rank to avoid silently missing states. See `crate::solver::generate::bfs_from` for the full
+    // explanation.
+    Table {
+        data: bfs(
+            Group::Zero.moves(),
+            DEPTH,
+            SIZE,
+            |cube| idx(cube.edge_orientations()),
+            |cube| (idx(cube.edge_orientations()), ptoidx(cube.edge_permutations())),
+        ),
+    }
 }
 
 /// Returns the index within the pruning table for the given edge orientations by treating them as a binary number.

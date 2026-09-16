@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::cube::{Cube, NUM_CORNERS, NUM_EDGES};
 use crate::solver::generate::bfs;
 use crate::solver::kociemba::phase::PHASE_TWO_VALID_MOVES;
-use crate::solver::maths::factorial;
+use crate::solver::maths::{factorial, ptoidx};
 
 /// The number of corner permutations, which are being fixed in phase two.
 const CORNER_PERM_STATES: usize = factorial(NUM_CORNERS);
@@ -51,8 +51,8 @@ impl Table {
 /// Creates a new pattern database for phase two.
 fn phase_two() -> Table {
     Table {
-        corner: bfs(&PHASE_TWO_VALID_MOVES, DEPTH, SIZE_CORNER, corner_idx),
-        edge: bfs(&PHASE_TWO_VALID_MOVES, DEPTH, SIZE_EDGE, edge_idx),
+        corner: bfs(&PHASE_TWO_VALID_MOVES, DEPTH, SIZE_CORNER, corner_idx, corner_idx),
+        edge: bfs(&PHASE_TWO_VALID_MOVES, DEPTH, SIZE_EDGE, edge_idx, edge_idx),
     }
 }
 
@@ -77,24 +77,4 @@ fn slice_edges(perms: &[usize; NUM_EDGES]) -> [usize; 4] {
 /// for use with `ptoidx`.
 fn nonslice_edges(perms: &[usize; NUM_EDGES]) -> [usize; 8] {
     std::array::from_fn(|i| perms[i])
-}
-
-/// Returns the index within the pruning table for the given permutation, ranked as its Lehmer code amongst all
-/// `N!` orderings.
-///
-/// https://www.jaapsch.net/puzzles/compindx.htm#perm
-fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
-    let mut t = 0;
-
-    for i in 0..N - 1 {
-        t *= N - i;
-
-        for j in i + 1..N {
-            if perms[i] > perms[j] {
-                t += 1;
-            }
-        }
-    }
-
-    t
 }

@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::cube::{Cube, NUM_CORNERS, NUM_EDGES};
-use crate::solver::generate::bfs_seeded;
+use crate::solver::generate::bfs_from;
 use crate::solver::group::Group;
-use crate::solver::maths::{combinations, factorial};
+use crate::solver::maths::{combinations, factorial, ptoidx};
 
 /// There's 96 starting states for G2.
 const INITIAL: usize = 96;
@@ -53,7 +53,7 @@ fn g2() -> Table {
     // Perform a breadth first search outward from the 96 starting states, applying all the valid G2 moves; the
     // first time a state is reached is guaranteed to be its shortest depth.
     Table {
-        data: bfs_seeded(Group::Two.moves(), &seeds, DEPTH, SIZE, idx),
+        data: bfs_from(Group::Two.moves(), &seeds, DEPTH, SIZE, idx, idx),
     }
 }
 
@@ -111,25 +111,6 @@ fn cino(cperms: &[usize; NUM_CORNERS]) -> bool {
     }
 
     true
-}
-
-/// Returns the index in the pruning table for the given corner permutations.
-///
-/// https://www.jaapsch.net/puzzles/compindx.htm#perm
-pub fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
-    let mut t = 0;
-
-    for i in 0..N - 1 {
-        t *= N - i;
-
-        for j in i + 1..N {
-            if perms[i] > perms[j] {
-                t += 1;
-            }
-        }
-    }
-
-    t
 }
 
 /// Returns the index in the pruning table for the given edge permutation combinations.

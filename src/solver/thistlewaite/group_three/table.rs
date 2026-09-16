@@ -37,7 +37,7 @@ fn g3() -> Table {
     // Perform a breadth first search, applying all the valid G3 moves and recording the depth from the solved
     // state; the first time a state is reached is guaranteed to be its shortest depth.
     Table {
-        data: bfs(Group::Three.moves(), DEPTH, SIZE, idx),
+        data: bfs(Group::Three.moves(), DEPTH, SIZE, idx, idx),
     }
 }
 
