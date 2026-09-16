@@ -16,5 +16,9 @@ snap = "1.1.1"
 criterion = { version = "0.8.2", features = ["html_reports"] }
 
 [[bench]]
-name = "solve"
+name = "thistlewaite"
+harness = false
+
+[[bench]]
+name = "kociemba"
 harness = false

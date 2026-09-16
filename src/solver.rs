@@ -11,4 +11,4 @@ mod tables;
 
 mod search;
 
-mod kociemba;
+pub mod kociemba;

@@ -30,7 +30,7 @@ Solution: [BP, R2, U, L2, FP, U2, RP, D2, B, R2, F, L, F, LP, F2, L, B2, R, F2, 
 
 I've not run into many cube states which take longer than $250ms$ to solve; I've not generated the deepest possible tables though, so that may be a low-hanging fruit improvement.
 
-The `cargo bench` suite ([`benches/solve.rs`](./benches/solve.rs)) measures `ThistlewaiteSolver::solve` in isolation (table load included, process start-up excluded); once against a fixed (seeded) scramble for run-to-run comparability, and once against a fresh scramble per sample to capture variance across cube states:
+The `cargo bench` suite ([`benches/thistlewaite.rs`](./benches/thistlewaite.rs)) measures `ThistlewaiteSolver::solve` in isolation (table load included, process start-up excluded); once against a fixed (seeded) scramble for run-to-run comparability, and once against a fresh scramble per sample to capture variance across cube states:
 
 ```
 $ cargo bench
