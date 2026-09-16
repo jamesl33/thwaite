@@ -210,6 +210,21 @@ Each group then combines the indices of the piece-state it fixes into a single f
 - **G2:** A permutation index over all corner permutations ($8! = 40{,}320$) combined with a combination index over the edge distribution across the $8$ non-E-slice positions ($\binom{8}{4} = 70$), for $40{,}320 \times 70 = 2{,}822{,}400$ entries.
 - **G3:** Permutation/combination indices over the M-slice, S-slice and E-slice edges and the corner tetrad are ranked separately (via Lehmer codes) then folded together into a single fixed-size ($663{,}552$ entry) index; see [`group_three/table.rs`](src/solver/group_three/table.rs) for the exact mixed-radix layout, which is adapted from [`itaysadeh/rubiks-cube-solver`](https://github.com/itaysadeh/rubiks-cube-solver).
 
+# Kociemba (Experimental)
+
+`thwaite` also includes an MVP [`KociembaSolver`](src/solver/kociemba/solver.rs) implementing [Kociemba's two-phase algorithm](https://kociemba.org/cube.htm). It is **not** wired into the CLI or used by default - it exists as a separate code path, exercised only by its own tests, alongside the default `ThistlewaiteSolver`.
+
+Kociemba's algorithm reaches a solution in two phases rather than Thistlewaite's four groups:
+
+- **Phase one** searches with all $18$ moves until edge orientation, corner orientation and LR-slice edge membership are simultaneously satisfied (analogous to Thistlewaite's G0+G1 combined into a single goal).
+- **Phase two** then searches using only the moves that preserve that state, until the cube is solved.
+
+Note that this codebase defines piece orientation relative to the L/R axis (`Cube::rotate_left`/`rotate_right` never touch orientation; `rotate_up`/`rotate_down` disturb both corner and edge orientation), the opposite of the textbook Kociemba convention (which assumes U/D quarter turns preserve orientation). Phase two's move set here is therefore `<L, R, F2, B2, U2, D2>`, not the textbook `<U, D, L2, R2, F2, B2>` - and the tracked "slice" is the same LR-slice edges (piece ids 8-11) Thistlewaite's own G1 already tracks, not a U/D-relative E-slice.
+
+Both phases reuse the same [indexing primitives](#indexing) as the Thistlewaite groups (orientation index, Lehmer permutation index, combination index), duplicated locally per module rather than shared, matching this repo's existing per-group convention. Each phase's pruning table is too large to store as a single dense array (phase one's three coordinates alone would need ~2.2 billion entries), so each phase instead uses two independently-generated coordinate tables with the IDA* heuristic taken as their max - the same technique real two-phase implementations use for phase one.
+
+**Known limitation:** this MVP does not implement symmetry reduction or multi-candidate phase-one search (both used by production two-phase implementations to keep phase two fast). Because phase two's two coordinates (corner permutation and edge permutation) are only weakly correlated, the max-of-two heuristic can be a poor lower bound for some cube states, so phase two's search time varies widely - anywhere from milliseconds to tens of seconds - depending on the scramble and which phase-one solution happened to be found first.
+
 # References
 
 With this implementation, I'm simply standing on the shoulders of giants; it would not have been possible without a huge number of resources.

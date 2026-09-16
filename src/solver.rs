@@ -16,3 +16,5 @@ mod group_one;
 mod group_two;
 
 mod group_three;
+
+mod kociemba;
