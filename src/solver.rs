@@ -7,7 +7,7 @@ use group::*;
 mod maths;
 use maths::*;
 
-mod tables;
+pub mod tables;
 
 mod search;
 

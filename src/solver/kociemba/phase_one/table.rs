@@ -147,28 +147,3 @@ fn lrslice_ctoidx(perms: &[usize; NUM_EDGES]) -> usize {
 
     idx
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    #[ignore]
-    fn generate() {
-        let table = Table::new();
-        let solved = Cube::new();
-
-        assert_eq!(table.corner[corner_idx(&solved)], 0);
-        assert_eq!(table.edge[edge_idx(&solved)], 0);
-
-        // A handful of (corner-orientation, LR-slice-combination) pairs are combinatorially unreachable by any
-        // real cube state (e.g. via corner orientation parity), so a small number of table entries are expected
-        // to be left at the sentinel `DEPTH` value; bound it generously rather than requiring exactly zero.
-        let corner_unreached = table.corner.iter().filter(|&&d| d == DEPTH).count();
-        let edge_unreached = table.edge.iter().filter(|&&d| d == DEPTH).count();
-        assert!(corner_unreached < SIZE_CORNER / 100, "too many unreached corner entries: {corner_unreached}");
-        assert!(edge_unreached < SIZE_EDGE / 100, "too many unreached edge entries: {edge_unreached}");
-
-        crate::solver::tables::write("./src/solver/kociemba/phase_one/table.db", &table).unwrap();
-    }
-}

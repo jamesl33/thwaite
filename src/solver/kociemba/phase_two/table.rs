@@ -98,22 +98,3 @@ fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
 
     t
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    #[ignore]
-    fn generate() {
-        let table = Table::new();
-        let solved = Cube::new();
-
-        assert_eq!(table.corner[corner_idx(&solved)], 0);
-        assert_eq!(table.edge[edge_idx(&solved)], 0);
-        assert!(!table.corner.contains(&DEPTH), "corner table has unreached entries");
-        assert!(!table.edge.contains(&DEPTH), "edge table has unreached entries");
-
-        crate::solver::tables::write("./src/solver/kociemba/phase_two/table.db", &table).unwrap();
-    }
-}

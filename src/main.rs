@@ -1,15 +1,6 @@
 use thwaite::cube::*;
 use thwaite::solver::*;
 
-// fn main() -> std::io::Result<()> {
-//     solver::tables::write("./src/solver/group_zero/table.db", &solver::group_zero::Table::new())?;
-//     solver::tables::write("./src/solver/group_one/table.db", &solver::group_one::Table::new())?;
-//     solver::tables::write("./src/solver/group_two/table.db", &solver::group_two::Table::new())?;
-//     solver::tables::write("./src/solver/group_three/table.db", &solver::group_three::Table::new())?;
-//
-//     Ok(())
-// }
-
 /// Returns a scrambled cube.
 fn scramble() -> Cube {
     let mut c: Cube = Cube::new();

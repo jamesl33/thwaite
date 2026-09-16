@@ -194,6 +194,14 @@ G2's table is the exception: corner permutation parity isn't fully fixed by G0/G
 
 [^4]: Sourced from the same paper as the group descriptions above.
 
+The checked-in `table.db` files (one per group, plus Kociemba's two phases) are pre-generated; regenerate them, if the generation algorithm or indexing changes, with:
+
+```
+$ cargo run --release --bin generate
+```
+
+This is slow (large tables can take a while to build) and only needs to be run when generation itself changes, not as part of a normal build.
+
 ### Indexing
 
 By far the most complex (intricate) part of the solver, is the indexing of cube-state into the pattern databases; in most cases, the permutations (or orientations) of a subset of the cube pieces are turned into indices where a "depth" is stored.
