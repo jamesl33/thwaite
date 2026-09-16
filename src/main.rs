@@ -57,7 +57,7 @@ fn cube() -> Cube {
 fn main() {
     let mut c = cube();
 
-    let mut s: Solver = Solver::new(c);
+    let mut s: ThistlewaiteSolver = ThistlewaiteSolver::new(c);
 
     let solution = s.solve().expect("cube is not solvable; check the provided cube string");
 

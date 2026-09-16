@@ -18,15 +18,15 @@ static G3: &[u8] = include_bytes!("./group_three/table.db");
 
 /// Exposes an API to solve the Rubik's Cube using the Thistlewaite-45 method.
 #[derive(Debug)]
-pub struct Solver {
+pub struct ThistlewaiteSolver {
     /// The cube being solved.
     cube: cube::Cube,
 }
 
-impl Solver {
+impl ThistlewaiteSolver {
     /// Returns a new solver, which will solve the given cube.
-    pub fn new(cube: cube::Cube) -> Solver {
-        Solver { cube }
+    pub fn new(cube: cube::Cube) -> ThistlewaiteSolver {
+        ThistlewaiteSolver { cube }
     }
 
     /// Returns a solution for the target cube, if one can be found.
