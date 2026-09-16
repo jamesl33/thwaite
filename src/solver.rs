@@ -1,5 +1,5 @@
-pub mod solver;
-pub use solver::*;
+pub mod thistlewaite;
+pub use thistlewaite::*;
 
 mod group;
 use group::*;
@@ -9,12 +9,6 @@ use maths::*;
 
 mod tables;
 
-mod group_zero;
-
-mod group_one;
-
-mod group_two;
-
-mod group_three;
+mod search;
 
 mod kociemba;

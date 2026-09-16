@@ -3,7 +3,7 @@ use crate::cube::Rotation;
 use crate::solver;
 use crate::solver::kociemba::phase::{PHASE_ONE_VALID_MOVES, PHASE_TWO_VALID_MOVES};
 use crate::solver::kociemba::{phase_one, phase_two};
-use crate::solver::solver::idas;
+use crate::solver::search::idas;
 
 /// The pre-computed pattern database for traversing to phase one's target group (see `phase::PHASE_TWO_VALID_MOVES`
 /// for the group's generators, and why they differ from the textbook `<U, D, L2, R2, F2, B2>`).

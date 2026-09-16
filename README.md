@@ -208,7 +208,7 @@ Each group then combines the indices of the piece-state it fixes into a single f
 - **G0:** Only edge orientations matter, encoded directly as an $11$-bit orientation index ($2^{11} = 2{,}048$ entries).
 - **G1:** A combination index over the LR-slice edge permutations ($\binom{12}{4} = 495$, via a precomputed $0..2048 \to 0..495$ lookup table) combined with a corner orientation index ($3^7 = 2{,}187$), for $495 \times 2{,}187 = 1{,}082{,}565$ entries.
 - **G2:** A permutation index over all corner permutations ($8! = 40{,}320$) combined with a combination index over the edge distribution across the $8$ non-E-slice positions ($\binom{8}{4} = 70$), for $40{,}320 \times 70 = 2{,}822{,}400$ entries.
-- **G3:** Permutation/combination indices over the M-slice, S-slice and E-slice edges and the corner tetrad are ranked separately (via Lehmer codes) then folded together into a single fixed-size ($663{,}552$ entry) index; see [`group_three/table.rs`](src/solver/group_three/table.rs) for the exact mixed-radix layout, which is adapted from [`itaysadeh/rubiks-cube-solver`](https://github.com/itaysadeh/rubiks-cube-solver).
+- **G3:** Permutation/combination indices over the M-slice, S-slice and E-slice edges and the corner tetrad are ranked separately (via Lehmer codes) then folded together into a single fixed-size ($663{,}552$ entry) index; see [`group_three/table.rs`](src/solver/thistlewaite/group_three/table.rs) for the exact mixed-radix layout, which is adapted from [`itaysadeh/rubiks-cube-solver`](https://github.com/itaysadeh/rubiks-cube-solver).
 
 # Kociemba (Experimental)
 

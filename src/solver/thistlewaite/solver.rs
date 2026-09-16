@@ -1,8 +1,7 @@
-use std::cmp;
-
 use crate::cube;
-use crate::cube::{Cube, Rotation};
+use crate::cube::Rotation;
 use crate::solver;
+use crate::solver::search::idas;
 
 /// The pre-compute pattern database for traversing to G1.
 static G0: &[u8] = include_bytes!("./group_zero/table.db");
@@ -37,7 +36,7 @@ impl ThistlewaiteSolver {
         }
 
         // Setup the G0 table
-        let g0 = solver::tables::read::<solver::group_zero::Table>(G0);
+        let g0 = solver::tables::read::<super::group_zero::Table>(G0);
 
         // Calculate the rotations to move to G1
         let zero = idas(self.cube, solver::Group::Zero.moves(), &|cube| g0.depth(cube))?;
@@ -46,7 +45,7 @@ impl ThistlewaiteSolver {
         self.apply(&zero);
 
         // Setup the G1 table
-        let g1 = solver::tables::read::<solver::group_one::Table>(G1);
+        let g1 = solver::tables::read::<super::group_one::Table>(G1);
 
         // Calculate the rotations to move to G1
         let one = idas(self.cube, solver::Group::One.moves(), &|cube| g1.depth(cube))?;
@@ -55,7 +54,7 @@ impl ThistlewaiteSolver {
         self.apply(&one);
 
         // Setup the G2 table
-        let g2 = solver::tables::read::<solver::group_two::Table>(G2);
+        let g2 = solver::tables::read::<super::group_two::Table>(G2);
 
         // Calculate the rotations to move to G2
         let two = idas(self.cube, solver::Group::Two.moves(), &|cube| g2.depth(cube))?;
@@ -64,7 +63,7 @@ impl ThistlewaiteSolver {
         self.apply(&two);
 
         // Setup the G3 table
-        let g3 = solver::tables::read::<solver::group_three::Table>(G3);
+        let g3 = solver::tables::read::<super::group_three::Table>(G3);
 
         // Calculate the rotations to move to G3
         let three = idas(self.cube, solver::Group::Three.moves(), &|cube| g3.depth(cube))?;
@@ -83,72 +82,4 @@ impl ThistlewaiteSolver {
             self.cube.rotate(moves[i]);
         }
     }
-}
-
-/// Perform an iterative deepening A* search, using the given heuristic.
-pub(super) fn idas<F>(cube: Cube, moves: &[Rotation], hueristic: &F) -> Option<Vec<Rotation>>
-where
-    F: Fn(&Cube) -> usize,
-{
-    let mut limit = hueristic(&cube);
-
-    // Already in the target group, exit early
-    if limit == 0 {
-        return Some(vec![]);
-    }
-
-    loop {
-        let (t, path) = dfs(cube, 0, limit, moves, hueristic);
-
-        if path.is_some() {
-            return path;
-        }
-
-        if t == usize::MAX {
-            return None;
-        }
-
-        limit = t;
-    }
-}
-
-/// Perform a depth first search, using the given moves and heuristic returning the minimum cost branch and the moves
-/// that have been made to get there.
-fn dfs<F>(cube: Cube, g: usize, limit: usize, valid: &[Rotation], hueristic: &F) -> (usize, Option<Vec<Rotation>>)
-where
-    F: Fn(&Cube) -> usize,
-{
-    let mut min = usize::MAX;
-
-    for mv in valid {
-        if cube.redundant(mv) {
-            continue;
-        }
-
-        let mut cube = cube;
-
-        cube.rotate(*mv);
-
-        let h = hueristic(&cube);
-        let f = g + h;
-
-        if h == 0 {
-            return (0, Some(vec![*mv]));
-        }
-
-        if f > limit {
-            min = cmp::min(min, f);
-            continue;
-        }
-
-        let (cost, path) = dfs(cube, g + 1, limit, valid, hueristic);
-
-        if let Some(path) = path {
-            return (0, Some([vec![*mv], path].concat()));
-        }
-
-        min = cmp::min(min, cost);
-    }
-
-    (min, None)
 }

@@ -1,0 +1,71 @@
+use std::cmp;
+
+use crate::cube::{Cube, Rotation};
+
+/// Perform an iterative deepening A* search, using the given heuristic.
+pub fn idas<F>(cube: Cube, moves: &[Rotation], hueristic: &F) -> Option<Vec<Rotation>>
+where
+    F: Fn(&Cube) -> usize,
+{
+    let mut limit = hueristic(&cube);
+
+    // Already in the target group, exit early
+    if limit == 0 {
+        return Some(vec![]);
+    }
+
+    loop {
+        let (t, path) = dfs(cube, 0, limit, moves, hueristic);
+
+        if path.is_some() {
+            return path;
+        }
+
+        if t == usize::MAX {
+            return None;
+        }
+
+        limit = t;
+    }
+}
+
+/// Perform a depth first search, using the given moves and heuristic returning the minimum cost branch and the moves
+/// that have been made to get there.
+fn dfs<F>(cube: Cube, g: usize, limit: usize, valid: &[Rotation], hueristic: &F) -> (usize, Option<Vec<Rotation>>)
+where
+    F: Fn(&Cube) -> usize,
+{
+    let mut min = usize::MAX;
+
+    for mv in valid {
+        if cube.redundant(mv) {
+            continue;
+        }
+
+        let mut cube = cube;
+
+        cube.rotate(*mv);
+
+        let h = hueristic(&cube);
+        let f = g + h;
+
+        if h == 0 {
+            return (0, Some(vec![*mv]));
+        }
+
+        if f > limit {
+            min = cmp::min(min, f);
+            continue;
+        }
+
+        let (cost, path) = dfs(cube, g + 1, limit, valid, hueristic);
+
+        if let Some(path) = path {
+            return (0, Some([vec![*mv], path].concat()));
+        }
+
+        min = cmp::min(min, cost);
+    }
+
+    (min, None)
+}
