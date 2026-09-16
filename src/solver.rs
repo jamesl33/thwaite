@@ -9,6 +9,8 @@ use maths::*;
 
 pub mod tables;
 
+mod generate;
+
 mod search;
 
 pub mod kociemba;

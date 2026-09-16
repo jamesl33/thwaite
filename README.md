@@ -24,9 +24,9 @@ Solution: [BP, R2, U, L2, FP, U2, RP, D2, B, R2, F, L, F, LP, F2, L, B2, R, F2, 
 
 `thwaite` is built to be performant:
 
-- Pre-computed lookup tables (embedded, snappy compressed data)
+- Pre-computed lookup tables (embedded, snappy compressed data; see [Generation](#generation) for how they're built)
 - Pre-computed factorials/combinations
-- Depth first search (DFS) rather than breadth first search (BFS)
+- Solves via iterative deepening A\* (IDA\*) - a depth-first, heuristic-guided search, appropriate here since it's goal-directed rather than exhaustive (see [IDA\*](#ida-iterative-deepening-a))
 
 I've not run into many cube states which take longer than $250ms$ to solve; I've not generated the deepest possible tables though, so that may be a low-hanging fruit improvement.
 
@@ -188,11 +188,15 @@ The "depth" from the solved state, is pre-computed for each group and stored in 
 
 ### Generation
 
-The generation for the pattern databases uses a limited depth first search (DFS) where for each group, a search is started, using the groups valid moves from the solved cube; the depth is then recorded in the lookup table. The DFS is depth-limited to the group's known max depth[^4], and only records a depth when it's cheaper than what's already stored at that index, guarding against a longer path overwriting a shorter one found earlier.
+G2 and G3's tables are generated with a breadth first search (BFS): a search is started using the group's valid moves from the solved cube, visiting states in non-decreasing depth order, so the first time a state is reached is guaranteed to be its shortest depth[^4]; deduplicating on `(coordinate, last move face)` - rather than just the coordinate, since `redundant()`'s next-move eligibility depends on the last move's face - keeps the search exhaustive while still visiting each pair at most once. This is only safe when the group's coordinate is "closed" under the move action: two states sharing a coordinate must always transition to the same next coordinate for a given move, otherwise this dedup silently under-fills the table. G2 and G3's coordinates (which both fold in permutation/combination information, not just orientation) satisfy this; both Kociemba phases' coordinates do too.
 
-G2's table is the exception: corner permutation parity isn't fully fixed by G0/G1, so a single DFS from the solved cube can't reach every reachable corner-permutation orbit within a sane depth limit. Instead, a shallow (depth $4$) search first collects $96$ distinct initial cube states (one per valid corner-permutation orbit, keyed by [`ptoidx`](#indexing)), then a full depth first search is run from each of those $96$ states, unioning the results into the same table.
+G0 and G1 don't: their coordinates are orientation-only (G0) or orientation combined with only a partial permutation combination (G1), which isn't enough to determine a state's next coordinate uniquely. They're generated with a depth-limited depth first search instead[^5], recording the shallower of any two depths found for the same coordinate - correct regardless of how much information the coordinate captures, just more expensive; a real difference in practice, since promoting G0/G1's search to G2/G3's BFS was tried and confirmed (by comparing against this older search's output) to leave most of G0's table at its sentinel depth, never visited.
 
-[^4]: Sourced from the same paper as the group descriptions above.
+G2's table has a further exception: corner permutation parity isn't fully fixed by G0/G1, so a single BFS from the solved cube can't reach every reachable corner-permutation orbit within a sane depth limit. Instead, a shallow (depth $4$) depth first search first collects $96$ distinct initial cube states (one per valid corner-permutation orbit, keyed by [`ptoidx`](#indexing)), then the BFS is seeded from all $96$ of those states at once, rather than just the solved cube.
+
+[^4]: A plain depth first search re-explores the same state through every move sequence that reaches it, which is exponential in the search depth; BFS turns this into roughly `states * branching factor`. The group's known max depth (sourced from the same paper as the group descriptions above) is still used as the search's sentinel/cutoff value.
+
+[^5]: Depth-limited to the group's known max depth, same source as above.
 
 The checked-in `table.db` files (one per group, plus Kociemba's two phases) are pre-generated; regenerate them, if the generation algorithm or indexing changes, with:
 

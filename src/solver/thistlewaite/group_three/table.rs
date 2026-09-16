@@ -1,8 +1,7 @@
-use std::cmp;
-
 use serde::{Deserialize, Serialize};
 
 use crate::cube::Cube;
+use crate::solver::generate::bfs;
 use crate::solver::group::Group;
 use crate::solver::maths::factorial;
 
@@ -35,27 +34,11 @@ fn g3() -> Table {
     // http://joren.ralphdesign.nl/projects/rubiks_cube/cube.pdf
     const DEPTH: usize = 15;
 
-    // We initialize the pruning table at the max depth, and search for the cheaper distances
-    let mut tab: Table = Table {
-        data: vec![DEPTH; SIZE],
-    };
-
-    // Which has a distance of zero
-    tab.data[0] = 0;
-
-    // We start searching from a solved cube
-    let start: Cube = Cube::new();
-
-    // Perform a depth first search, applying all the valid G3 moves and recording the depth from the solved state
-    start.search(Group::Three.moves(), DEPTH - 1, &mut |cube, depth| {
-        // Calculate the index in the pruning table
-        let idx = idx(cube);
-
-        // Only update the pruning table, if we've found a shorter path
-        tab.data[idx] = cmp::min(tab.data[idx], depth);
-    });
-
-    tab
+    // Perform a breadth first search, applying all the valid G3 moves and recording the depth from the solved
+    // state; the first time a state is reached is guaranteed to be its shortest depth.
+    Table {
+        data: bfs(Group::Three.moves(), DEPTH, SIZE, idx),
+    }
 }
 
 /// Returns the index within the pruning table for the given cube.
