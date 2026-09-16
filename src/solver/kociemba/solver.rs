@@ -1,3 +1,5 @@
+use std::sync::LazyLock;
+
 use crate::cube;
 use crate::cube::Rotation;
 use crate::solver;
@@ -7,10 +9,16 @@ use crate::solver::search::idas;
 
 /// The pre-computed pattern database for traversing to phase one's target group (see `phase::PHASE_TWO_VALID_MOVES`
 /// for the group's generators, and why they differ from the textbook `<U, D, L2, R2, F2, B2>`).
-static P1: &[u8] = include_bytes!("./phase_one/table.db");
+///
+/// Lazily decoded once per process, rather than once per `solve()` call.
+static P1: LazyLock<phase_one::Table> =
+    LazyLock::new(|| solver::tables::read(include_bytes!("./phase_one/table.db")));
 
 /// The pre-computed pattern database for solving the cube, once already in phase one's target group.
-static P2: &[u8] = include_bytes!("./phase_two/table.db");
+///
+/// Lazily decoded once per process, rather than once per `solve()` call.
+static P2: LazyLock<phase_two::Table> =
+    LazyLock::new(|| solver::tables::read(include_bytes!("./phase_two/table.db")));
 
 /// Exposes an API to solve the Rubik's Cube using Kociemba's two-phase method.
 ///
@@ -42,20 +50,14 @@ impl KociembaSolver {
             return Some(vec![]);
         }
 
-        // Setup the phase one table
-        let p1 = solver::tables::read::<phase_one::Table>(P1);
-
         // Calculate the rotations to reach phase one's target group
-        let one = idas(self.cube, &PHASE_ONE_VALID_MOVES, &|cube| p1.depth(cube))?;
+        let one = idas(self.cube, &PHASE_ONE_VALID_MOVES, &|cube| P1.depth(cube))?;
 
         // Apply those moves
         self.apply(&one);
 
-        // Setup the phase two table
-        let p2 = solver::tables::read::<phase_two::Table>(P2);
-
         // Calculate the rotations to solve the cube, using only phase one's target group's moves
-        let two = idas(self.cube, &PHASE_TWO_VALID_MOVES, &|cube| p2.depth(cube))?;
+        let two = idas(self.cube, &PHASE_TWO_VALID_MOVES, &|cube| P2.depth(cube))?;
 
         // Apply the moves
         self.apply(&two);

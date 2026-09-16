@@ -1,19 +1,33 @@
+use std::sync::LazyLock;
+
 use crate::cube;
 use crate::cube::Rotation;
 use crate::solver;
 use crate::solver::search::idas;
 
 /// The pre-compute pattern database for traversing to G1.
-static G0: &[u8] = include_bytes!("./group_zero/table.db");
+///
+/// Lazily decoded once per process, rather than once per `solve()` call.
+static G0: LazyLock<super::group_zero::Table> =
+    LazyLock::new(|| solver::tables::read(include_bytes!("./group_zero/table.db")));
 
 /// The pre-compute pattern database for traversing to G2.
-static G1: &[u8] = include_bytes!("./group_one/table.db");
+///
+/// Lazily decoded once per process, rather than once per `solve()` call.
+static G1: LazyLock<super::group_one::Table> =
+    LazyLock::new(|| solver::tables::read(include_bytes!("./group_one/table.db")));
 
 /// The pre-compute pattern database for traversing to G3.
-static G2: &[u8] = include_bytes!("./group_two/table.db");
+///
+/// Lazily decoded once per process, rather than once per `solve()` call.
+static G2: LazyLock<super::group_two::Table> =
+    LazyLock::new(|| solver::tables::read(include_bytes!("./group_two/table.db")));
 
 /// The pre-compute pattern database for traversing to G4.
-static G3: &[u8] = include_bytes!("./group_three/table.db");
+///
+/// Lazily decoded once per process, rather than once per `solve()` call.
+static G3: LazyLock<super::group_three::Table> =
+    LazyLock::new(|| solver::tables::read(include_bytes!("./group_three/table.db")));
 
 /// Exposes an API to solve the Rubik's Cube using the Thistlewaite-45 method.
 #[derive(Debug)]
@@ -35,38 +49,26 @@ impl ThistlewaiteSolver {
             return Some(vec![]);
         }
 
-        // Setup the G0 table
-        let g0 = solver::tables::read::<super::group_zero::Table>(G0);
-
         // Calculate the rotations to move to G1
-        let zero = idas(self.cube, solver::Group::Zero.moves(), &|cube| g0.depth(cube))?;
+        let zero = idas(self.cube, solver::Group::Zero.moves(), &|cube| G0.depth(cube))?;
 
         // Apply those moves
         self.apply(&zero);
 
-        // Setup the G1 table
-        let g1 = solver::tables::read::<super::group_one::Table>(G1);
-
         // Calculate the rotations to move to G1
-        let one = idas(self.cube, solver::Group::One.moves(), &|cube| g1.depth(cube))?;
+        let one = idas(self.cube, solver::Group::One.moves(), &|cube| G1.depth(cube))?;
 
         // Apply the moves
         self.apply(&one);
 
-        // Setup the G2 table
-        let g2 = solver::tables::read::<super::group_two::Table>(G2);
-
         // Calculate the rotations to move to G2
-        let two = idas(self.cube, solver::Group::Two.moves(), &|cube| g2.depth(cube))?;
+        let two = idas(self.cube, solver::Group::Two.moves(), &|cube| G2.depth(cube))?;
 
         // Apply the moves
         self.apply(&two);
 
-        // Setup the G3 table
-        let g3 = solver::tables::read::<super::group_three::Table>(G3);
-
         // Calculate the rotations to move to G3
-        let three = idas(self.cube, solver::Group::Three.moves(), &|cube| g3.depth(cube))?;
+        let three = idas(self.cube, solver::Group::Three.moves(), &|cube| G3.depth(cube))?;
 
         // Apply the moves
         //
