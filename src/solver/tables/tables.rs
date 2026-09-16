@@ -19,7 +19,6 @@ where
     decoder.read_to_end(&mut encoded).unwrap();
 
     // Decode the encoded table
-    
 
     bincode::deserialize(&encoded).unwrap()
 }

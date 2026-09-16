@@ -103,8 +103,7 @@ impl Corner {
             ])
         });
 
-        *c2c
-            .get(&key(a, b, c))
+        *c2c.get(&key(a, b, c))
             .unwrap_or_else(|| panic!("invalid corner colors: {:?}, {:?}, {:?}", a, b, c))
     }
 

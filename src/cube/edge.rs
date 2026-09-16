@@ -120,8 +120,7 @@ impl Edge {
             ])
         });
 
-        *c2e
-            .get(&key(a, b))
+        *c2e.get(&key(a, b))
             .unwrap_or_else(|| panic!("invalid edge colors: {:?}, {:?}", a, b))
     }
 

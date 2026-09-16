@@ -177,7 +177,12 @@ impl From<&str> for Cube {
         let cs = Vec::from(cs);
 
         // A cube string is 6 faces of 9 facelets each.
-        assert_eq!(cs.len(), 54, "cube string must be exactly 54 characters, got {}", cs.len());
+        assert_eq!(
+            cs.len(),
+            54,
+            "cube string must be exactly 54 characters, got {}",
+            cs.len()
+        );
 
         // Convert that into a vector of colors
         let cs: Vec<Color> = cs.iter().map(|c| c.into()).collect();
