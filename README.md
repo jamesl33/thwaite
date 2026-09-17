@@ -14,19 +14,29 @@ In its current state, when built and run, `thwaite` supports two use-cases:
 
 ```
 $ cargo run --release
-Scramble: [BP, RP, RP, R2, D, U2, B, U, F2, F, B, U2, D, D, RP, F2, D, D, D, FP]
-Solution: [U, F2, R, B2, U, FP, L, U2, F, L, B2, U2, B2, L, F, L, F2, LP, F2, R2, F2, L, F2, L, U2, L2, U2, L2, U2, B2, R2, U2, L2, U2, L2, F2, L2]
+Scramble: [U2, B2, L, BP, LP, U, L, D2, R, BP, D, R, UP, LP, B, RP, FP, DP, BP, R2]
+Solution: [F, RP, U, LP, FP, R, D, F, D2, L, F, D2, R, F, L2, U2, LP, D2, L, D2, L, D2, L, U2, F2, U2, R2, F2, R2, U2, F2, D2, B2, U2]
 ```
 
 ```
 $ cargo run --release 'OOWYYBBWOBYGRROGGRROWGBBOYWGROYWRGRYYGWBOWYOYRGBBGWBWR'
-Solution: [BP, R2, U, L2, FP, U2, RP, D2, B, R2, F, L, F, LP, F2, L, B2, R, F2, R, F2, L, F2, D2, R2, B2, L2, U2, F2, L2, U2, F2, L2, U2]
+Solution: [BP, R2, U, R2, FP, L2, B, L, U2, RP, B, L, D2, F, L2, U2, L2, F2, U2, L, D2, L2, B2, R, F2, D2, L2, U2, B2, U2, R2, F2, R2, U2, L2, F2]
 ```
 
 ```
 $ cargo run --release -- --algorithm kociemba
-Scramble: [R, U, F, D2, RP, FP, LP, DP, RP, UP, LP, D2, B2, D2, BP, D, BP, R, F, D2]
-Solution: [F, L2, BP, LP, D, BP, R2, DP, RP, F2, U, L, B2, U2, RP, D2, R, B2, LP, F2, R, U2, LP, D2, B2, L]
+Scramble: [R, BP, R, B, UP, L2, U2, F2, L, F, LP, D2, B, R2, U, B, D2, L2, DP, R]
+Solution: [F, UP, B2, U, L2, B2, RP, F, LP, U, F2, L, B2, U2, LP, B2, RP, F2, R2, B2, U2, L2, D2, L, D2]
+```
+
+`thwaite` is also a library (`src/lib.rs`), so a cube can be built and solved without the CLI:
+
+```rust
+use thwaite::cube::Cube;
+use thwaite::solver::ThistlewaiteSolver;
+
+let cube = Cube::from("OOWYYBBWOBYGRROGGRROWGBBOYWGROYWRGRYYGWBOWYOYRGBBGWBWR");
+let solution = ThistlewaiteSolver::new(cube).solve().expect("cube is solvable");
 ```
 
 # Performance
@@ -44,13 +54,11 @@ The `cargo bench` suite ([`benches/thistlewaite.rs`](./benches/thistlewaite.rs),
 ```
 $ cargo bench
 thistlewaite solve (seeded)
-                        time:   [30.808 ms 31.425 ms 32.050 ms]
+                        time:   [17.756 ms 17.878 ms 18.007 ms]
 thistlewaite solve (random)
-                        time:   [16.097 ms 18.580 ms 21.282 ms]
-kociemba solve (seeded)
-                        time:   [124.31 µs 127.48 µs 130.67 µs]
-kociemba solve (random)
-                        time:   [2.5362 ms 2.6709 ms 2.8072 ms]
+                        time:   [9.7838 ms 10.811 ms 11.899 ms]
+kociemba solve (seeded) time:   [82.070 µs 83.193 µs 84.602 µs]
+kociemba solve (random) time:   [1.6881 ms 1.7561 ms 1.8269 ms]
 ```
 
 Kociemba is typically an order of magnitude (or more) faster than Thistlewaite, but with wider
@@ -285,5 +293,6 @@ A special mention to Joren Heit's paper "Building and Solving Rubik’s Cube in 
 
 # TODO
 
-- [ ] A CLI which allows inputting scrambled cubes
-- [ ] Turn the crate in a library, rather than a binary
+- [ ] Multi-candidate phase-one search for `KociembaSolver`, so phase two stays fast regardless of scramble
+- [ ] Symmetry reduction for phase one's coordinates
+- [ ] Generate deeper Thistlewaite pruning tables (current tables aren't the deepest possible; see [Performance](#performance))
