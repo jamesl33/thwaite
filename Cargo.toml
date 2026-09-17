@@ -16,6 +16,11 @@ zstd = "0.13"
 [dev-dependencies]
 criterion = { version = "0.8.2", features = ["html_reports"] }
 
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+
 [[bench]]
 name = "thistlewaite"
 harness = false
