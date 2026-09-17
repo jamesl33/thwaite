@@ -152,9 +152,9 @@ The Cube is made up of four arrays:
 
 With each using the representations depicted above.
 
-# Solver
+# Thistlewaite
 
-The solving algorithm implemented in `thwaite` is [Thistlewaite 45](https://www.jaapsch.net/puzzles/thistle.htm), an algorithm which uses group theory to limit the search space for a solution by progressively restricting the available moves (after reaching certain states).
+The default solving algorithm implemented in `thwaite` is [Thistlewaite 45](https://www.jaapsch.net/puzzles/thistle.htm), an algorithm which uses group theory to limit the search space for a solution by progressively restricting the available moves (after reaching certain states).
 
 ## Group 0 (G0)
 
@@ -252,16 +252,36 @@ Each group then combines the indices of the piece-state it fixes into a single f
 
 `thwaite` also includes [`KociembaSolver`](src/solver/kociemba/solver.rs) implementing [Kociemba's two-phase algorithm](https://kociemba.org/cube.htm), selectable via `--algorithm kociemba` (see [Usage](#usage)); `ThistlewaiteSolver` remains the default.
 
-Kociemba's algorithm reaches a solution in two phases rather than Thistlewaite's four groups:
+Kociemba's algorithm reaches a solution in two phases rather than Thistlewaite's four groups.
 
-- **Phase one** searches with all $18$ moves until edge orientation, corner orientation and LR-slice edge membership are simultaneously satisfied (analogous to Thistlewaite's G0+G1 combined into a single goal).
-- **Phase two** then searches using only the moves that preserve that state, until the cube is solved.
+## Phase One
+
+Searches with all $18$ moves until edge orientation, corner orientation and LR-slice edge membership are simultaneously satisfied (analogous to Thistlewaite's G0+G1 combined into a single goal). As documented by Kociemba, at most $12$ moves are required.
+
+Its pruning table is too large to store as a single dense array (a fully joint corner-orientation/edge-orientation/LR-slice table would need ~2.2 billion entries), so it's split into two coordinate tables, taking the maximum of both as the IDA\* heuristic:
+
+- **`corner`:** corner orientation ($3^7 = 2{,}187$) combined with LR-slice edge combination ($\binom{12}{4} = 495$), for $2{,}187 \times 495 = 1{,}082{,}565$ entries.
+- **`edge`:** edge orientation ($2^{11} = 2{,}048$) combined with the same LR-slice edge combination ($495$), for $2{,}048 \times 495 = 1{,}013{,}760$ entries.
+
+## Phase Two
+
+Searches using only the moves that preserve phase one's target state, until the cube is solved. As documented by Kociemba, at most $18$ moves are required.
 
 Note that this codebase defines piece orientation relative to the L/R axis (`Cube::rotate_left`/`rotate_right` never touch orientation; `rotate_up`/`rotate_down` disturb both corner and edge orientation), the opposite of the textbook Kociemba convention (which assumes U/D quarter turns preserve orientation). Phase two's move set here is therefore `<L, R, F2, B2, U2, D2>`, not the textbook `<U, D, L2, R2, F2, B2>` - and the tracked "slice" is the same LR-slice edges (piece ids 8-11) Thistlewaite's own G1 already tracks, not a U/D-relative E-slice.
 
-Both phases reuse the same [indexing primitives](#indexing) as the Thistlewaite groups (orientation index, Lehmer permutation index, combination index), duplicated locally per module rather than shared, matching this repo's existing per-group convention. Each phase's pruning table is too large to store as a single dense array (phase one's three coordinates alone would need ~2.2 billion entries), so each phase instead uses multiple independently-generated coordinate tables with the IDA* heuristic taken as their max - the same technique real two-phase implementations use for phase one.
+Its pruning table is likewise too large for a single dense array, and is split into three coordinate tables, again taking their max:
 
-Phase two's `corner` and `edge` coordinates (corner permutation and edge permutation, each paired with LR-slice edge permutation) are only weakly correlated on their own, so a third, genuinely joint `corner_edge_sym` coordinate is added - kept small enough to store by symmetry-reducing it over the whole-cube symmetries that fix the L-R axis. It doesn't make `corner`/`edge` redundant, though: it never sees LR-slice-edge permutation at all, so `corner`/`edge` remain the only signal for states where that's the dominant remaining work (measured empirically: each independently exceeds `corner_edge_sym` in ~38% of sampled reachable states, by up to 8-9 moves).
+- **`corner`:** corner permutation ($8! = 40{,}320$) combined with LR-slice edge permutation ($4! = 24$), for $40{,}320 \times 24 = 967{,}680$ entries.
+- **`edge`:** non-LR-slice edge permutation ($8! = 40{,}320$) combined with LR-slice edge permutation ($24$), for $40{,}320 \times 24 = 967{,}680$ entries.
+- **`corner_edge_sym`:** a genuinely joint corner-permutation/non-LR-slice-edge-permutation coordinate, made tractable by symmetry-reducing corner permutation over the $16$ whole-cube symmetries that fix the L-R axis ($40{,}320$ raw permutations collapse to $2{,}768$ classes) before combining with edge permutation, for $2{,}768 \times 40{,}320 = 111{,}605{,}760$ entries.
+
+`corner`/`edge` and `corner_edge_sym` are only weakly correlated on their own: `corner_edge_sym` never sees LR-slice-edge permutation at all, so `corner`/`edge` remain the only signal for states where that's the dominant remaining work (measured empirically: each independently exceeds `corner_edge_sym` in ~38% of sampled reachable states, by up to 8-9 moves).
+
+## Symmetry Reduction
+
+Both phases reuse the same [indexing primitives](#indexing) as the Thistlewaite groups (orientation index, Lehmer permutation index, combination index), duplicated locally per module rather than shared, matching this repo's existing per-group convention.
+
+`corner_edge_sym` adds one more primitive on top: canonicalising the (much smaller) corner-permutation coordinate against the $16$ symmetries tells us both its symmetry class and which symmetry to also apply to the edge-permutation coordinate - avoiding a $16$-way search at lookup time.
 
 **Known limitation:** `thwaite` doesn't implement multi-candidate phase-one search (used by production two-phase implementations to keep phase two fast) or symmetry reduction for phase one's coordinates. Phase two's search time still varies depending on the scramble and which phase-one solution happened to be found first - empirically sub-second (see [Performance](#performance)), though no adversarial worst case has been established.
 
