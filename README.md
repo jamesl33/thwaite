@@ -24,7 +24,7 @@ Solution: [BP, R2, U, L2, FP, U2, RP, D2, B, R2, F, L, F, LP, F2, L, B2, R, F2, 
 
 `thwaite` is built to be performant:
 
-- Pre-computed lookup tables (embedded, snappy compressed data; see [Generation](#generation) for how they're built)
+- Pre-computed lookup tables (embedded, zstd compressed data; see [Generation](#generation) for how they're built)
 - Pre-computed factorials/combinations
 - Solves via iterative deepening A\* (IDA\*) - a depth-first, heuristic-guided search, appropriate here since it's goal-directed rather than exhaustive (see [IDA\*](#ida-iterative-deepening-a))
 
