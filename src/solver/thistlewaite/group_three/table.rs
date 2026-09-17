@@ -97,7 +97,7 @@ fn idx(cube: &Cube) -> usize {
     let cr = cperms[0];
 
     // Corner index
-    let cidx = ptoidx(&c) * 4 + (cr & 3);
+    let cidx = ptoidx(&c) * 4 + (cr & 3) as usize;
 
     // The combined E-C index
     eidx * 96 + cidx
@@ -106,7 +106,7 @@ fn idx(cube: &Cube) -> usize {
 /// Returns the index as determined by the combination of the pieces positions.
 ///
 /// https://github.com/itaysadeh/rubiks-cube-solver/blob/b80fd03698055bd630067358c6175a240ecd64b1/Util/indexer.h#L95-L120.
-fn ctoidx<const N: usize, const K: usize>(perms: &[usize; K]) -> usize {
+fn ctoidx<const N: usize, const K: usize>(perms: &[u8; K]) -> usize {
     let mut lehmer = *perms;
 
     for i in 1..K {
@@ -120,7 +120,7 @@ fn ctoidx<const N: usize, const K: usize>(perms: &[usize; K]) -> usize {
     let mut idx = 0;
 
     for i in 0..K {
-        idx += lehmer[i] * comb(N - 1 - i, K - 1 - i);
+        idx += lehmer[i] as usize * comb(N - 1 - i, K - 1 - i);
     }
 
     idx
@@ -142,7 +142,7 @@ fn comb(n: usize, k: usize) -> usize {
 /// Returns the index for the given piece permutations.
 ///
 /// https://github.com/itaysadeh/rubiks-cube-solver/blob/b80fd03698055bd630067358c6175a240ecd64b1/Util/indexer.h#L52-L77.
-fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
+fn ptoidx<const N: usize>(perms: &[u8; N]) -> usize {
     let mut lehmer = *perms;
 
     for i in 1..N {
@@ -159,7 +159,7 @@ fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
     let mut j = N - 1;
 
     while i < N && j > 0 {
-        idx += lehmer[i] * factorial(j);
+        idx += lehmer[i] as usize * factorial(j);
 
         i += 1;
 

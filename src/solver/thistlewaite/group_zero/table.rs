@@ -52,11 +52,11 @@ fn g0() -> Table {
 /// Returns the index within the pruning table for the given edge orientations by treating them as a binary number.
 ///
 /// NOTE: We may ignore the last edge state, as it's implied.
-fn idx(eorien: &[usize; NUM_EDGES]) -> usize {
+fn idx(eorien: &[u8; NUM_EDGES]) -> usize {
     let mut dec = 0;
 
     for i in 0..NUM_EDGES - 1 {
-        dec += eorien[i] * usize::pow(2, 10 - i as u32)
+        dec += eorien[i] as usize * usize::pow(2, 10 - i as u32)
     }
 
     debug_assert!(dec < SIZE);

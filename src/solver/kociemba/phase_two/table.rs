@@ -42,7 +42,7 @@ static CORNER_SYM: LazyLock<Vec<(usize, u8)>> = LazyLock::new(|| {
             continue;
         }
 
-        let perm: [usize; NUM_CORNERS] = idxtoperm(raw);
+        let perm: [u8; NUM_CORNERS] = idxtoperm(raw);
 
         let orbit: Vec<usize> = SYMMETRIES
             .iter()
@@ -56,7 +56,7 @@ static CORNER_SYM: LazyLock<Vec<(usize, u8)>> = LazyLock::new(|| {
                 continue;
             }
 
-            let member_perm: [usize; NUM_CORNERS] = idxtoperm(member);
+            let member_perm: [u8; NUM_CORNERS] = idxtoperm(member);
 
             let sym_idx = SYMMETRIES
                 .iter()
@@ -174,9 +174,9 @@ fn generate_corner_edge_sym() -> Vec<u8> {
             let class = idx / NONSLICE_EDGE_PERM_STATES;
             let edge_rank = idx % NONSLICE_EDGE_PERM_STATES;
 
-            let cperms: [usize; NUM_CORNERS] = idxtoperm(REP_CORNER[class]);
-            let nonslice: [usize; 8] = idxtoperm(edge_rank);
-            let eperms: [usize; NUM_EDGES] = std::array::from_fn(|i| if i < 8 { nonslice[i] } else { i });
+            let cperms: [u8; NUM_CORNERS] = idxtoperm(REP_CORNER[class]);
+            let nonslice: [u8; 8] = idxtoperm(edge_rank);
+            let eperms: [u8; NUM_EDGES] = std::array::from_fn(|i| if i < 8 { nonslice[i] } else { i as u8 });
 
             let cube = Cube::from_perms(cperms, eperms);
 
@@ -226,13 +226,13 @@ fn edge_idx(cube: &Cube) -> usize {
 
 /// Extracts the four LR-slice edges (piece ids 8-11, guaranteed by phase one to occupy slots 8-11) and
 /// relabels them to rank 0-3, for use with `ptoidx`.
-fn slice_edges(perms: &[usize; NUM_EDGES]) -> [usize; 4] {
+fn slice_edges(perms: &[u8; NUM_EDGES]) -> [u8; 4] {
     std::array::from_fn(|i| perms[8 + i] - 8)
 }
 
 /// Extracts the eight non LR-slice edges (slots 0-7, already ranked 0-7 since piece ids 0-7 are contiguous),
 /// for use with `ptoidx`.
-fn nonslice_edges(perms: &[usize; NUM_EDGES]) -> [usize; 8] {
+fn nonslice_edges(perms: &[u8; NUM_EDGES]) -> [u8; 8] {
     std::array::from_fn(|i| perms[i])
 }
 
@@ -246,7 +246,7 @@ mod tests {
     /// Returns the corner/edge slot permutation induced by applying `m` to the solved cube; since moves act by a
     /// fixed permutation regardless of the current state, applying `m` from solved recovers that permutation
     /// directly (see `cube::cube::permute`'s "old[idx]/new[idx]" convention).
-    fn move_perms(m: Rotation) -> ([usize; NUM_CORNERS], [usize; NUM_EDGES]) {
+    fn move_perms(m: Rotation) -> ([u8; NUM_CORNERS], [u8; NUM_EDGES]) {
         let mut cube = Cube::new();
         cube.rotate(m);
         (*cube.corner_permutations(), *cube.edge_permutations())
@@ -260,13 +260,13 @@ mod tests {
     fn symmetries_commute_with_phase_two_moves() {
         // A handful of arbitrary corner/edge permutations - the property is a pure group-theoretic identity, so
         // it must hold for every permutation, not just cube-reachable ones.
-        let sample_corners: [[usize; NUM_CORNERS]; 4] = [
+        let sample_corners: [[u8; NUM_CORNERS]; 4] = [
             idxtoperm(0),
             idxtoperm(12345),
             idxtoperm(30000),
             idxtoperm(CORNER_PERM_STATES - 1),
         ];
-        let sample_edges: [[usize; NUM_EDGES]; 4] = [
+        let sample_edges: [[u8; NUM_EDGES]; 4] = [
             idxtoperm(0),
             idxtoperm(1_234_567),
             idxtoperm(20_000_000),

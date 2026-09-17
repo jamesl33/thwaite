@@ -2,7 +2,7 @@
 /// `N!` orderings.
 ///
 /// https://www.jaapsch.net/puzzles/compindx.htm#perm
-pub fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
+pub fn ptoidx<const N: usize>(perms: &[u8; N]) -> usize {
     let mut t = 0;
 
     for i in 0..N - 1 {
@@ -20,7 +20,7 @@ pub fn ptoidx<const N: usize>(perms: &[usize; N]) -> usize {
 
 /// Returns the permutation of length `N`, ranked at Lehmer-code index `idx` amongst all `N!` orderings; the
 /// inverse of `ptoidx`.
-pub fn idxtoperm<const N: usize>(mut idx: usize) -> [usize; N] {
+pub fn idxtoperm<const N: usize>(mut idx: usize) -> [u8; N] {
     let mut digits = [0usize; N];
 
     for i in (0..N - 1).rev() {
@@ -30,21 +30,21 @@ pub fn idxtoperm<const N: usize>(mut idx: usize) -> [usize; N] {
     }
 
     let mut remaining: Vec<usize> = (0..N).collect();
-    let mut perm = [0usize; N];
+    let mut perm = [0u8; N];
 
     for (i, d) in digits.iter().enumerate() {
-        perm[i] = remaining.remove(*d);
+        perm[i] = remaining.remove(*d) as u8;
     }
 
     perm
 }
 
 /// Returns the inverse of the given permutation, i.e. the permutation `inv` such that `inv[perm[i]] == i`.
-pub fn invert<const N: usize>(perm: &[usize; N]) -> [usize; N] {
-    let mut inv = [0usize; N];
+pub fn invert<const N: usize>(perm: &[u8; N]) -> [u8; N] {
+    let mut inv = [0u8; N];
 
     for (i, p) in perm.iter().enumerate() {
-        inv[*p] = i;
+        inv[*p as usize] = i as u8;
     }
 
     inv

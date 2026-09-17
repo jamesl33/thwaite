@@ -103,7 +103,7 @@ fn initial() -> Vec<Cube> {
 }
 
 /// Returns a boolean indicating whether the provided corners are in orbit.
-fn cino(cperms: &[usize; NUM_CORNERS]) -> bool {
+fn cino(cperms: &[u8; NUM_CORNERS]) -> bool {
     for i in 0..4 {
         if cperms[i] > 3 {
             return false;
@@ -116,7 +116,7 @@ fn cino(cperms: &[usize; NUM_CORNERS]) -> bool {
 /// Returns the index in the pruning table for the given edge permutation combinations.
 ///
 /// https://www.jaapsch.net/puzzles/compindx.htm#comb
-fn pctoidx<const N: usize>(perms: &[usize; N]) -> usize {
+fn pctoidx<const N: usize>(perms: &[u8; N]) -> usize {
     let mut t = 0;
     let mut r = 4;
 

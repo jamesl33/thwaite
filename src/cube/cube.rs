@@ -14,16 +14,16 @@ pub const NUM_EDGES: usize = 12;
 #[derive(Debug, Clone, Copy)]
 pub struct Cube {
     /// Corner permutations.
-    cperms: [usize; NUM_CORNERS],
+    cperms: [u8; NUM_CORNERS],
 
     /// Corner orientations.
-    corien: [usize; NUM_CORNERS],
+    corien: [u8; NUM_CORNERS],
 
     /// Edge permutations.
-    eperms: [usize; NUM_EDGES],
+    eperms: [u8; NUM_EDGES],
 
     /// Edge orientations.
-    eorien: [usize; NUM_EDGES],
+    eorien: [u8; NUM_EDGES],
 
     // The last move applied to the cube.
     last: Option<Rotation>,
@@ -33,9 +33,9 @@ impl Cube {
     /// Returns a cube, in the solved state.
     pub fn new() -> Cube {
         Cube {
-            cperms: core::array::from_fn(|i| i),
+            cperms: core::array::from_fn(|i| i as u8),
             corien: [0; NUM_CORNERS],
-            eperms: core::array::from_fn(|i| i),
+            eperms: core::array::from_fn(|i| i as u8),
             eorien: [0; NUM_EDGES],
             last: None,
         }
@@ -45,7 +45,7 @@ impl Cube {
     /// recorded. Used to reconstruct a synthetic cube from a pruning-table coordinate for further move
     /// application, where only a move's permutation action matters - see
     /// `solver::kociemba::phase_two::table`'s dedicated BFS.
-    pub(crate) fn from_perms(cperms: [usize; NUM_CORNERS], eperms: [usize; NUM_EDGES]) -> Cube {
+    pub(crate) fn from_perms(cperms: [u8; NUM_CORNERS], eperms: [u8; NUM_EDGES]) -> Cube {
         Cube {
             cperms,
             corien: [0; NUM_CORNERS],
@@ -56,31 +56,31 @@ impl Cube {
     }
 
     /// Returns the cube corner permutations.
-    pub fn corner_permutations(&self) -> &[usize; NUM_CORNERS] {
+    pub fn corner_permutations(&self) -> &[u8; NUM_CORNERS] {
         &self.cperms
     }
 
     /// Returns the cube corner orientations.
-    pub fn corner_orientations(&self) -> &[usize; NUM_CORNERS] {
+    pub fn corner_orientations(&self) -> &[u8; NUM_CORNERS] {
         &self.corien
     }
 
     /// Returns the cube edge permutations.
-    pub fn edge_permutations(&self) -> &[usize; NUM_EDGES] {
+    pub fn edge_permutations(&self) -> &[u8; NUM_EDGES] {
         &self.eperms
     }
 
     /// Returns the cube edge orientations.
-    pub fn edge_orientations(&self) -> &[usize; NUM_EDGES] {
+    pub fn edge_orientations(&self) -> &[u8; NUM_EDGES] {
         &self.eorien
     }
 
     /// Returns a boolean indicating whether the cube is in the solved state.
     pub fn solved(&self) -> bool {
         let eo = self.eorien == [0; NUM_EDGES];
-        let ep = self.eperms == core::array::from_fn(|i| i);
+        let ep = self.eperms == core::array::from_fn(|i| i as u8);
         let co = self.corien == [0; NUM_CORNERS];
-        let cp = self.cperms == core::array::from_fn(|i| i);
+        let cp = self.cperms == core::array::from_fn(|i| i as u8);
 
         eo && ep && co && cp
     }
@@ -189,10 +189,10 @@ impl Cube {
     /// precomputed tables it passes here.
     fn apply(
         &mut self,
-        pc: [usize; NUM_CORNERS],
-        oc: Option<[isize; NUM_CORNERS]>,
-        pe: [usize; NUM_EDGES],
-        oe: Option<[isize; NUM_EDGES]>,
+        pc: [u8; NUM_CORNERS],
+        oc: Option<[i8; NUM_CORNERS]>,
+        pe: [u8; NUM_EDGES],
+        oe: Option<[i8; NUM_EDGES]>,
     ) {
         self.cperms = permute(self.cperms, pc);
 
@@ -260,7 +260,7 @@ fn edges_from_cs(cube: &mut Cube, cs: &Vec<Vec<Color>>) {
         let id = ea.id();
 
         // Populate the permutation (i.e. edge ea is in the position ed)
-        cube.eperms[idx] = id;
+        cube.eperms[idx] = id as u8;
 
         // Grab the solved color for this face; it doesn't matter which, providing the following code using the same
         let want = ea.a.face.color();
@@ -302,7 +302,7 @@ fn corners_from_cs(cube: &mut Cube, cs: &Vec<Vec<Color>>) {
         let ca_id = ca.id();
 
         // Populate the permutation (i.e. corner ca is in the position cd)
-        cube.cperms[idx] = ca_id;
+        cube.cperms[idx] = ca_id as u8;
 
         // Get the faces in the x, y, z order
         let axis = cd.axis();
@@ -385,29 +385,33 @@ where
 }
 
 /// Permutes the given pieces using the provided rotation definition.
-pub(crate) fn permute<const N: usize>(src: [usize; N], rot: [usize; N]) -> [usize; N] {
-    let mut cop: [usize; N] = src;
+pub(crate) fn permute<const N: usize>(src: [u8; N], rot: [u8; N]) -> [u8; N] {
+    let mut cop: [u8; N] = src;
 
     for (i, v) in rot.iter().enumerate() {
-        cop[i] = src[*v];
+        cop[i] = src[*v as usize];
     }
 
     // The summation of the pieces should not have changed, they should have just been permuted
-    debug_assert_eq!(cop.iter().sum::<usize>(), (0..N).sum::<usize>());
+    debug_assert_eq!(
+        cop.iter().map(|&x| x as usize).sum::<usize>(),
+        (0..N).sum::<usize>()
+    );
 
     cop
 }
 
 /// Orients the given pieces using the provided rotation definition.
-fn orient<const N: usize>(orien: [usize; N], perms: [usize; N], rot: [isize; N], rem: usize) -> [usize; N] {
-    let mut cop: [usize; N] = orien;
+fn orient<const N: usize>(orien: [u8; N], perms: [u8; N], rot: [i8; N], rem: usize) -> [u8; N] {
+    let mut cop: [u8; N] = orien;
 
     for (i, v) in rot.iter().enumerate() {
-        cop[perms[i]] = (cop[perms[i]] as isize + *v).rem_euclid(rem as isize) as usize;
+        let idx = perms[i] as usize;
+        cop[idx] = (cop[idx] as isize + *v as isize).rem_euclid(rem as isize) as u8;
     }
 
     // The remainder of the summation of piece orientations should equal zero
-    debug_assert_eq!(cop.iter().sum::<usize>().rem_euclid(rem), 0);
+    debug_assert_eq!(cop.iter().map(|&x| x as usize).sum::<usize>().rem_euclid(rem), 0);
 
     cop
 }

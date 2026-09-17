@@ -5,16 +5,16 @@ use crate::cube::{NUM_CORNERS, NUM_EDGES};
 use crate::solver::maths::invert;
 
 /// A 90 degree rotation of the whole cube about the L-R axis (U -> F -> D -> B -> U), fixing L and R as faces.
-const ROT_CORNERS: [usize; NUM_CORNERS] = [5, 4, 6, 7, 0, 1, 3, 2];
-const ROT_EDGES: [usize; NUM_EDGES] = [4, 5, 7, 6, 1, 0, 2, 3, 11, 8, 9, 10];
+const ROT_CORNERS: [u8; NUM_CORNERS] = [5, 4, 6, 7, 0, 1, 3, 2];
+const ROT_EDGES: [u8; NUM_EDGES] = [4, 5, 7, 6, 1, 0, 2, 3, 11, 8, 9, 10];
 
 /// A 180 degree rotation of the whole cube about the F-B axis, swapping U<->D and L<->R.
-const FLIP_CORNERS: [usize; NUM_CORNERS] = [2, 3, 0, 1, 6, 7, 4, 5];
-const FLIP_EDGES: [usize; NUM_EDGES] = [3, 2, 1, 0, 7, 6, 5, 4, 9, 8, 11, 10];
+const FLIP_CORNERS: [u8; NUM_CORNERS] = [2, 3, 0, 1, 6, 7, 4, 5];
+const FLIP_EDGES: [u8; NUM_EDGES] = [3, 2, 1, 0, 7, 6, 5, 4, 9, 8, 11, 10];
 
 /// The central inversion of the whole cube (an improper symmetry), swapping U<->D, F<->B and L<->R.
-const MIRROR_CORNERS: [usize; NUM_CORNERS] = [6, 7, 4, 5, 2, 3, 0, 1];
-const MIRROR_EDGES: [usize; NUM_EDGES] = [3, 2, 1, 0, 6, 7, 4, 5, 10, 11, 8, 9];
+const MIRROR_CORNERS: [u8; NUM_CORNERS] = [6, 7, 4, 5, 2, 3, 0, 1];
+const MIRROR_EDGES: [u8; NUM_EDGES] = [3, 2, 1, 0, 6, 7, 4, 5, 10, 11, 8, 9];
 
 /// The 16 whole-cube symmetries that fix the L-R axis (as a line, not necessarily pointwise). This is the axis
 /// phase two's move group `<L, R, F2, B2, U2, D2>` is built around (see `solver::kociemba::phase`'s doc comment on
@@ -28,8 +28,8 @@ pub static SYMMETRIES: LazyLock<[Symmetry; 16]> = LazyLock::new(build_symmetries
 /// A whole-cube symmetry, expressed as the corner and edge slot permutations it induces.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Symmetry {
-    corners: [usize; NUM_CORNERS],
-    edges: [usize; NUM_EDGES],
+    corners: [u8; NUM_CORNERS],
+    edges: [u8; NUM_EDGES],
 }
 
 impl Symmetry {
@@ -55,15 +55,15 @@ impl Symmetry {
     }
 
     /// Returns the given corner permutation, conjugated by this symmetry.
-    pub fn conjugate_corners(&self, cperms: &[usize; NUM_CORNERS]) -> [usize; NUM_CORNERS] {
+    pub fn conjugate_corners(&self, cperms: &[u8; NUM_CORNERS]) -> [u8; NUM_CORNERS] {
         let tmp = permute(*cperms, self.inverse().corners);
-        std::array::from_fn(|i| self.corners[tmp[i]])
+        std::array::from_fn(|i| self.corners[tmp[i] as usize])
     }
 
     /// Returns the given edge permutation, conjugated by this symmetry.
-    pub fn conjugate_edges(&self, eperms: &[usize; NUM_EDGES]) -> [usize; NUM_EDGES] {
+    pub fn conjugate_edges(&self, eperms: &[u8; NUM_EDGES]) -> [u8; NUM_EDGES] {
         let tmp = permute(*eperms, self.inverse().edges);
-        std::array::from_fn(|i| self.edges[tmp[i]])
+        std::array::from_fn(|i| self.edges[tmp[i] as usize])
     }
 }
 
@@ -149,7 +149,7 @@ mod tests {
         // Every symmetry must map the 8 non LR-slice edge slots (0-7) amongst themselves, and the 4 LR-slice
         // edge slots (8-11) amongst themselves - phase two's combined pruning table relies on this.
         for sym in SYMMETRIES.iter() {
-            let conjugated = sym.conjugate_edges(&std::array::from_fn(|i| i));
+            let conjugated = sym.conjugate_edges(&std::array::from_fn(|i| i as u8));
 
             for (slot, &piece) in conjugated.iter().enumerate() {
                 assert_eq!(slot >= 8, piece >= 8, "symmetry moved slice-ness of slot {}", slot);

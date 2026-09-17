@@ -114,28 +114,28 @@ fn edge_idx(cube: &Cube) -> usize {
 /// bucket's post-move results gives zero mismatches, where the same test on the raw piece-indexed vector
 /// mismatches on the large majority of buckets - i.e. the piece-indexed table this code shipped with was
 /// silently non-admissible).
-fn slot_corner_orientations(cube: &Cube) -> [usize; NUM_CORNERS] {
+fn slot_corner_orientations(cube: &Cube) -> [u8; NUM_CORNERS] {
     let orien = cube.corner_orientations();
     let perms = cube.corner_permutations();
-    std::array::from_fn(|i| orien[perms[i]])
+    std::array::from_fn(|i| orien[perms[i] as usize])
 }
 
 /// Returns edge orientation re-indexed by slot rather than piece id; see `slot_corner_orientations`, whose
 /// reasoning applies identically here.
-fn slot_edge_orientations(cube: &Cube) -> [usize; NUM_EDGES] {
+fn slot_edge_orientations(cube: &Cube) -> [u8; NUM_EDGES] {
     let orien = cube.edge_orientations();
     let perms = cube.edge_permutations();
-    std::array::from_fn(|i| orien[perms[i]])
+    std::array::from_fn(|i| orien[perms[i] as usize])
 }
 
 /// Returns the index for the given corner orientations, treating them as a base three number.
 ///
 /// https://www.jaapsch.net/puzzles/compindx.htm#orient
-fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
+fn otoidx<const N: usize>(orien: &[u8; N]) -> usize {
     let mut idx: usize = 0;
 
     for i in 0..N - 1 {
-        idx = idx * CORNER_ORIENTATIONS + orien[i]
+        idx = idx * CORNER_ORIENTATIONS + orien[i] as usize
     }
 
     debug_assert!(idx < CORNER_ORIENTATION_STATES);
@@ -146,11 +146,11 @@ fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
 /// Returns the index for the given edge orientations, treating them as a base two number.
 ///
 /// https://www.jaapsch.net/puzzles/compindx.htm#orient
-fn eotoidx(orien: &[usize; NUM_EDGES]) -> usize {
+fn eotoidx(orien: &[u8; NUM_EDGES]) -> usize {
     let mut idx: usize = 0;
 
     for i in 0..NUM_EDGES - 1 {
-        idx = idx * EDGE_ORIENTATIONS + orien[i]
+        idx = idx * EDGE_ORIENTATIONS + orien[i] as usize
     }
 
     debug_assert!(idx < EDGE_ORIENTATION_STATES);
@@ -163,7 +163,7 @@ fn eotoidx(orien: &[usize; NUM_EDGES]) -> usize {
 /// the textbook Kociemba U/D axis; see `phase::PHASE_TWO_VALID_MOVES`), calculated by treating their occupied
 /// slots as a binary number (ignoring the last slot) then converting that into a number between 0-495 using a
 /// lookup table.
-fn lrslice_ctoidx(perms: &[usize; NUM_EDGES]) -> usize {
+fn lrslice_ctoidx(perms: &[u8; NUM_EDGES]) -> usize {
     let mut dec = 0;
 
     for i in 0..NUM_EDGES - 1 {
@@ -194,7 +194,7 @@ mod tests {
     /// too), which silently made the pruning table non-admissible.
     #[test]
     fn slot_indexed_orientation_is_closed_under_moves() {
-        let mut buckets: std::collections::HashMap<([usize; NUM_CORNERS], [usize; NUM_EDGES]), Vec<Cube>> =
+        let mut buckets: std::collections::HashMap<([u8; NUM_CORNERS], [u8; NUM_EDGES]), Vec<Cube>> =
             std::collections::HashMap::new();
 
         let mut cube = Cube::new();

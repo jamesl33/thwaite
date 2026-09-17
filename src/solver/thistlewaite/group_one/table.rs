@@ -107,11 +107,11 @@ fn idx(cube: &Cube) -> usize {
 /// Returns the index within the pruning table for the given corner orientations.
 ///
 /// https://www.jaapsch.net/puzzles/compindx.htm#orient
-fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
+fn otoidx<const N: usize>(orien: &[u8; N]) -> usize {
     let mut idx: usize = 0;
 
     for i in 0..N - 1 {
-        idx = idx * 3 + orien[i]
+        idx = idx * 3 + orien[i] as usize
     }
 
     debug_assert!(idx < M_SIZE);
@@ -121,7 +121,7 @@ fn otoidx<const N: usize>(orien: &[usize; N]) -> usize {
 
 /// Returns the index within the pruning table for the LR slice edges, calculated by treating the permutations as a
 /// binary number (ignoring the last edge) then converting that into a number between 0-495 using a lookup table.
-fn ptoidx(perms: &[usize; NUM_EDGES]) -> usize {
+fn ptoidx(perms: &[u8; NUM_EDGES]) -> usize {
     let mut dec = 0;
 
     for i in 0..NUM_EDGES - 1 {
