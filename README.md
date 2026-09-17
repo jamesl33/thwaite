@@ -9,6 +9,9 @@ In its current state, when built and run, `thwaite` supports two use-cases:
 1. Generating a random cube, then solving it
 2. Solving a provided cube
 
+`--algorithm` selects the solving algorithm (`thistlewaite` or `kociemba`), defaulting to
+`thistlewaite`.
+
 ```
 $ cargo run --release
 Scramble: [BP, RP, RP, R2, D, U2, B, U, F2, F, B, U2, D, D, RP, F2, D, D, D, FP]
@@ -20,6 +23,12 @@ $ cargo run --release 'OOWYYBBWOBYGRROGGRROWGBBOYWGROYWRGRYYGWBOWYOYRGBBGWBWR'
 Solution: [BP, R2, U, L2, FP, U2, RP, D2, B, R2, F, L, F, LP, F2, L, B2, R, F2, R, F2, L, F2, D2, R2, B2, L2, U2, F2, L2, U2, F2, L2, U2]
 ```
 
+```
+$ cargo run --release -- --algorithm kociemba
+Scramble: [R, U, F, D2, RP, FP, LP, DP, RP, UP, LP, D2, B2, D2, BP, D, BP, R, F, D2]
+Solution: [F, L2, BP, LP, D, BP, R2, DP, RP, F2, U, L, B2, U2, RP, D2, R, B2, LP, F2, R, U2, LP, D2, B2, L]
+```
+
 # Performance
 
 `thwaite` is built to be performant:
@@ -28,18 +37,26 @@ Solution: [BP, R2, U, L2, FP, U2, RP, D2, B, R2, F, L, F, LP, F2, L, B2, R, F2, 
 - Pre-computed factorials/combinations
 - Solves via iterative deepening A\* (IDA\*) - a depth-first, heuristic-guided search, appropriate here since it's goal-directed rather than exhaustive (see [IDA\*](#ida-iterative-deepening-a))
 
-I've not run into many cube states which take longer than $250ms$ to solve; I've not generated the deepest possible tables though, so that may be a low-hanging fruit improvement.
+I've not run into many cube states which take longer than $250ms$ to solve with `ThistlewaiteSolver`; I've not generated the deepest possible tables though, so that may be a low-hanging fruit improvement.
 
-The `cargo bench` suite ([`benches/thistlewaite.rs`](./benches/thistlewaite.rs)) measures `ThistlewaiteSolver::solve` in isolation (table load included, process start-up excluded); once against a fixed (seeded) scramble for run-to-run comparability, and once against a fresh scramble per sample to capture variance across cube states:
+The `cargo bench` suite ([`benches/thistlewaite.rs`](./benches/thistlewaite.rs), [`benches/kociemba.rs`](./benches/kociemba.rs)) measures each solver's `solve` in isolation (table load included, process start-up excluded); once against a fixed (seeded) scramble for run-to-run comparability, and once against a fresh scramble per sample to capture variance across cube states:
 
 ```
 $ cargo bench
 thistlewaite solve (seeded)
-                        time:   [27.516 ms 27.966 ms 28.462 ms]
+                        time:   [30.808 ms 31.425 ms 32.050 ms]
 thistlewaite solve (random)
-                        time:   [18.817 ms 21.733 ms 24.953 ms]
+                        time:   [16.097 ms 18.580 ms 21.282 ms]
+kociemba solve (seeded)
+                        time:   [124.31 µs 127.48 µs 130.67 µs]
+kociemba solve (random)
+                        time:   [2.5362 ms 2.6709 ms 2.8072 ms]
 ```
 
+Kociemba is typically an order of magnitude (or more) faster than Thistlewaite, but with wider
+variance: phase one only returns the first solution IDA* finds rather than retrying candidates
+chosen to make phase two easy (see [Kociemba](#kociemba)). Across 200,000 random 20-move scrambles,
+worst case was still under a second (~630ms) - but no adversarial worst case has been established.
 
 # Cube Representation
 
@@ -225,9 +242,9 @@ Each group then combines the indices of the piece-state it fixes into a single f
 - **G2:** A permutation index over all corner permutations ($8! = 40{,}320$) combined with a combination index over the edge distribution across the $8$ non-E-slice positions ($\binom{8}{4} = 70$), for $40{,}320 \times 70 = 2{,}822{,}400$ entries.
 - **G3:** Permutation/combination indices over the M-slice, S-slice and E-slice edges and the corner tetrad are ranked separately (via Lehmer codes) then folded together into a single fixed-size ($663{,}552$ entry) index; see [`group_three/table.rs`](src/solver/thistlewaite/group_three/table.rs) for the exact mixed-radix layout, which is adapted from [`itaysadeh/rubiks-cube-solver`](https://github.com/itaysadeh/rubiks-cube-solver).
 
-# Kociemba (Experimental)
+# Kociemba
 
-`thwaite` also includes an MVP [`KociembaSolver`](src/solver/kociemba/solver.rs) implementing [Kociemba's two-phase algorithm](https://kociemba.org/cube.htm). It is **not** wired into the CLI or used by default - it exists as a separate code path, exercised only by its own tests, alongside the default `ThistlewaiteSolver`.
+`thwaite` also includes [`KociembaSolver`](src/solver/kociemba/solver.rs) implementing [Kociemba's two-phase algorithm](https://kociemba.org/cube.htm), selectable via `--algorithm kociemba` (see [Usage](#usage)); `ThistlewaiteSolver` remains the default.
 
 Kociemba's algorithm reaches a solution in two phases rather than Thistlewaite's four groups:
 
@@ -240,7 +257,7 @@ Both phases reuse the same [indexing primitives](#indexing) as the Thistlewaite 
 
 Phase two's `corner` and `edge` coordinates (corner permutation and edge permutation, each paired with LR-slice edge permutation) are only weakly correlated on their own, so a third, genuinely joint `corner_edge_sym` coordinate is added - kept small enough to store by symmetry-reducing it over the whole-cube symmetries that fix the L-R axis. It doesn't make `corner`/`edge` redundant, though: it never sees LR-slice-edge permutation at all, so `corner`/`edge` remain the only signal for states where that's the dominant remaining work (measured empirically: each independently exceeds `corner_edge_sym` in ~38% of sampled reachable states, by up to 8-9 moves).
 
-**Known limitation:** this MVP does not implement multi-candidate phase-one search (used by production two-phase implementations to keep phase two fast) or symmetry reduction for phase one's coordinates. Phase two's search time still varies - anywhere from milliseconds to tens of seconds - depending on the scramble and which phase-one solution happened to be found first.
+**Known limitation:** `thwaite` doesn't implement multi-candidate phase-one search (used by production two-phase implementations to keep phase two fast) or symmetry reduction for phase one's coordinates. Phase two's search time still varies depending on the scramble and which phase-one solution happened to be found first - empirically sub-second (see [Performance](#performance)), though no adversarial worst case has been established.
 
 # References
 
