@@ -106,12 +106,15 @@ static REP_CORNER: LazyLock<Vec<usize>> = LazyLock::new(|| {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// Depths keyed by corner permutation and LR-slice edge permutation.
+    #[serde(with = "serde_bytes")]
     corner: Vec<u8>,
 
     /// Depths keyed by non LR-slice edge permutation and LR-slice edge permutation.
+    #[serde(with = "serde_bytes")]
     edge: Vec<u8>,
 
     /// Depths keyed by the symmetry-reduced joint corner-permutation/non-LR-slice-edge-permutation coordinate.
+    #[serde(with = "serde_bytes")]
     corner_edge_sym: Vec<u8>,
 }
 

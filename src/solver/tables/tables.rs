@@ -7,8 +7,13 @@ pub fn read<T: Sized>(table: &[u8]) -> T
 where
     T: serde::de::DeserializeOwned,
 {
-    // Inflate the compressed table
-    let encoded = zstd::stream::decode_all(table).unwrap();
+    // Inflate the compressed table. `decode_all` would grow its output `Vec` from empty, causing repeated
+    // reallocation/copying for these multi-hundred-megabyte tables; reserving capacity up front based on the
+    // observed ~4x compression ratio (with headroom) avoids that, since a too-small guess just costs one
+    // reallocation rather than breaking correctness.
+    let mut decoder = zstd::stream::Decoder::new(table).unwrap();
+    let mut encoded = Vec::with_capacity(table.len() * 8);
+    std::io::Read::read_to_end(&mut decoder, &mut encoded).unwrap();
 
     // Decode the encoded table
     bincode::deserialize(&encoded).unwrap()

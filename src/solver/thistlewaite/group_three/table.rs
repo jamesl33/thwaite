@@ -12,6 +12,7 @@ const SIZE: usize = 663552;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// The underlying data, where each index represents a cube state and its depth from the solved state.
+    #[serde(with = "serde_bytes")]
     data: Vec<u8>,
 }
 

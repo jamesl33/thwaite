@@ -26,6 +26,7 @@ const IDX_LOOKUP_TABLE: [usize; IDX_LOOKUP_TABLE_SIZE] = idx_lookup_table();
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// The underlying data, where each index represents a cube state and its depth from the solved state.
+    #[serde(with = "serde_bytes")]
     data: Vec<u8>,
 }
 

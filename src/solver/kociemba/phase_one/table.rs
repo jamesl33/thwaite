@@ -38,9 +38,11 @@ const IDX_LOOKUP_TABLE: [usize; IDX_LOOKUP_TABLE_SIZE] = idx_lookup_table();
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// Depths keyed by corner-orientation and LR-slice edge combination.
+    #[serde(with = "serde_bytes")]
     corner: Vec<u8>,
 
     /// Depths keyed by edge-orientation and LR-slice edge combination.
+    #[serde(with = "serde_bytes")]
     edge: Vec<u8>,
 }
 
