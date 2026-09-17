@@ -17,8 +17,13 @@ where
     loop {
         let (t, path) = dfs(cube, 0, limit, moves, hueristic);
 
-        if path.is_some() {
-            return path;
+        if let Some(mut path) = path {
+            // dfs builds the path in reverse (deepest move first), each level appending rather than prepending
+            // its own move, to keep path reconstruction O(depth) instead of O(depth^2). Restore solution order.
+            return Some({
+                path.reverse();
+                path
+            });
         }
 
         if t == u8::MAX {
@@ -30,7 +35,7 @@ where
 }
 
 /// Perform a depth first search, using the given moves and heuristic returning the minimum cost branch and the moves
-/// that have been made to get there.
+/// that have been made to get there, in reverse order (deepest move first) - see `idas`'s comment on why.
 fn dfs<F>(cube: Cube, g: u8, limit: u8, valid: &[Rotation], hueristic: &F) -> (u8, Option<Vec<Rotation>>)
 where
     F: Fn(&Cube) -> u8,
@@ -60,8 +65,8 @@ where
 
         let (cost, path) = dfs(cube, g + 1, limit, valid, hueristic);
 
-        if let Some(path) = path {
-            return (0, Some([vec![*mv], path].concat()));
+        if let Some(mut path) = path {
+            return (0, Some({ path.push(*mv); path }));
         }
 
         min = cmp::min(min, cost);
