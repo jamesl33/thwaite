@@ -95,29 +95,76 @@ impl Cube {
     }
 
     /// Applies the given rotations to the cube.
-    ///
-    /// TODO (jamesl33): The 180 degree turns can optimized into a single operation.
-    /// TODO (jamesl33): The 90 degree prime turns can optimized into a single operation.
     pub fn rotate(&mut self, m: Rotation) {
         match m {
-            Rotation::F => rotate(self, &mut Self::rotate_front, 1),
-            Rotation::F2 => rotate(self, &mut Self::rotate_front, 2),
-            Rotation::FP => rotate(self, &mut Self::rotate_front, 3),
-            Rotation::B => rotate(self, &mut Self::rotate_back, 1),
-            Rotation::B2 => rotate(self, &mut Self::rotate_back, 2),
-            Rotation::BP => rotate(self, &mut Self::rotate_back, 3),
-            Rotation::L => rotate(self, &mut Self::rotate_left, 1),
-            Rotation::L2 => rotate(self, &mut Self::rotate_left, 2),
-            Rotation::LP => rotate(self, &mut Self::rotate_left, 3),
-            Rotation::R => rotate(self, &mut Self::rotate_right, 1),
-            Rotation::R2 => rotate(self, &mut Self::rotate_right, 2),
-            Rotation::RP => rotate(self, &mut Self::rotate_right, 3),
-            Rotation::U => rotate(self, &mut Self::rotate_up, 1),
-            Rotation::U2 => rotate(self, &mut Self::rotate_up, 2),
-            Rotation::UP => rotate(self, &mut Self::rotate_up, 3),
-            Rotation::D => rotate(self, &mut Self::rotate_down, 1),
-            Rotation::D2 => rotate(self, &mut Self::rotate_down, 2),
-            Rotation::DP => rotate(self, &mut Self::rotate_down, 3),
+            Rotation::F => self.apply(PERMUTE_FRONT_CORNERS, Some(ORIENT_FRONT_CORNERS), PERMUTE_FRONT_EDGES, None),
+            Rotation::F2 => self.apply(
+                PERMUTE_FRONT_CORNERS_180,
+                Some(ORIENT_FRONT_CORNERS_180),
+                PERMUTE_FRONT_EDGES_180,
+                None,
+            ),
+            Rotation::FP => self.apply(
+                PERMUTE_FRONT_CORNERS_270,
+                Some(ORIENT_FRONT_CORNERS_270),
+                PERMUTE_FRONT_EDGES_270,
+                None,
+            ),
+            Rotation::B => self.apply(PERMUTE_BACK_CORNERS, Some(ORIENT_BACK_CORNERS), PERMUTE_BACK_EDGES, None),
+            Rotation::B2 => self.apply(
+                PERMUTE_BACK_CORNERS_180,
+                Some(ORIENT_BACK_CORNERS_180),
+                PERMUTE_BACK_EDGES_180,
+                None,
+            ),
+            Rotation::BP => self.apply(
+                PERMUTE_BACK_CORNERS_270,
+                Some(ORIENT_BACK_CORNERS_270),
+                PERMUTE_BACK_EDGES_270,
+                None,
+            ),
+            Rotation::L => self.apply(PERMUTE_LEFT_CORNERS, None, PERMUTE_LEFT_EDGES, None),
+            Rotation::L2 => self.apply(PERMUTE_LEFT_CORNERS_180, None, PERMUTE_LEFT_EDGES_180, None),
+            Rotation::LP => self.apply(PERMUTE_LEFT_CORNERS_270, None, PERMUTE_LEFT_EDGES_270, None),
+            Rotation::R => self.apply(PERMUTE_RIGHT_CORNERS, None, PERMUTE_RIGHT_EDGES, None),
+            Rotation::R2 => self.apply(PERMUTE_RIGHT_CORNERS_180, None, PERMUTE_RIGHT_EDGES_180, None),
+            Rotation::RP => self.apply(PERMUTE_RIGHT_CORNERS_270, None, PERMUTE_RIGHT_EDGES_270, None),
+            Rotation::U => self.apply(
+                PERMUTE_UP_CORNERS,
+                Some(ORIENT_UP_CORNERS),
+                PERMUTE_UP_EDGES,
+                Some(ORIENT_UP_EDGES),
+            ),
+            Rotation::U2 => self.apply(
+                PERMUTE_UP_CORNERS_180,
+                Some(ORIENT_UP_CORNERS_180),
+                PERMUTE_UP_EDGES_180,
+                Some(ORIENT_UP_EDGES_180),
+            ),
+            Rotation::UP => self.apply(
+                PERMUTE_UP_CORNERS_270,
+                Some(ORIENT_UP_CORNERS_270),
+                PERMUTE_UP_EDGES_270,
+                Some(ORIENT_UP_EDGES_270),
+            ),
+            Rotation::D => self.apply(
+                PERMUTE_DOWN_CORNERS,
+                Some(ORIENT_DOWN_CORNERS),
+                PERMUTE_DOWN_EDGES,
+                Some(ORIENT_DOWN_EDGES),
+            ),
+            Rotation::D2 => self.apply(
+                PERMUTE_DOWN_CORNERS_180,
+                Some(ORIENT_DOWN_CORNERS_180),
+                PERMUTE_DOWN_EDGES_180,
+                Some(ORIENT_DOWN_EDGES_180),
+            ),
+            Rotation::DP => self.apply(
+                PERMUTE_DOWN_CORNERS_270,
+                Some(ORIENT_DOWN_CORNERS_270),
+                PERMUTE_DOWN_EDGES_270,
+                Some(ORIENT_DOWN_EDGES_270),
+            ),
         };
 
         self.last = Some(m);
@@ -137,50 +184,27 @@ impl Cube {
         false
     }
 
-    /// Rotates the front face clockwise by 90 degrees.
-    fn rotate_front(&mut self) {
-        self.cperms = permute(self.cperms, PERMUTE_FRONT_CORNERS);
-        self.corien = orient(self.corien, self.cperms, ORIENT_FRONT_CORNERS, CORNER_ORIENTATIONS);
-        self.eperms = permute(self.eperms, PERMUTE_FRONT_EDGES);
-        // We omit orienting the front edges, as it's a no-op.
-    }
+    /// Applies a single move's corner/edge permutation, and (where the move twists pieces) orientation delta.
+    /// Shared by every `Rotation` arm in `rotate()` - each 90/180/270 degree turn differs only in which
+    /// precomputed tables it passes here.
+    fn apply(
+        &mut self,
+        pc: [usize; NUM_CORNERS],
+        oc: Option<[isize; NUM_CORNERS]>,
+        pe: [usize; NUM_EDGES],
+        oe: Option<[isize; NUM_EDGES]>,
+    ) {
+        self.cperms = permute(self.cperms, pc);
 
-    /// Rotates the back face clockwise by 90 degrees.
-    fn rotate_back(&mut self) {
-        self.cperms = permute(self.cperms, PERMUTE_BACK_CORNERS);
-        self.corien = orient(self.corien, self.cperms, ORIENT_BACK_CORNERS, CORNER_ORIENTATIONS);
-        self.eperms = permute(self.eperms, PERMUTE_BACK_EDGES);
-        // We omit orienting the back edges, as it's a no-op.
-    }
+        if let Some(oc) = oc {
+            self.corien = orient(self.corien, self.cperms, oc, CORNER_ORIENTATIONS);
+        }
 
-    /// Rotates the left face clockwise by 90 degrees.
-    fn rotate_left(&mut self) {
-        self.cperms = permute(self.cperms, PERMUTE_LEFT_CORNERS);
-        self.eperms = permute(self.eperms, PERMUTE_LEFT_EDGES);
-        // No orientation required
-    }
+        self.eperms = permute(self.eperms, pe);
 
-    /// Rotates the right face clockwise by 90 degrees.
-    fn rotate_right(&mut self) {
-        self.cperms = permute(self.cperms, PERMUTE_RIGHT_CORNERS);
-        self.eperms = permute(self.eperms, PERMUTE_RIGHT_EDGES);
-        // No orientation required
-    }
-
-    /// Rotates the up face clockwise by 90 degrees.
-    fn rotate_up(&mut self) {
-        self.cperms = permute(self.cperms, PERMUTE_UP_CORNERS);
-        self.corien = orient(self.corien, self.cperms, ORIENT_UP_CORNERS, CORNER_ORIENTATIONS);
-        self.eperms = permute(self.eperms, PERMUTE_UP_EDGES);
-        self.eorien = orient(self.eorien, self.eperms, ORIENT_UP_EDGES, EDGE_ORIENTATIONS);
-    }
-
-    /// Rotates the down face clockwise by 90 degrees.
-    fn rotate_down(&mut self) {
-        self.cperms = permute(self.cperms, PERMUTE_DOWN_CORNERS);
-        self.corien = orient(self.corien, self.cperms, ORIENT_DOWN_CORNERS, CORNER_ORIENTATIONS);
-        self.eperms = permute(self.eperms, PERMUTE_DOWN_EDGES);
-        self.eorien = orient(self.eorien, self.eperms, ORIENT_DOWN_EDGES, EDGE_ORIENTATIONS);
+        if let Some(oe) = oe {
+            self.eorien = orient(self.eorien, self.eperms, oe, EDGE_ORIENTATIONS);
+        }
     }
 }
 
@@ -357,16 +381,6 @@ where
         }
 
         dfs(cube, moves, depth + 1, limit, func);
-    }
-}
-
-/// Runs the given rotation `n` number of times.
-fn rotate<F>(cube: &mut Cube, func: &mut F, n: usize)
-where
-    F: FnMut(&mut Cube),
-{
-    for _ in 0..n {
-        func(cube)
     }
 }
 
