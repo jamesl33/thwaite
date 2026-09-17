@@ -31,4 +31,7 @@ pub use color::*;
 pub mod orientations;
 pub use orientations::*;
 
+pub mod symmetry;
+pub use symmetry::*;
+
 mod permutations;

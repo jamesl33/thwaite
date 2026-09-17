@@ -357,7 +357,7 @@ where
 }
 
 /// Permutes the given pieces using the provided rotation definition.
-fn permute<const N: usize>(src: [usize; N], rot: [usize; N]) -> [usize; N] {
+pub(crate) fn permute<const N: usize>(src: [usize; N], rot: [usize; N]) -> [usize; N] {
     let mut cop: [usize; N] = src;
 
     for (i, v) in rot.iter().enumerate() {

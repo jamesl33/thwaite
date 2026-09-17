@@ -25,12 +25,13 @@ static P2: LazyLock<phase_two::Table> =
 /// https://kociemba.org/cube.htm
 ///
 /// NOTE: This is an MVP: phase one returns the first IDA* solution found (not one of several candidates chosen
-/// to make phase two easy), and phase two's heuristic is the max of two independently-generated coordinate
-/// tables (corner-permutation and edge-permutation, each paired with the LR-slice edge permutation) rather
-/// than a symmetry-reduced combined table. Because those two coordinates are only weakly correlated, the
-/// heuristic can be far too optimistic for some cube states, making phase two's IDA* search take anywhere from
-/// milliseconds to tens of seconds depending on the scramble. Production two-phase implementations avoid this
-/// via symmetry-reduced tables and/or retrying phase one with multiple candidates; neither is implemented here.
+/// to make phase two easy), so phase two's IDA* search can still take anywhere from milliseconds to tens of
+/// seconds depending on the scramble. Phase two's heuristic is the max of three tables: two independently
+/// generated coordinate tables (corner-permutation and edge-permutation, each paired with the LR-slice edge
+/// permutation - only weakly correlated with each other) plus a genuinely joint corner/edge-permutation
+/// coordinate, made tractable to store by reducing it with `cube::SYMMETRIES` (see
+/// `phase_two::table::CORNER_SYM`). Production two-phase implementations also retry phase one with multiple
+/// candidates to make phase two easier still; that isn't implemented here.
 #[derive(Debug)]
 pub struct KociembaSolver {
     /// The cube being solved.

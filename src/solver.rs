@@ -4,7 +4,7 @@ pub use thistlewaite::*;
 mod group;
 use group::*;
 
-mod maths;
+pub(crate) mod maths;
 use maths::*;
 
 pub mod tables;
