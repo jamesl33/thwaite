@@ -6,7 +6,7 @@ use crate::cube::{Cube, Rotation};
 /// Performs a breadth first search over `moves`, starting from the solved cube, recording the depth of every
 /// distinct coordinate produced by `idx`, up to `size` distinct coordinates. See `bfs_from` for the full
 /// explanation; this is just its single-seed case.
-pub(super) fn bfs<IF, KF, K>(moves: &[Rotation], sentinel: usize, size: usize, idx: IF, key: KF) -> Vec<usize>
+pub(super) fn bfs<IF, KF, K>(moves: &[Rotation], sentinel: u8, size: usize, idx: IF, key: KF) -> Vec<u8>
 where
     K: Eq + Hash,
     IF: Fn(&Cube) -> usize,
@@ -42,11 +42,11 @@ where
 pub(super) fn bfs_from<K, IF, KF>(
     moves: &[Rotation],
     seeds: &[Cube],
-    sentinel: usize,
+    sentinel: u8,
     size: usize,
     idx: IF,
     key: KF,
-) -> Vec<usize>
+) -> Vec<u8>
 where
     K: Eq + Hash,
     IF: Fn(&Cube) -> usize,

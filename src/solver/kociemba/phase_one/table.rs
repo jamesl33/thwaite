@@ -38,10 +38,10 @@ const IDX_LOOKUP_TABLE: [usize; IDX_LOOKUP_TABLE_SIZE] = idx_lookup_table();
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// Depths keyed by corner-orientation and LR-slice edge combination.
-    corner: Vec<usize>,
+    corner: Vec<u8>,
 
     /// Depths keyed by edge-orientation and LR-slice edge combination.
-    edge: Vec<usize>,
+    edge: Vec<u8>,
 }
 
 impl Table {
@@ -51,7 +51,7 @@ impl Table {
     }
 
     /// Returns the number of moves the given cube is, from being in phase one's target group.
-    pub fn depth(&self, cube: &Cube) -> usize {
+    pub fn depth(&self, cube: &Cube) -> u8 {
         std::cmp::max(self.corner[corner_idx(cube)], self.edge[edge_idx(cube)])
     }
 }
@@ -68,8 +68,8 @@ impl Table {
 /// solver is still an unwired MVP.
 fn phase_one() -> Table {
     Table {
-        corner: bfs(&PHASE_ONE_VALID_MOVES, DEPTH, SIZE_CORNER, corner_idx, corner_idx),
-        edge: bfs(&PHASE_ONE_VALID_MOVES, DEPTH, SIZE_EDGE, edge_idx, edge_idx),
+        corner: bfs(&PHASE_ONE_VALID_MOVES, DEPTH as u8, SIZE_CORNER, corner_idx, corner_idx),
+        edge: bfs(&PHASE_ONE_VALID_MOVES, DEPTH as u8, SIZE_EDGE, edge_idx, edge_idx),
     }
 }
 

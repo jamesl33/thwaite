@@ -99,10 +99,10 @@ static REP_CORNER: LazyLock<Vec<usize>> = LazyLock::new(|| {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// Depths keyed by corner permutation and LR-slice edge permutation.
-    corner: Vec<usize>,
+    corner: Vec<u8>,
 
     /// Depths keyed by non LR-slice edge permutation and LR-slice edge permutation.
-    edge: Vec<usize>,
+    edge: Vec<u8>,
 
     /// Depths keyed by the symmetry-reduced joint corner-permutation/non-LR-slice-edge-permutation coordinate.
     corner_edge_sym: Vec<u8>,
@@ -115,10 +115,10 @@ impl Table {
     }
 
     /// Returns the number of moves the given cube is, from being solved.
-    pub fn depth(&self, cube: &Cube) -> usize {
+    pub fn depth(&self, cube: &Cube) -> u8 {
         std::cmp::max(
             std::cmp::max(self.corner[corner_idx(cube)], self.edge[edge_idx(cube)]),
-            self.corner_edge_sym[corner_edge_sym_idx(cube)] as usize,
+            self.corner_edge_sym[corner_edge_sym_idx(cube)],
         )
     }
 }
@@ -126,8 +126,8 @@ impl Table {
 /// Creates a new pattern database for phase two.
 fn phase_two() -> Table {
     Table {
-        corner: bfs(&PHASE_TWO_VALID_MOVES, DEPTH, SIZE_CORNER, corner_idx, corner_idx),
-        edge: bfs(&PHASE_TWO_VALID_MOVES, DEPTH, SIZE_EDGE, edge_idx, edge_idx),
+        corner: bfs(&PHASE_TWO_VALID_MOVES, DEPTH as u8, SIZE_CORNER, corner_idx, corner_idx),
+        edge: bfs(&PHASE_TWO_VALID_MOVES, DEPTH as u8, SIZE_EDGE, edge_idx, edge_idx),
         corner_edge_sym: generate_corner_edge_sym(),
     }
 }

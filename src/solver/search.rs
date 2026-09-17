@@ -5,7 +5,7 @@ use crate::cube::{Cube, Rotation};
 /// Perform an iterative deepening A* search, using the given heuristic.
 pub fn idas<F>(cube: Cube, moves: &[Rotation], hueristic: &F) -> Option<Vec<Rotation>>
 where
-    F: Fn(&Cube) -> usize,
+    F: Fn(&Cube) -> u8,
 {
     let mut limit = hueristic(&cube);
 
@@ -21,7 +21,7 @@ where
             return path;
         }
 
-        if t == usize::MAX {
+        if t == u8::MAX {
             return None;
         }
 
@@ -31,11 +31,11 @@ where
 
 /// Perform a depth first search, using the given moves and heuristic returning the minimum cost branch and the moves
 /// that have been made to get there.
-fn dfs<F>(cube: Cube, g: usize, limit: usize, valid: &[Rotation], hueristic: &F) -> (usize, Option<Vec<Rotation>>)
+fn dfs<F>(cube: Cube, g: u8, limit: u8, valid: &[Rotation], hueristic: &F) -> (u8, Option<Vec<Rotation>>)
 where
-    F: Fn(&Cube) -> usize,
+    F: Fn(&Cube) -> u8,
 {
-    let mut min = usize::MAX;
+    let mut min = u8::MAX;
 
     for mv in valid {
         if cube.redundant(mv) {

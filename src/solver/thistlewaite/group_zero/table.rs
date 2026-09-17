@@ -12,7 +12,7 @@ const SIZE: usize = usize::pow(2, 11);
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// The underlying data, where each index represents a cube state and its depth from the solved state.
-    data: Vec<usize>,
+    data: Vec<u8>,
 }
 
 impl Table {
@@ -22,7 +22,7 @@ impl Table {
     }
 
     /// Returns the number of moves the given cube is, from being in G0.
-    pub fn depth(&self, cube: &Cube) -> usize {
+    pub fn depth(&self, cube: &Cube) -> u8 {
         self.data[idx(cube.edge_orientations())]
     }
 }
@@ -41,7 +41,7 @@ fn g0() -> Table {
     Table {
         data: bfs(
             Group::Zero.moves(),
-            DEPTH,
+            DEPTH as u8,
             SIZE,
             |cube| idx(cube.edge_orientations()),
             |cube| (idx(cube.edge_orientations()), ptoidx(cube.edge_permutations())),

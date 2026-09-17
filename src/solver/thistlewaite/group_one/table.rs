@@ -26,7 +26,7 @@ const IDX_LOOKUP_TABLE: [usize; IDX_LOOKUP_TABLE_SIZE] = idx_lookup_table();
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// The underlying data, where each index represents a cube state and its depth from the solved state.
-    data: Vec<usize>,
+    data: Vec<u8>,
 }
 
 impl Table {
@@ -36,7 +36,7 @@ impl Table {
     }
 
     /// Returns the number of moves the given cube is, from being in G1.
-    pub fn depth(&self, cube: &Cube) -> usize {
+    pub fn depth(&self, cube: &Cube) -> u8 {
         self.data[idx(cube)]
     }
 }
@@ -71,7 +71,7 @@ fn g1() -> Table {
 
     // We initialize the pruning table at the max depth, then overwrite for cheaper distances
     let mut tab = Table {
-        data: vec![DEPTH; SIZE],
+        data: vec![DEPTH as u8; SIZE],
     };
 
     // The zeroth index represents the solved state (e.g. in G1)
@@ -86,7 +86,7 @@ fn g1() -> Table {
         let idx = idx(cube);
 
         // Only update the pruning table, if we've found a shorter path
-        tab.data[idx] = cmp::min(tab.data[idx], depth);
+        tab.data[idx] = cmp::min(tab.data[idx], depth as u8);
     });
 
     tab

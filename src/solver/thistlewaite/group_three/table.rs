@@ -12,7 +12,7 @@ const SIZE: usize = 663552;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Table {
     /// The underlying data, where each index represents a cube state and its depth from the solved state.
-    data: Vec<usize>,
+    data: Vec<u8>,
 }
 
 impl Table {
@@ -22,7 +22,7 @@ impl Table {
     }
 
     /// Returns the number of moves the given cube is, from being in G3.
-    pub fn depth(&self, cube: &Cube) -> usize {
+    pub fn depth(&self, cube: &Cube) -> u8 {
         self.data[idx(cube)]
     }
 }
@@ -37,7 +37,7 @@ fn g3() -> Table {
     // Perform a breadth first search, applying all the valid G3 moves and recording the depth from the solved
     // state; the first time a state is reached is guaranteed to be its shortest depth.
     Table {
-        data: bfs(Group::Three.moves(), DEPTH, SIZE, idx, idx),
+        data: bfs(Group::Three.moves(), DEPTH as u8, SIZE, idx, idx),
     }
 }
 
