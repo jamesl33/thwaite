@@ -12,6 +12,10 @@ In its current state, when built and run, `thwaite` supports two use-cases:
 `--algorithm` selects the solving algorithm (`thistlewaite` or `kociemba`), defaulting to
 `thistlewaite`.
 
+> [!NOTE]
+> Pattern-database tables are generated at build time (see [Generation](#generation)), not checked in. The first
+> build takes a few minutes because of this; subsequent builds are unaffected as long as `target/` isn't cleaned.
+
 ```
 $ cargo run --release
 Scramble: [U2, B2, L, BP, LP, U, L, D2, R, BP, D, R, UP, LP, B, RP, FP, DP, BP, R2]
