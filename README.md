@@ -53,12 +53,10 @@ The `cargo bench` suite ([`benches/thistlewaite.rs`](./benches/thistlewaite.rs),
 
 ```
 $ cargo bench
-thistlewaite solve (seeded)
-                        time:   [17.756 ms 17.878 ms 18.007 ms]
-thistlewaite solve (random)
-                        time:   [9.7838 ms 10.811 ms 11.899 ms]
-kociemba solve (seeded) time:   [82.070 µs 83.193 µs 84.602 µs]
-kociemba solve (random) time:   [1.6881 ms 1.7561 ms 1.8269 ms]
+thistlewaite solve (seeded) time:   [17.756 ms 17.878 ms 18.007 ms]
+thistlewaite solve (random) time:   [9.7838 ms 10.811 ms 11.899 ms]
+kociemba solve (seeded)     time:   [82.070 µs 83.193 µs 84.602 µs]
+kociemba solve (random)     time:   [1.6881 ms 1.7561 ms 1.8269 ms]
 ```
 
 Kociemba is typically an order of magnitude (or more) faster than Thistlewaite, but with wider
