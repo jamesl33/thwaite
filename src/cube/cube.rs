@@ -41,6 +41,20 @@ impl Cube {
         }
     }
 
+    /// Returns a cube with the given corner/edge permutations, orientation fixed to solved and no last move
+    /// recorded. Used to reconstruct a synthetic cube from a pruning-table coordinate for further move
+    /// application, where only a move's permutation action matters - see
+    /// `solver::kociemba::phase_two::table`'s dedicated BFS.
+    pub(crate) fn from_perms(cperms: [usize; NUM_CORNERS], eperms: [usize; NUM_EDGES]) -> Cube {
+        Cube {
+            cperms,
+            corien: [0; NUM_CORNERS],
+            eperms,
+            eorien: [0; NUM_EDGES],
+            last: None,
+        }
+    }
+
     /// Returns the cube corner permutations.
     pub fn corner_permutations(&self) -> &[usize; NUM_CORNERS] {
         &self.cperms

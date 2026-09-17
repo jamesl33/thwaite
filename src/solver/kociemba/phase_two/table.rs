@@ -75,6 +75,23 @@ static CORNER_SYM: LazyLock<Vec<(usize, u8)>> = LazyLock::new(|| {
 /// The number of distinct corner-permutation symmetry classes, i.e. the number of orbits `CORNER_SYM` assigns.
 static NUM_CORNER_CLASSES: LazyLock<usize> = LazyLock::new(|| CORNER_SYM.iter().map(|&(class, _)| class).max().unwrap() + 1);
 
+/// For each corner symmetry class: the raw corner-permutation rank chosen as that orbit's representative.
+///
+/// `SYMMETRIES[0]` is always the identity (see `build_symmetries`'s `group = vec![Symmetry::IDENTITY]` seed, which
+/// is never reordered), so identity is the only symmetry that can map a raw state to itself - meaning `CORNER_SYM`
+/// records `sym_idx == 0` exactly for each class's representative, and nowhere else.
+static REP_CORNER: LazyLock<Vec<usize>> = LazyLock::new(|| {
+    let mut rep = vec![0; *NUM_CORNER_CLASSES];
+
+    for (raw, &(class, sym_idx)) in CORNER_SYM.iter().enumerate() {
+        if sym_idx == 0 {
+            rep[class] = raw;
+        }
+    }
+
+    rep
+});
+
 /// The pruning table for phase two; the depth to solve the cube (having already reached phase one's target
 /// group) is the maximum of three coordinates. `corner` and `edge` are weakly correlated (a known MVP gap - see
 /// `solver::kociemba::solver`'s doc comment history), so `corner_edge_sym` adds a genuinely joint corner/edge
@@ -108,22 +125,75 @@ impl Table {
 
 /// Creates a new pattern database for phase two.
 fn phase_two() -> Table {
-    let size_corner_edge_sym = *NUM_CORNER_CLASSES * NONSLICE_EDGE_PERM_STATES;
-
     Table {
         corner: bfs(&PHASE_TWO_VALID_MOVES, DEPTH, SIZE_CORNER, corner_idx, corner_idx),
         edge: bfs(&PHASE_TWO_VALID_MOVES, DEPTH, SIZE_EDGE, edge_idx, edge_idx),
-        corner_edge_sym: bfs(
-            &PHASE_TWO_VALID_MOVES,
-            DEPTH,
-            size_corner_edge_sym,
-            corner_edge_sym_idx,
-            corner_edge_sym_idx,
-        )
-        .into_iter()
-        .map(|depth| depth as u8)
-        .collect(),
+        corner_edge_sym: generate_corner_edge_sym(),
     }
+}
+
+/// Generates the `corner_edge_sym` pruning table via a dedicated, memory-light BFS.
+///
+/// `generate::bfs`'s `HashSet<(key, face)>` dedup and `Vec<Cube>` frontier don't scale to this table's ~112
+/// million entries (see `solver::kociemba::solver`'s doc comment) - both OOM, even on a 64GB machine. This BFS
+/// instead works purely on `usize` coordinates: the `dist` array doubles as the visited set (no separate hash
+/// set), and the frontier is a `Vec<u32>` of indices rather than full `Cube`s.
+///
+/// Each frontier index is decoded back into a synthetic `Cube` (via `REP_CORNER`'s representative corner
+/// permutation, this index's edge permutation, and solved LR-slice edges/orientation) purely so `Cube::rotate` can
+/// compute the move's permutation action - corner and edge permutations are independent group actions, so this
+/// synthetic embedding doesn't need to be a reachable (or even legal) cube state for that action to be correct;
+/// see `symmetries_commute_with_phase_two_moves`, which relies on the same independence.
+///
+/// `Cube::redundant` filtering is intentionally skipped: it's a search-speed optimization for IDA*, not a
+/// requirement for BFS's shortest-depth correctness (a "redundant" move only ever reaches a state some shorter,
+/// non-redundant sequence already reached, so `dist`'s dedup discards it just as effectively).
+fn generate_corner_edge_sym() -> Vec<u8> {
+    let size = *NUM_CORNER_CLASSES * NONSLICE_EDGE_PERM_STATES;
+    let sentinel = DEPTH as u8;
+
+    let mut dist = vec![sentinel; size];
+
+    let start = corner_edge_sym_idx(&Cube::new());
+    dist[start] = 0;
+
+    let mut frontier = vec![start as u32];
+
+    for depth in 1..=(DEPTH as u8 - 1) {
+        let mut next = Vec::new();
+
+        for &idx in &frontier {
+            let idx = idx as usize;
+            let class = idx / NONSLICE_EDGE_PERM_STATES;
+            let edge_rank = idx % NONSLICE_EDGE_PERM_STATES;
+
+            let cperms: [usize; NUM_CORNERS] = idxtoperm(REP_CORNER[class]);
+            let nonslice: [usize; 8] = idxtoperm(edge_rank);
+            let eperms: [usize; NUM_EDGES] = std::array::from_fn(|i| if i < 8 { nonslice[i] } else { i });
+
+            let cube = Cube::from_perms(cperms, eperms);
+
+            for &mv in PHASE_TWO_VALID_MOVES.iter() {
+                let mut moved = cube;
+                moved.rotate(mv);
+
+                let nidx = corner_edge_sym_idx(&moved);
+
+                if dist[nidx] == sentinel {
+                    dist[nidx] = depth;
+                    next.push(nidx as u32);
+                }
+            }
+        }
+
+        if next.is_empty() {
+            break;
+        }
+
+        frontier = next;
+    }
+
+    dist
 }
 
 /// Returns the index within the symmetry-reduced combined corner/edge-permutation pruning table for the given

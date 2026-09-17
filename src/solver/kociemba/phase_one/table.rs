@@ -96,12 +96,37 @@ const fn idx_lookup_table() -> [usize; IDX_LOOKUP_TABLE_SIZE] {
 
 /// Returns the index within the corner-orientation pruning table for the given cube.
 fn corner_idx(cube: &Cube) -> usize {
-    otoidx(cube.corner_orientations()) * LRSLICE_COMBINATIONS + lrslice_ctoidx(cube.edge_permutations())
+    otoidx(&slot_corner_orientations(cube)) * LRSLICE_COMBINATIONS + lrslice_ctoidx(cube.edge_permutations())
 }
 
 /// Returns the index within the edge-orientation pruning table for the given cube.
 fn edge_idx(cube: &Cube) -> usize {
-    eotoidx(cube.edge_orientations()) * LRSLICE_COMBINATIONS + lrslice_ctoidx(cube.edge_permutations())
+    eotoidx(&slot_edge_orientations(cube)) * LRSLICE_COMBINATIONS + lrslice_ctoidx(cube.edge_permutations())
+}
+
+/// Returns corner orientation re-indexed by slot rather than piece id: `[i]` is the orientation of whichever
+/// piece currently occupies slot `i`.
+///
+/// `Cube::corner_orientations()` is indexed by piece id, so its evolution under a move depends on
+/// `Cube::corner_permutations()` too (a move's fixed per-slot twist lands on whichever piece is in that slot) -
+/// re-indexing by slot here removes that dependency, since a move's twist is then applied at a fixed slot
+/// regardless of which piece occupies it. This is what actually closes the coordinate under the move action
+/// (verified empirically: bucketing legally-reachable cubes by this slot-indexed vector and comparing each
+/// bucket's post-move results gives zero mismatches, where the same test on the raw piece-indexed vector
+/// mismatches on the large majority of buckets - i.e. the piece-indexed table this code shipped with was
+/// silently non-admissible).
+fn slot_corner_orientations(cube: &Cube) -> [usize; NUM_CORNERS] {
+    let orien = cube.corner_orientations();
+    let perms = cube.corner_permutations();
+    std::array::from_fn(|i| orien[perms[i]])
+}
+
+/// Returns edge orientation re-indexed by slot rather than piece id; see `slot_corner_orientations`, whose
+/// reasoning applies identically here.
+fn slot_edge_orientations(cube: &Cube) -> [usize; NUM_EDGES] {
+    let orien = cube.edge_orientations();
+    let perms = cube.edge_permutations();
+    std::array::from_fn(|i| orien[perms[i]])
 }
 
 /// Returns the index for the given corner orientations, treating them as a base three number.
@@ -155,4 +180,56 @@ fn lrslice_ctoidx(perms: &[usize; NUM_EDGES]) -> usize {
     debug_assert!(idx < LRSLICE_COMBINATIONS);
 
     idx
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Confirms the property `corner_idx`/`edge_idx` rely on for `bfs`'s dedup to be sound: two reachable cubes
+    /// with the same slot-indexed orientation must land on the same slot-indexed orientation after any given
+    /// move, regardless of how their underlying permutations differ. This is what actually closes the
+    /// coordinate under the move action - the piece-indexed `Cube::corner_orientations()`/`edge_orientations()`
+    /// this codebase shipped with initially does NOT have this property (a move's fixed per-slot twist lands on
+    /// whichever piece occupies that slot, so the piece-indexed vector's evolution depends on the permutation
+    /// too), which silently made the pruning table non-admissible.
+    #[test]
+    fn slot_indexed_orientation_is_closed_under_moves() {
+        let mut buckets: std::collections::HashMap<([usize; NUM_CORNERS], [usize; NUM_EDGES]), Vec<Cube>> =
+            std::collections::HashMap::new();
+
+        let mut cube = Cube::new();
+        let mut seed = 1u64;
+
+        for _ in 0..20_000 {
+            seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1);
+            let mv = PHASE_ONE_VALID_MOVES[(seed >> 33) as usize % PHASE_ONE_VALID_MOVES.len()];
+            cube.rotate(mv);
+
+            let key = (slot_corner_orientations(&cube), slot_edge_orientations(&cube));
+            buckets.entry(key).or_default().push(cube);
+        }
+
+        for states in buckets.values() {
+            if states.len() < 2 {
+                continue;
+            }
+
+            for &mv in PHASE_ONE_VALID_MOVES.iter() {
+                let mut results = states.iter().map(|c| {
+                    let mut c = *c;
+                    c.rotate(mv);
+                    (slot_corner_orientations(&c), slot_edge_orientations(&c))
+                });
+
+                let first = results.next().unwrap();
+
+                assert!(
+                    results.all(|r| r == first),
+                    "slot-indexed orientation coordinate isn't closed under move {:?}",
+                    mv
+                );
+            }
+        }
+    }
 }
