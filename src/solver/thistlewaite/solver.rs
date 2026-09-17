@@ -1,33 +1,39 @@
 use std::sync::LazyLock;
 
-use crate::cube;
-use crate::cube::Rotation;
-use crate::solver;
-use crate::solver::search::idas;
+use thwaite_core::cube;
+use thwaite_core::cube::Rotation;
+use thwaite_core::solver::group::Group;
+use thwaite_core::solver::search::idas;
+use thwaite_core::solver::tables;
+use thwaite_core::solver::thistlewaite::{group_one, group_three, group_two, group_zero};
 
 /// The pre-compute pattern database for traversing to G1.
 ///
-/// Lazily decoded once per process, rather than once per `solve()` call.
-static G0: LazyLock<super::group_zero::Table> =
-    LazyLock::new(|| solver::tables::read(include_bytes!("./group_zero/table.db")));
+/// Generated at build time (see `../../../build.rs`) and lazily decoded once per process, rather than once per
+/// `solve()` call.
+static G0: LazyLock<group_zero::Table> =
+    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/group_zero_table.db"))));
 
 /// The pre-compute pattern database for traversing to G2.
 ///
-/// Lazily decoded once per process, rather than once per `solve()` call.
-static G1: LazyLock<super::group_one::Table> =
-    LazyLock::new(|| solver::tables::read(include_bytes!("./group_one/table.db")));
+/// Generated at build time (see `../../../build.rs`) and lazily decoded once per process, rather than once per
+/// `solve()` call.
+static G1: LazyLock<group_one::Table> =
+    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/group_one_table.db"))));
 
 /// The pre-compute pattern database for traversing to G3.
 ///
-/// Lazily decoded once per process, rather than once per `solve()` call.
-static G2: LazyLock<super::group_two::Table> =
-    LazyLock::new(|| solver::tables::read(include_bytes!("./group_two/table.db")));
+/// Generated at build time (see `../../../build.rs`) and lazily decoded once per process, rather than once per
+/// `solve()` call.
+static G2: LazyLock<group_two::Table> =
+    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/group_two_table.db"))));
 
 /// The pre-compute pattern database for traversing to G4.
 ///
-/// Lazily decoded once per process, rather than once per `solve()` call.
-static G3: LazyLock<super::group_three::Table> =
-    LazyLock::new(|| solver::tables::read(include_bytes!("./group_three/table.db")));
+/// Generated at build time (see `../../../build.rs`) and lazily decoded once per process, rather than once per
+/// `solve()` call.
+static G3: LazyLock<group_three::Table> =
+    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/group_three_table.db"))));
 
 /// Exposes an API to solve the Rubik's Cube using the Thistlewaite-45 method.
 #[derive(Debug)]
@@ -50,25 +56,25 @@ impl ThistlewaiteSolver {
         }
 
         // Calculate the rotations to move to G1
-        let zero = idas(self.cube, solver::Group::Zero.moves(), &|cube| G0.depth(cube))?;
+        let zero = idas(self.cube, Group::Zero.moves(), &|cube| G0.depth(cube))?;
 
         // Apply those moves
         self.apply(&zero);
 
         // Calculate the rotations to move to G1
-        let one = idas(self.cube, solver::Group::One.moves(), &|cube| G1.depth(cube))?;
+        let one = idas(self.cube, Group::One.moves(), &|cube| G1.depth(cube))?;
 
         // Apply the moves
         self.apply(&one);
 
         // Calculate the rotations to move to G2
-        let two = idas(self.cube, solver::Group::Two.moves(), &|cube| G2.depth(cube))?;
+        let two = idas(self.cube, Group::Two.moves(), &|cube| G2.depth(cube))?;
 
         // Apply the moves
         self.apply(&two);
 
         // Calculate the rotations to move to G3
-        let three = idas(self.cube, solver::Group::Three.moves(), &|cube| G3.depth(cube))?;
+        let three = idas(self.cube, Group::Three.moves(), &|cube| G3.depth(cube))?;
 
         // Apply the moves
         //

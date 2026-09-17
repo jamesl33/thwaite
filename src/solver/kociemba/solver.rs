@@ -1,24 +1,26 @@
 use std::sync::LazyLock;
 
-use crate::cube;
-use crate::cube::Rotation;
-use crate::solver;
-use crate::solver::kociemba::phase::{PHASE_ONE_VALID_MOVES, PHASE_TWO_VALID_MOVES};
-use crate::solver::kociemba::{phase_one, phase_two};
-use crate::solver::search::idas;
+use thwaite_core::cube;
+use thwaite_core::cube::Rotation;
+use thwaite_core::solver::kociemba::phase::{PHASE_ONE_VALID_MOVES, PHASE_TWO_VALID_MOVES};
+use thwaite_core::solver::kociemba::{phase_one, phase_two};
+use thwaite_core::solver::search::idas;
+use thwaite_core::solver::tables;
 
 /// The pre-computed pattern database for traversing to phase one's target group (see `phase::PHASE_TWO_VALID_MOVES`
 /// for the group's generators, and why they differ from the textbook `<U, D, L2, R2, F2, B2>`).
 ///
-/// Lazily decoded once per process, rather than once per `solve()` call.
+/// Generated at build time (see `../../../build.rs`) and lazily decoded once per process, rather than once per
+/// `solve()` call.
 static P1: LazyLock<phase_one::Table> =
-    LazyLock::new(|| solver::tables::read(include_bytes!("./phase_one/table.db")));
+    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/phase_one_table.db"))));
 
 /// The pre-computed pattern database for solving the cube, once already in phase one's target group.
 ///
-/// Lazily decoded once per process, rather than once per `solve()` call.
+/// Generated at build time (see `../../../build.rs`) and lazily decoded once per process, rather than once per
+/// `solve()` call.
 static P2: LazyLock<phase_two::Table> =
-    LazyLock::new(|| solver::tables::read(include_bytes!("./phase_two/table.db")));
+    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/phase_two_table.db"))));
 
 /// Exposes an API to solve the Rubik's Cube using Kociemba's two-phase method.
 ///
@@ -78,7 +80,7 @@ impl KociembaSolver {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::cube::Cube;
+    use thwaite_core::cube::Cube;
 
     #[test]
     fn solves_an_already_solved_cube() {

@@ -1,3 +1,6 @@
+[workspace]
+members = ["crates/thwaite-core"]
+
 [package]
 name = "thwaite"
 version = "0.1.0"
@@ -5,16 +8,12 @@ edition = "2021"
 default-run = "thwaite"
 
 [dependencies]
-arrayref = "0.3.9"
-bincode = "1.3.3"
-bytes = "1.9.0"
 clap = { version = "4.5", features = ["derive"] }
-enum-utils = "0.1.2"
 rand = "0.9.0"
-rustc-hash = "2"
-serde = { version = "1.0.217", features = ["serde_derive"] }
-serde_bytes = "0.11"
-zstd = "0.13"
+thwaite-core = { path = "crates/thwaite-core" }
+
+[build-dependencies]
+thwaite-core = { path = "crates/thwaite-core" }
 
 [dev-dependencies]
 criterion = { version = "0.8.2", features = ["html_reports"] }
@@ -23,6 +22,12 @@ criterion = { version = "0.8.2", features = ["html_reports"] }
 lto = true
 codegen-units = 1
 panic = "abort"
+
+# Build scripts and their dependencies use the dev profile by default, even under `--release`. `thwaite-core` is a
+# build-dependency (table generation runs from `build.rs`), so without this override that BFS runs unoptimized -
+# 300s becomes tens of minutes.
+[profile.release.build-override]
+opt-level = 3
 
 [[bench]]
 name = "thistlewaite"

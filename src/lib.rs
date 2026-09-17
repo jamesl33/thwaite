@@ -1,10 +1,3 @@
-#![allow(dead_code)]
-
-#[macro_use]
-extern crate arrayref;
-
-pub mod cube;
-pub use cube::*;
+pub use thwaite_core::cube;
 
 pub mod solver;
-pub use solver::*;
