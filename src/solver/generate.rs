@@ -1,5 +1,6 @@
-use std::collections::HashSet;
 use std::hash::Hash;
+
+use rustc_hash::FxHashSet;
 
 use crate::cube::{Cube, Rotation};
 
@@ -53,7 +54,7 @@ where
     KF: Fn(&Cube) -> K,
 {
     let mut data = vec![sentinel; size];
-    let mut visited = HashSet::new();
+    let mut visited = FxHashSet::default();
 
     for seed in seeds {
         data[idx(seed)] = 0;

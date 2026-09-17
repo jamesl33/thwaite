@@ -10,6 +10,7 @@ bytes = "1.9.0"
 clap = { version = "4.5", features = ["derive"] }
 enum-utils = "0.1.2"
 rand = "0.9.0"
+rustc-hash = "2"
 serde = { version = "1.0.217", features = ["serde_derive"] }
 zstd = "0.13"
 
