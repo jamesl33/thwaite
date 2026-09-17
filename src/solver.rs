@@ -14,3 +14,4 @@ mod generate;
 mod search;
 
 pub mod kociemba;
+pub use kociemba::KociembaSolver;

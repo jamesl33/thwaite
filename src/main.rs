@@ -1,5 +1,25 @@
+use clap::{Parser, ValueEnum};
+
 use thwaite::cube::*;
 use thwaite::solver::*;
+
+/// Which solving algorithm to use.
+#[derive(Clone, ValueEnum)]
+enum Solver {
+    Thistlewaite,
+    Kociemba,
+}
+
+/// A Rubik's Cube solver.
+#[derive(Parser)]
+struct Args {
+    /// Cube state to solve; a random scramble is generated if omitted.
+    cube: Option<String>,
+
+    /// Which solving algorithm to use.
+    #[arg(long, value_enum, default_value = "thistlewaite")]
+    algorithm: Solver,
+}
 
 /// Returns a scrambled cube.
 fn scramble() -> Cube {
@@ -29,20 +49,23 @@ fn scramble() -> Cube {
 }
 
 /// Returns the cube to solve, which will be provided by the user or randomly scrambled.
-fn cube() -> Cube {
-    if let Some(state) = std::env::args().skip(1).next() {
-        return Cube::from(state.as_str());
+fn cube(state: Option<String>) -> Cube {
+    match state {
+        Some(state) => Cube::from(state.as_str()),
+        None => scramble(),
     }
-
-    scramble()
 }
 
 fn main() {
-    let mut c = cube();
+    let args = Args::parse();
 
-    let mut s: ThistlewaiteSolver = ThistlewaiteSolver::new(c);
+    let mut c = cube(args.cube);
 
-    let solution = s.solve().expect("cube is not solvable; check the provided cube string");
+    let solution = match args.algorithm {
+        Solver::Thistlewaite => ThistlewaiteSolver::new(c).solve(),
+        Solver::Kociemba => KociembaSolver::new(c).solve(),
+    }
+    .expect("cube is not solvable; check the provided cube string");
 
     for i in 0..solution.len() {
         c.rotate(solution[i]);
