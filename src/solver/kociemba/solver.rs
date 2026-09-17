@@ -24,9 +24,9 @@ static P2: LazyLock<phase_two::Table> =
 ///
 /// https://kociemba.org/cube.htm
 ///
-/// NOTE: This is an MVP: phase one returns the first IDA* solution found (not one of several candidates chosen
-/// to make phase two easy), so phase two's IDA* search can still take anywhere from milliseconds to tens of
-/// seconds depending on the scramble. Phase two's heuristic is the max of three tables: two independently
+/// NOTE: Phase one returns the first IDA* solution found (not one of several candidates chosen to make phase two
+/// easy), so phase two's IDA* search can still take anywhere from milliseconds to tens of seconds depending on
+/// the scramble. Phase two's heuristic is the max of three tables: two independently
 /// generated coordinate tables (corner-permutation and edge-permutation, each paired with the LR-slice edge
 /// permutation - only weakly correlated with each other) plus a genuinely joint corner/edge-permutation
 /// coordinate, made tractable to store by reducing it with `cube::SYMMETRIES` (see

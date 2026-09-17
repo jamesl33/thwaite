@@ -93,9 +93,9 @@ static REP_CORNER: LazyLock<Vec<usize>> = LazyLock::new(|| {
 });
 
 /// The pruning table for phase two; the depth to solve the cube (having already reached phase one's target
-/// group) is the maximum of three coordinates. `corner` and `edge` are weakly correlated (a known MVP gap - see
-/// `solver::kociemba::solver`'s doc comment history), so `corner_edge_sym` adds a genuinely joint corner/edge
-/// coordinate, made tractable to store by reducing it with `SYMMETRIES`.
+/// group) is the maximum of three coordinates. `corner` and `edge` are only weakly correlated, so
+/// `corner_edge_sym` adds a genuinely joint corner/edge coordinate, made tractable to store by reducing it with
+/// `SYMMETRIES`.
 ///
 /// `corner_edge_sym` doesn't make `corner`/`edge` redundant: it never sees LR-slice-edge permutation at all
 /// (`corner_edge_sym_idx` drops it entirely), while `corner`/`edge` each pair their piece-type with it - they're

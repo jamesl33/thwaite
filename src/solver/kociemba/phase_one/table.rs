@@ -58,14 +58,13 @@ impl Table {
 
 /// Creates a new pattern database for phase one.
 ///
-/// CAUTION: `corner_idx` and `edge_idx` each combine an orientation coordinate with the LR slice edge combination;
-/// the orientation part isn't closed under the move action on its own - it depends on the matching permutation too
-/// (see `crate::cube::Cube::rotate_up`) - so this search can silently miss states (see
-/// `crate::solver::generate::bfs_from`'s doc comment). Pairing the search key with the matching permutation rank
-/// fixes this, but the resulting key space is large enough (corner permutation rank alone is 8! = 40320, crossed
-/// with ~1e6 `corner_idx` values) that it OOMs in practice; the same problem hit Thistlewaite's G1 (see
-/// `group_one::table::g1`, which uses an exhaustive depth first search instead). Left unfixed here since Kociemba's
-/// solver is still an unwired MVP.
+/// `corner_idx` and `edge_idx` each combine an orientation coordinate with the LR slice edge combination.
+/// Orientation alone isn't closed under the move action - it depends on the matching permutation too (see
+/// `crate::cube::Cube::rotate_up`) - so both coordinates re-index orientation by slot rather than piece id
+/// (`slot_corner_orientations`/`slot_edge_orientations`) before combining it with the LR-slice combination. That
+/// re-indexing is what closes the coordinate under the move action, making this BFS's dedup sound; see
+/// `slot_corner_orientations`'s doc comment and the `slot_indexed_orientation_is_closed_under_moves` test, which
+/// verifies the property empirically.
 fn phase_one() -> Table {
     Table {
         corner: bfs(&PHASE_ONE_VALID_MOVES, DEPTH as u8, SIZE_CORNER, corner_idx, corner_idx),
