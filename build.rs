@@ -15,6 +15,8 @@ fn path(out_dir: &str, name: &str) -> Option<PathBuf> {
         return None;
     }
 
+    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+
     println!("cargo:warning=thwaite-core: generating {name}, this may take a while...");
 
     Some(path)
@@ -24,7 +26,7 @@ fn main() {
     let out_dir = std::env::var("OUT_DIR").unwrap();
 
     std::thread::scope(|scope| {
-        if let Some(path) = path(&out_dir, "group_zero_table.db") {
+        if let Some(path) = path(&out_dir, "thistlewaite/group_zero/table.db") {
             scope.spawn(move || {
                 let table = group_zero::Table::new();
                 assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
@@ -32,7 +34,7 @@ fn main() {
             });
         }
 
-        if let Some(path) = path(&out_dir, "group_one_table.db") {
+        if let Some(path) = path(&out_dir, "thistlewaite/group_one/table.db") {
             scope.spawn(move || {
                 let table = group_one::Table::new();
                 assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
@@ -40,7 +42,7 @@ fn main() {
             });
         }
 
-        if let Some(path) = path(&out_dir, "group_two_table.db") {
+        if let Some(path) = path(&out_dir, "thistlewaite/group_two/table.db") {
             scope.spawn(move || {
                 // NOTE: no solved-depth assertion here - G2's table is seeded from 96 corner-permutation-orbit
                 // representatives (see `group_two::initial`), not from the solved cube alone, so the solved
@@ -51,7 +53,7 @@ fn main() {
             });
         }
 
-        if let Some(path) = path(&out_dir, "group_three_table.db") {
+        if let Some(path) = path(&out_dir, "thistlewaite/group_three/table.db") {
             scope.spawn(move || {
                 let table = group_three::Table::new();
                 assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
@@ -59,7 +61,7 @@ fn main() {
             });
         }
 
-        if let Some(path) = path(&out_dir, "phase_one_table.db") {
+        if let Some(path) = path(&out_dir, "kociemba/phase_one/table.db") {
             scope.spawn(move || {
                 let table = phase_one::Table::new();
                 assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
@@ -67,7 +69,7 @@ fn main() {
             });
         }
 
-        if let Some(path) = path(&out_dir, "phase_two_table.db") {
+        if let Some(path) = path(&out_dir, "kociemba/phase_two/table.db") {
             scope.spawn(move || {
                 let table = phase_two::Table::new();
                 assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");

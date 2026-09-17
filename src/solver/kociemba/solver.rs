@@ -13,14 +13,14 @@ use thwaite_core::solver::tables;
 /// Generated at build time (see `../../../build.rs`) and lazily decoded once per process, rather than once per
 /// `solve()` call.
 static P1: LazyLock<phase_one::Table> =
-    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/phase_one_table.db"))));
+    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/kociemba/phase_one/table.db"))));
 
 /// The pre-computed pattern database for solving the cube, once already in phase one's target group.
 ///
 /// Generated at build time (see `../../../build.rs`) and lazily decoded once per process, rather than once per
 /// `solve()` call.
 static P2: LazyLock<phase_two::Table> =
-    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/phase_two_table.db"))));
+    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/kociemba/phase_two/table.db"))));
 
 /// Exposes an API to solve the Rubik's Cube using Kociemba's two-phase method.
 ///
