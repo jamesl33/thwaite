@@ -47,7 +47,7 @@ let solution = ThistlewaiteSolver::new(cube).solve().expect("cube is solvable");
 - Pre-computed factorials/combinations
 - Solves via iterative deepening A\* (IDA\*) - a depth-first, heuristic-guided search, appropriate here since it's goal-directed rather than exhaustive (see [IDA\*](#ida-iterative-deepening-a))
 
-I've not run into many cube states which take longer than $250ms$ to solve with `ThistlewaiteSolver`; I've not generated the deepest possible tables though, so that may be a low-hanging fruit improvement.
+I've not run into many cube states which take longer than $250ms$ to solve with `ThistlewaiteSolver`.
 
 The `cargo bench` suite ([`benches/thistlewaite.rs`](./benches/thistlewaite.rs), [`benches/kociemba.rs`](./benches/kociemba.rs)) measures each solver's `solve` in isolation (table load included, process start-up excluded); once against a fixed (seeded) scramble for run-to-run comparability, and once against a fresh scramble per sample to capture variance across cube states:
 
@@ -295,4 +295,3 @@ A special mention to Joren Heit's paper "Building and Solving Rubik’s Cube in 
 
 - [ ] Multi-candidate phase-one search for `KociembaSolver`, so phase two stays fast regardless of scramble
 - [ ] Symmetry reduction for phase one's coordinates
-- [ ] Generate deeper Thistlewaite pruning tables (current tables aren't the deepest possible; see [Performance](#performance))
