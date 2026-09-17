@@ -25,8 +25,12 @@ panic = "abort"
 
 # Build scripts and their dependencies use the dev profile by default, even under `--release`. `thwaite-core` is a
 # build-dependency (table generation runs from `build.rs`), so without this override that BFS runs unoptimized -
-# 300s becomes tens of minutes.
+# 300s becomes tens of minutes. Set for both profiles, since a plain (non-release) build hits the same build
+# script and is otherwise just as slow.
 [profile.release.build-override]
+opt-level = 3
+
+[profile.dev.build-override]
 opt-level = 3
 
 [[bench]]
