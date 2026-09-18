@@ -58,15 +58,8 @@ impl Table {
     }
 }
 
-/// Creates a new pattern database for phase one.
-///
-/// `corner_idx` and `edge_idx` each combine an orientation coordinate with the LR slice edge combination.
-/// Orientation alone isn't closed under the move action - it depends on the matching permutation too (see
-/// `crate::cube::Cube::rotate_up`) - so both coordinates re-index orientation by slot rather than piece id
-/// (`slot_corner_orientations`/`slot_edge_orientations`) before combining it with the LR-slice combination. That
-/// re-indexing is what closes the coordinate under the move action, making this BFS's dedup sound; see
-/// `slot_corner_orientations`'s doc comment and the `slot_indexed_orientation_is_closed_under_moves` test, which
-/// verifies the property empirically.
+/// Creates a new pattern database for phase one by running BFS over the corner- and edge-orientation
+/// coordinates (see `slot_corner_orientations` for why those coordinates are safe to dedup on).
 fn phase_one() -> Table {
     Table {
         corner: bfs(&PHASE_ONE_VALID_MOVES, DEPTH as u8, SIZE_CORNER, corner_idx, corner_idx),

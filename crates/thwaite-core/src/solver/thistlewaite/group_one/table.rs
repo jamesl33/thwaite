@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::cube::{Cube, CORNER_ORIENTATIONS, NUM_CORNERS, NUM_EDGES};
 use crate::solver::group::Group;
 use crate::solver::maths::combinations;
+use crate::solver::search::dfs;
 
 /// The number of combinations of the four (LR slice) edge pieces that we're fixing in this group.
 const N_SIZE: usize = combinations(NUM_EDGES, 4);
@@ -82,7 +83,7 @@ fn g1() -> Table {
     let start: Cube = Cube::new();
 
     // Perform a depth first search, applying all the valid G1 moves and recording the depth from the solved state
-    start.search(Group::One.moves(), DEPTH - 1, &mut |cube, depth| {
+    dfs(start, Group::One.moves(), DEPTH - 1, &mut |cube, depth| {
         // Calculate the index in the pruning table
         let idx = idx(cube);
 

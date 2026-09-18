@@ -6,6 +6,7 @@ use crate::cube::{Cube, NUM_CORNERS, NUM_EDGES};
 use crate::solver::generate::bfs_from;
 use crate::solver::group::Group;
 use crate::solver::maths::{combinations, factorial, ptoidx};
+use crate::solver::search::dfs;
 
 /// There's 96 starting states for G2.
 const INITIAL: usize = 96;
@@ -82,7 +83,7 @@ fn initial() -> Vec<Cube> {
     let start: Cube = Cube::new();
 
     // Perform a depth first search, applying all the valid G2 moves and recording the depth from the solved state
-    start.search(Group::Two.moves(), DEPTH - 1, &mut |cube, _| {
+    dfs(start, Group::Two.moves(), DEPTH - 1, &mut |cube, _| {
         // If the corners aren't in orbit, we ignore the cube state (as it's not a valid initial state for G2)
         if !cino(cube.corner_permutations()) {
             return;

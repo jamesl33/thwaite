@@ -33,6 +33,7 @@ pub struct Symmetry {
 }
 
 impl Symmetry {
+    /// The identity symmetry: leaves every corner and edge slot unchanged.
     const IDENTITY: Symmetry = Symmetry {
         corners: [0, 1, 2, 3, 4, 5, 6, 7],
         edges: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
@@ -67,16 +68,21 @@ impl Symmetry {
     }
 }
 
-/// Computes the closure of `{ROT, FLIP, MIRROR}`, which should be exactly the 16-element group described above.
+/// Computes the closure of `{ROT, FLIP, MIRROR}` under composition, which should be exactly the 16-element group
+/// described above. Repeatedly composes every symmetry found so far with each generator (see `new_symmetries`),
+/// adding any previously-unseen results to the group, until a pass finds nothing new - a standard fixed-point
+/// group-closure algorithm.
 fn build_symmetries() -> [Symmetry; 16] {
     let rot = Symmetry {
         corners: ROT_CORNERS,
         edges: ROT_EDGES,
     };
+
     let flip = Symmetry {
         corners: FLIP_CORNERS,
         edges: FLIP_EDGES,
     };
+
     let mirror = Symmetry {
         corners: MIRROR_CORNERS,
         edges: MIRROR_EDGES,
@@ -86,17 +92,7 @@ fn build_symmetries() -> [Symmetry; 16] {
     let mut group = vec![Symmetry::IDENTITY];
 
     loop {
-        let mut new = Vec::new();
-
-        for g in &group {
-            for generator in &generators {
-                let candidate = g.compose(generator);
-
-                if !group.contains(&candidate) && !new.contains(&candidate) {
-                    new.push(candidate);
-                }
-            }
-        }
+        let new = new_symmetries(&group, &generators);
 
         if new.is_empty() {
             break;
@@ -108,6 +104,24 @@ fn build_symmetries() -> [Symmetry; 16] {
     group
         .try_into()
         .unwrap_or_else(|g: Vec<Symmetry>| panic!("expected a 16 element symmetry group, got {}", g.len()))
+}
+
+/// Composes every symmetry currently in `group` with every symmetry in `generators`, returning the distinct
+/// results that aren't already members of `group` (i.e. one closure step/pass of `build_symmetries`'s algorithm).
+fn new_symmetries(group: &[Symmetry], generators: &[Symmetry]) -> Vec<Symmetry> {
+    let mut new = Vec::new();
+
+    for g in group {
+        for generator in generators {
+            let candidate = g.compose(generator);
+
+            if !group.contains(&candidate) && !new.contains(&candidate) {
+                new.push(candidate);
+            }
+        }
+    }
+
+    new
 }
 
 #[cfg(test)]

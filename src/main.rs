@@ -21,38 +21,11 @@ struct Args {
     algorithm: Solver,
 }
 
-/// Returns a scrambled cube.
-fn scramble() -> Cube {
-    let mut c: Cube = Cube::new();
-
-    let mut scramble: Vec<Rotation> = Vec::with_capacity(20);
-
-    loop {
-        if scramble.len() >= 20 {
-            break;
-        }
-
-        let mv: Rotation = rand::random();
-
-        if c.redundant(&mv) {
-            continue;
-        }
-
-        c.rotate(mv);
-
-        scramble.push(mv);
-    }
-
-    println!("Scramble: {:?}", scramble);
-
-    c
-}
-
 /// Returns the cube to solve, which will be provided by the user or randomly scrambled.
 fn cube(state: Option<String>) -> Cube {
     match state {
         Some(state) => Cube::from(state.as_str()),
-        None => scramble(),
+        None => Cube::scrambled(&mut rand::rng()),
     }
 }
 

@@ -38,30 +38,6 @@ pub const PERMUTE_DOWN_CORNERS: [u8; NUM_CORNERS] = [0, 5, 6, 3, 4, 2, 1, 7];
 /// The rotation matrix for the down-face edges where rotation = old + new % orientations.
 pub const PERMUTE_DOWN_EDGES: [u8; NUM_EDGES] = [0, 10, 2, 9, 4, 5, 6, 7, 8, 1, 3, 11];
 
-/// Composes the given single 90 degree turn's permutation with itself `times` times, producing the permutation
-/// equivalent to applying that 90 degree turn `times` times in a row. Used below to derive each face's 180/270
-/// degree tables from its 90 degree one at compile time, rather than looping `Cube::rotate_*` 2-3 times per move
-/// at runtime.
-const fn compose<const N: usize>(rot: [u8; N], times: usize) -> [u8; N] {
-    let mut out = [0u8; N];
-    let mut i = 0;
-
-    while i < N {
-        let mut idx = i;
-        let mut t = 0;
-
-        while t < times {
-            idx = rot[idx] as usize;
-            t += 1;
-        }
-
-        out[i] = idx as u8;
-        i += 1;
-    }
-
-    out
-}
-
 /// The rotation matrix for a 180 degree turn of the front-face corners.
 pub const PERMUTE_FRONT_CORNERS_180: [u8; NUM_CORNERS] = compose(PERMUTE_FRONT_CORNERS, 2);
 
@@ -133,3 +109,28 @@ pub const PERMUTE_DOWN_EDGES_180: [u8; NUM_EDGES] = compose(PERMUTE_DOWN_EDGES, 
 
 /// The rotation matrix for a 270 degree (counter-clockwise 90 degree) turn of the down-face edges.
 pub const PERMUTE_DOWN_EDGES_270: [u8; NUM_EDGES] = compose(PERMUTE_DOWN_EDGES, 3);
+
+/// Composes the given single 90 degree turn's permutation with itself `times` times, producing the permutation
+/// equivalent to applying that 90 degree turn `times` times in a row. Used below to derive each face's 180/270
+/// degree tables from its 90 degree one at compile time, rather than looping `Cube::rotate_*` 2-3 times per move
+/// at runtime.
+const fn compose<const N: usize>(rot: [u8; N], times: usize) -> [u8; N] {
+    let mut out = [0u8; N];
+    let mut i = 0;
+
+    while i < N {
+        let mut idx = i;
+        let mut t = 0;
+
+        while t < times {
+            idx = rot[idx] as usize;
+            t += 1;
+        }
+
+        out[i] = idx as u8;
+        i += 1;
+    }
+
+    out
+}
+

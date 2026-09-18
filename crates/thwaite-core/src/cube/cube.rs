@@ -1,3 +1,5 @@
+use rand::Rng;
+
 use crate::cube::orientations::*;
 use crate::cube::permutations::*;
 use crate::cube::{Axis, Color, Corner, Edge, Rotation, CORNERS, EDGES};
@@ -9,8 +11,6 @@ pub const NUM_CORNERS: usize = 8;
 pub const NUM_EDGES: usize = 12;
 
 /// Models a 3x3 Rubik's cube, exposing functionality required to produce pruning tables and search for solutions.
-///
-/// TODO (jamesl33): Move this to a module.
 #[derive(Debug, Clone, Copy)]
 pub struct Cube {
     /// Corner permutations.
@@ -55,6 +55,25 @@ impl Cube {
         }
     }
 
+    /// Returns a scrambled cube, using the given RNG.
+    pub fn scrambled<R: Rng>(rng: &mut R) -> Cube {
+        let mut c = Cube::new();
+
+        let mut moves = 0;
+        while moves < 20 {
+            let mv: Rotation = rng.random();
+
+            if c.redundant(&mv) {
+                continue;
+            }
+
+            c.rotate(mv);
+            moves += 1;
+        }
+
+        c
+    }
+
     /// Returns the cube corner permutations.
     pub fn corner_permutations(&self) -> &[u8; NUM_CORNERS] {
         &self.cperms
@@ -85,86 +104,27 @@ impl Cube {
         eo && ep && co && cp
     }
 
-    /// Performs a depth first search applying the given moves, until a limit is reached; runs the given callback for
-    /// each cube state visited.
-    pub fn search<F>(&self, moves: &[Rotation], limit: usize, func: &mut F)
-    where
-        F: FnMut(&Cube, usize),
-    {
-        dfs(*self, moves, 1, limit, func);
-    }
-
     /// Applies the given rotations to the cube.
     pub fn rotate(&mut self, m: Rotation) {
         match m {
             Rotation::F => self.apply(PERMUTE_FRONT_CORNERS, Some(ORIENT_FRONT_CORNERS), PERMUTE_FRONT_EDGES, None),
-            Rotation::F2 => self.apply(
-                PERMUTE_FRONT_CORNERS_180,
-                Some(ORIENT_FRONT_CORNERS_180),
-                PERMUTE_FRONT_EDGES_180,
-                None,
-            ),
-            Rotation::FP => self.apply(
-                PERMUTE_FRONT_CORNERS_270,
-                Some(ORIENT_FRONT_CORNERS_270),
-                PERMUTE_FRONT_EDGES_270,
-                None,
-            ),
+            Rotation::F2 => self.apply(PERMUTE_FRONT_CORNERS_180, Some(ORIENT_FRONT_CORNERS_180), PERMUTE_FRONT_EDGES_180, None),
+            Rotation::FP => self.apply(PERMUTE_FRONT_CORNERS_270, Some(ORIENT_FRONT_CORNERS_270), PERMUTE_FRONT_EDGES_270, None),
             Rotation::B => self.apply(PERMUTE_BACK_CORNERS, Some(ORIENT_BACK_CORNERS), PERMUTE_BACK_EDGES, None),
-            Rotation::B2 => self.apply(
-                PERMUTE_BACK_CORNERS_180,
-                Some(ORIENT_BACK_CORNERS_180),
-                PERMUTE_BACK_EDGES_180,
-                None,
-            ),
-            Rotation::BP => self.apply(
-                PERMUTE_BACK_CORNERS_270,
-                Some(ORIENT_BACK_CORNERS_270),
-                PERMUTE_BACK_EDGES_270,
-                None,
-            ),
+            Rotation::B2 => self.apply(PERMUTE_BACK_CORNERS_180, Some(ORIENT_BACK_CORNERS_180), PERMUTE_BACK_EDGES_180, None),
+            Rotation::BP => self.apply(PERMUTE_BACK_CORNERS_270, Some(ORIENT_BACK_CORNERS_270), PERMUTE_BACK_EDGES_270, None),
             Rotation::L => self.apply(PERMUTE_LEFT_CORNERS, None, PERMUTE_LEFT_EDGES, None),
             Rotation::L2 => self.apply(PERMUTE_LEFT_CORNERS_180, None, PERMUTE_LEFT_EDGES_180, None),
             Rotation::LP => self.apply(PERMUTE_LEFT_CORNERS_270, None, PERMUTE_LEFT_EDGES_270, None),
             Rotation::R => self.apply(PERMUTE_RIGHT_CORNERS, None, PERMUTE_RIGHT_EDGES, None),
             Rotation::R2 => self.apply(PERMUTE_RIGHT_CORNERS_180, None, PERMUTE_RIGHT_EDGES_180, None),
             Rotation::RP => self.apply(PERMUTE_RIGHT_CORNERS_270, None, PERMUTE_RIGHT_EDGES_270, None),
-            Rotation::U => self.apply(
-                PERMUTE_UP_CORNERS,
-                Some(ORIENT_UP_CORNERS),
-                PERMUTE_UP_EDGES,
-                Some(ORIENT_UP_EDGES),
-            ),
-            Rotation::U2 => self.apply(
-                PERMUTE_UP_CORNERS_180,
-                Some(ORIENT_UP_CORNERS_180),
-                PERMUTE_UP_EDGES_180,
-                Some(ORIENT_UP_EDGES_180),
-            ),
-            Rotation::UP => self.apply(
-                PERMUTE_UP_CORNERS_270,
-                Some(ORIENT_UP_CORNERS_270),
-                PERMUTE_UP_EDGES_270,
-                Some(ORIENT_UP_EDGES_270),
-            ),
-            Rotation::D => self.apply(
-                PERMUTE_DOWN_CORNERS,
-                Some(ORIENT_DOWN_CORNERS),
-                PERMUTE_DOWN_EDGES,
-                Some(ORIENT_DOWN_EDGES),
-            ),
-            Rotation::D2 => self.apply(
-                PERMUTE_DOWN_CORNERS_180,
-                Some(ORIENT_DOWN_CORNERS_180),
-                PERMUTE_DOWN_EDGES_180,
-                Some(ORIENT_DOWN_EDGES_180),
-            ),
-            Rotation::DP => self.apply(
-                PERMUTE_DOWN_CORNERS_270,
-                Some(ORIENT_DOWN_CORNERS_270),
-                PERMUTE_DOWN_EDGES_270,
-                Some(ORIENT_DOWN_EDGES_270),
-            ),
+            Rotation::U => self.apply(PERMUTE_UP_CORNERS, Some(ORIENT_UP_CORNERS), PERMUTE_UP_EDGES, Some(ORIENT_UP_EDGES)),
+            Rotation::U2 => self.apply(PERMUTE_UP_CORNERS_180, Some(ORIENT_UP_CORNERS_180), PERMUTE_UP_EDGES_180, Some(ORIENT_UP_EDGES_180)),
+            Rotation::UP => self.apply(PERMUTE_UP_CORNERS_270, Some(ORIENT_UP_CORNERS_270), PERMUTE_UP_EDGES_270, Some(ORIENT_UP_EDGES_270)),
+            Rotation::D => self.apply(PERMUTE_DOWN_CORNERS, Some(ORIENT_DOWN_CORNERS), PERMUTE_DOWN_EDGES, Some(ORIENT_DOWN_EDGES)),
+            Rotation::D2 => self.apply(PERMUTE_DOWN_CORNERS_180, Some(ORIENT_DOWN_CORNERS_180), PERMUTE_DOWN_EDGES_180, Some(ORIENT_DOWN_EDGES_180)),
+            Rotation::DP => self.apply(PERMUTE_DOWN_CORNERS_270, Some(ORIENT_DOWN_CORNERS_270), PERMUTE_DOWN_EDGES_270, Some(ORIENT_DOWN_EDGES_270)),
         };
 
         self.last = Some(m);
@@ -355,32 +315,6 @@ fn corners_from_cs(cube: &mut Cube, cs: &Vec<Vec<Color>>) {
         if or(colors_acw) {
             cube.corien[ca_id] = 2;
         }
-    }
-}
-
-/// Performs a depth first search applying the given moves, until a limit is reached; runs the given callback for each
-/// cube state visited.
-fn dfs<F>(cube: Cube, moves: &[Rotation], depth: usize, limit: usize, func: &mut F)
-where
-    F: FnMut(&Cube, usize),
-{
-    for mv in moves {
-        if cube.redundant(mv) {
-            continue;
-        }
-
-        let mut cube = cube;
-
-        cube.rotate(*mv);
-
-        func(&cube, depth);
-
-        // We've reached out limit, stop searching
-        if depth >= limit {
-            continue;
-        }
-
-        dfs(cube, moves, depth + 1, limit, func);
     }
 }
 

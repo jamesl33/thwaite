@@ -77,15 +77,6 @@ const E11: Edge = Edge {
 /// The edge positions on the cube.
 pub const EDGES: [Edge; NUM_EDGES] = [E0, E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11];
 
-/// Returns a canonical, order-independent key for the given color pair.
-fn key(a: Color, b: Color) -> String {
-    if a < b {
-        format!("{:?}:{:?}", a, b)
-    } else {
-        format!("{:?}:{:?}", b, a)
-    }
-}
-
 /// Represents an edge piece on a cube, note this is positional information; the color isn't stored.
 ///
 /// NOTE: We don't store as x, y or z because it's dependent ant on the permutation/orientation.
@@ -128,4 +119,13 @@ impl Edge {
     pub fn id(self: &Self) -> usize {
         EDGES.iter().position(|e| e == self).unwrap()
     }
+}
+
+/// Returns a canonical, order-independent key for the given color pair.
+fn key(a: Color, b: Color) -> String {
+    if a < b {
+        return format!("{:?}:{:?}", a, b)
+    }
+
+    return format!("{:?}:{:?}", b, a)
 }

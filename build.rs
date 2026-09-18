@@ -22,59 +22,63 @@ fn path(out_dir: &str, name: &str) -> Option<PathBuf> {
     Some(path)
 }
 
+/// Spawns a thread running `build` with the table's output path, unless that table already exists in
+/// `OUT_DIR` (see `path`), in which case generation is skipped entirely. `build` is expected to construct the
+/// table - asserting any invariants it cares about - and write it out via `tables::write`.
+fn generate<'scope, 'env>(
+    scope: &'scope std::thread::Scope<'scope, 'env>,
+    out_dir: &str,
+    name: &str,
+    build: impl FnOnce(PathBuf) + Send + 'scope,
+) {
+    let Some(path) = path(out_dir, name) else {
+        return;
+    };
+
+    scope.spawn(move || build(path));
+}
+
 fn main() {
     let out_dir = std::env::var("OUT_DIR").unwrap();
 
     std::thread::scope(|scope| {
-        if let Some(path) = path(&out_dir, "thistlewaite/group_zero/table.db") {
-            scope.spawn(move || {
-                let table = group_zero::Table::new();
-                assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
-                tables::write(path.to_str().unwrap(), &table).unwrap();
-            });
-        }
+        generate(scope, &out_dir, "thistlewaite/group_zero/table.db", |path| {
+            let table = group_zero::Table::new();
+            assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
+            tables::write(path.to_str().unwrap(), &table).unwrap();
+        });
 
-        if let Some(path) = path(&out_dir, "thistlewaite/group_one/table.db") {
-            scope.spawn(move || {
-                let table = group_one::Table::new();
-                assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
-                tables::write(path.to_str().unwrap(), &table).unwrap();
-            });
-        }
+        generate(scope, &out_dir, "thistlewaite/group_one/table.db", |path| {
+            let table = group_one::Table::new();
+            assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
+            tables::write(path.to_str().unwrap(), &table).unwrap();
+        });
 
-        if let Some(path) = path(&out_dir, "thistlewaite/group_two/table.db") {
-            scope.spawn(move || {
-                // NOTE: no solved-depth assertion here - G2's table is seeded from 96 corner-permutation-orbit
-                // representatives (see `group_two::initial`), not from the solved cube alone, so the solved
-                // cube's own coordinate doesn't necessarily land on that coordinate's depth-0 anchor the way it
-                // does for the other five (single-seed) tables.
-                let table = group_two::Table::new();
-                tables::write(path.to_str().unwrap(), &table).unwrap();
-            });
-        }
+        generate(scope, &out_dir, "thistlewaite/group_two/table.db", |path| {
+            // NOTE: no solved-depth assertion here - G2's table is seeded from 96 corner-permutation-orbit
+            // representatives (see `group_two::initial`), not from the solved cube alone, so the solved cube's
+            // own coordinate doesn't necessarily land on that coordinate's depth-0 anchor the way it does for
+            // the other five (single-seed) tables.
+            let table = group_two::Table::new();
+            tables::write(path.to_str().unwrap(), &table).unwrap();
+        });
 
-        if let Some(path) = path(&out_dir, "thistlewaite/group_three/table.db") {
-            scope.spawn(move || {
-                let table = group_three::Table::new();
-                assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
-                tables::write(path.to_str().unwrap(), &table).unwrap();
-            });
-        }
+        generate(scope, &out_dir, "thistlewaite/group_three/table.db", |path| {
+            let table = group_three::Table::new();
+            assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
+            tables::write(path.to_str().unwrap(), &table).unwrap();
+        });
 
-        if let Some(path) = path(&out_dir, "kociemba/phase_one/table.db") {
-            scope.spawn(move || {
-                let table = phase_one::Table::new();
-                assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
-                tables::write(path.to_str().unwrap(), &table).unwrap();
-            });
-        }
+        generate(scope, &out_dir, "kociemba/phase_one/table.db", |path| {
+            let table = phase_one::Table::new();
+            assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
+            tables::write(path.to_str().unwrap(), &table).unwrap();
+        });
 
-        if let Some(path) = path(&out_dir, "kociemba/phase_two/table.db") {
-            scope.spawn(move || {
-                let table = phase_two::Table::new();
-                assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
-                tables::write(path.to_str().unwrap(), &table).unwrap();
-            });
-        }
+        generate(scope, &out_dir, "kociemba/phase_two/table.db", |path| {
+            let table = phase_two::Table::new();
+            assert_eq!(table.depth(&Cube::new()), 0, "solved cube should be depth 0");
+            tables::write(path.to_str().unwrap(), &table).unwrap();
+        });
     });
 }
