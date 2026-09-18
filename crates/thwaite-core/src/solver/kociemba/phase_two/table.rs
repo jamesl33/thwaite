@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::cube::{Cube, Symmetry, NUM_CORNERS, NUM_EDGES, SYMMETRIES};
-use crate::solver::generate::bfs;
+use crate::solver::search::bfs;
 use crate::solver::kociemba::phase::PHASE_TWO_VALID_MOVES;
 use crate::solver::maths::{factorial, idxtoperm, ptoidx};
 
@@ -110,7 +110,7 @@ fn nonslice_edges(perms: &[u8; NUM_EDGES]) -> [u8; 8] {
 
 /// Generates the `corner_edge_sym` pruning table via a dedicated, memory-light BFS.
 ///
-/// `generate::bfs`'s `HashSet`-based dedup and `Vec<Cube>` frontier don't scale to this table's ~112 million
+/// `search::bfs`'s `HashSet`-based dedup and `Vec<Cube>` frontier don't scale to this table's ~112 million
 /// entries (see `solver::kociemba::solver`'s doc comment) - both OOM, even on a 64GB machine. This BFS instead
 /// tracks only `usize` coordinates: `dist` doubles as the visited set, and the frontier is a `Vec<u32>` of
 /// indices rather than full `Cube`s. `Cube::redundant` filtering is skipped since it's an IDA*-only speed

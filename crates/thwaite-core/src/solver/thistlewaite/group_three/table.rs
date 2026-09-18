@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::cube::Cube;
-use crate::solver::generate::bfs;
+use crate::solver::search::bfs;
 use crate::solver::group::Group;
 use crate::solver::maths::factorial;
 

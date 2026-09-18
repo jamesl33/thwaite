@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::cube::{Cube, CORNER_ORIENTATIONS, EDGE_ORIENTATIONS, NUM_CORNERS, NUM_EDGES};
-use crate::solver::generate::bfs;
+use crate::solver::search::bfs;
 use crate::solver::kociemba::phase::PHASE_ONE_VALID_MOVES;
 use crate::solver::maths::combinations;
 

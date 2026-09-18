@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::cube::{Cube, NUM_EDGES};
-use crate::solver::generate::bfs;
+use crate::solver::search::bfs;
 use crate::solver::group::Group;
 use crate::solver::maths::ptoidx;
 
@@ -37,7 +37,7 @@ fn g0() -> Table {
 
     // The edge orientation coordinate alone isn't closed under the move action - its evolution depends on the
     // full edge permutation too (see `crate::cube::Cube::rotate_up`) - so the search key pairs it with the edge
-    // permutation rank to avoid silently missing states. See `crate::solver::generate::bfs_from` for the full
+    // permutation rank to avoid silently missing states. See `crate::solver::search::bfs_from` for the full
     // explanation.
     Table {
         data: bfs(

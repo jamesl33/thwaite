@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::cube::{Cube, NUM_CORNERS, NUM_EDGES};
-use crate::solver::generate::bfs_from;
+use crate::solver::search::bfs_from;
 use crate::solver::group::Group;
 use crate::solver::maths::{combinations, factorial, ptoidx};
 use crate::solver::search::dfs;

@@ -7,8 +7,6 @@ use maths::*;
 
 pub mod tables;
 
-mod generate;
-
 pub mod search;
 
 pub mod kociemba;
