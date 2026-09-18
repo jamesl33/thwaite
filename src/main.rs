@@ -21,11 +21,16 @@ struct Args {
     algorithm: Solver,
 }
 
-/// Returns the cube to solve, which will be provided by the user or randomly scrambled.
+/// Returns the cube to solve, which will be provided by the user or randomly scrambled. Prints the scramble
+/// sequence when one is generated.
 fn cube(state: Option<String>) -> Cube {
     match state {
         Some(state) => Cube::from(state.as_str()),
-        None => Cube::scrambled(&mut rand::rng()),
+        None => {
+            let (cube, moves) = Cube::scrambled(&mut rand::rng());
+            println!("Scramble: {:?}", moves);
+            cube
+        }
     }
 }
 

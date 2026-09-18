@@ -9,7 +9,7 @@ use thwaite::solver::kociemba::KociembaSolver;
 
 fn solve(c: &mut Criterion) {
     // Fixed seed: same scramble every run, so results are comparable across benchmarks.
-    let seeded = Cube::scrambled(&mut StdRng::seed_from_u64(0));
+    let (seeded, _) = Cube::scrambled(&mut StdRng::seed_from_u64(0));
 
     c.bench_function("kociemba solve (seeded)", |b| {
         b.iter_batched(
@@ -22,7 +22,7 @@ fn solve(c: &mut Criterion) {
     // Fresh scramble per sample, so results reflect variance in solve time across cube states.
     c.bench_function("kociemba solve (random)", |b| {
         b.iter_batched(
-            || Cube::scrambled(&mut rand::rng()),
+            || Cube::scrambled(&mut rand::rng()).0,
             |cube| KociembaSolver::new(black_box(cube)).solve(),
             BatchSize::SmallInput,
         )

@@ -55,12 +55,12 @@ impl Cube {
         }
     }
 
-    /// Returns a scrambled cube, using the given RNG.
-    pub fn scrambled<R: Rng>(rng: &mut R) -> Cube {
+    /// Returns a scrambled cube, using the given RNG, along with the moves used to scramble it.
+    pub fn scrambled<R: Rng>(rng: &mut R) -> (Cube, Vec<Rotation>) {
         let mut c = Cube::new();
+        let mut moves = Vec::with_capacity(20);
 
-        let mut moves = 0;
-        while moves < 20 {
+        while moves.len() < 20 {
             let mv: Rotation = rng.random();
 
             if c.redundant(&mv) {
@@ -68,10 +68,10 @@ impl Cube {
             }
 
             c.rotate(mv);
-            moves += 1;
+            moves.push(mv);
         }
 
-        c
+        (c, moves)
     }
 
     /// Returns the cube corner permutations.
