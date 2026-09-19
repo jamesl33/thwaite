@@ -106,25 +106,116 @@ impl Cube {
 
     /// Applies the given rotations to the cube.
     pub fn rotate(&mut self, m: Rotation) {
+        #[rustfmt::skip]
         match m {
-            Rotation::F => self.apply(PERMUTE_FRONT_CORNERS, Some(ORIENT_FRONT_CORNERS), PERMUTE_FRONT_EDGES, None),
-            Rotation::F2 => self.apply(PERMUTE_FRONT_CORNERS_180, Some(ORIENT_FRONT_CORNERS_180), PERMUTE_FRONT_EDGES_180, None),
-            Rotation::FP => self.apply(PERMUTE_FRONT_CORNERS_270, Some(ORIENT_FRONT_CORNERS_270), PERMUTE_FRONT_EDGES_270, None),
-            Rotation::B => self.apply(PERMUTE_BACK_CORNERS, Some(ORIENT_BACK_CORNERS), PERMUTE_BACK_EDGES, None),
-            Rotation::B2 => self.apply(PERMUTE_BACK_CORNERS_180, Some(ORIENT_BACK_CORNERS_180), PERMUTE_BACK_EDGES_180, None),
-            Rotation::BP => self.apply(PERMUTE_BACK_CORNERS_270, Some(ORIENT_BACK_CORNERS_270), PERMUTE_BACK_EDGES_270, None),
-            Rotation::L => self.apply(PERMUTE_LEFT_CORNERS, None, PERMUTE_LEFT_EDGES, None),
-            Rotation::L2 => self.apply(PERMUTE_LEFT_CORNERS_180, None, PERMUTE_LEFT_EDGES_180, None),
-            Rotation::LP => self.apply(PERMUTE_LEFT_CORNERS_270, None, PERMUTE_LEFT_EDGES_270, None),
-            Rotation::R => self.apply(PERMUTE_RIGHT_CORNERS, None, PERMUTE_RIGHT_EDGES, None),
-            Rotation::R2 => self.apply(PERMUTE_RIGHT_CORNERS_180, None, PERMUTE_RIGHT_EDGES_180, None),
-            Rotation::RP => self.apply(PERMUTE_RIGHT_CORNERS_270, None, PERMUTE_RIGHT_EDGES_270, None),
-            Rotation::U => self.apply(PERMUTE_UP_CORNERS, Some(ORIENT_UP_CORNERS), PERMUTE_UP_EDGES, Some(ORIENT_UP_EDGES)),
-            Rotation::U2 => self.apply(PERMUTE_UP_CORNERS_180, Some(ORIENT_UP_CORNERS_180), PERMUTE_UP_EDGES_180, Some(ORIENT_UP_EDGES_180)),
-            Rotation::UP => self.apply(PERMUTE_UP_CORNERS_270, Some(ORIENT_UP_CORNERS_270), PERMUTE_UP_EDGES_270, Some(ORIENT_UP_EDGES_270)),
-            Rotation::D => self.apply(PERMUTE_DOWN_CORNERS, Some(ORIENT_DOWN_CORNERS), PERMUTE_DOWN_EDGES, Some(ORIENT_DOWN_EDGES)),
-            Rotation::D2 => self.apply(PERMUTE_DOWN_CORNERS_180, Some(ORIENT_DOWN_CORNERS_180), PERMUTE_DOWN_EDGES_180, Some(ORIENT_DOWN_EDGES_180)),
-            Rotation::DP => self.apply(PERMUTE_DOWN_CORNERS_270, Some(ORIENT_DOWN_CORNERS_270), PERMUTE_DOWN_EDGES_270, Some(ORIENT_DOWN_EDGES_270)),
+            Rotation::F => self.apply(
+                PERMUTE_FRONT_CORNERS,
+                Some(ORIENT_FRONT_CORNERS),
+                PERMUTE_FRONT_EDGES,
+                None,
+            ),
+            Rotation::F2 => self.apply(
+                PERMUTE_FRONT_CORNERS_180,
+                Some(ORIENT_FRONT_CORNERS_180),
+                PERMUTE_FRONT_EDGES_180,
+                None,
+            ),
+            Rotation::FP => self.apply(
+                PERMUTE_FRONT_CORNERS_270,
+                Some(ORIENT_FRONT_CORNERS_270),
+                PERMUTE_FRONT_EDGES_270,
+                None,
+            ),
+            Rotation::B => self.apply(
+                PERMUTE_BACK_CORNERS,
+                Some(ORIENT_BACK_CORNERS),
+                PERMUTE_BACK_EDGES,
+                None,
+            ),
+            Rotation::B2 => self.apply(
+                PERMUTE_BACK_CORNERS_180,
+                Some(ORIENT_BACK_CORNERS_180),
+                PERMUTE_BACK_EDGES_180,
+                None,
+            ),
+            Rotation::BP => self.apply(
+                PERMUTE_BACK_CORNERS_270,
+                Some(ORIENT_BACK_CORNERS_270),
+                PERMUTE_BACK_EDGES_270,
+                None,
+            ),
+            Rotation::L => self.apply(
+                PERMUTE_LEFT_CORNERS,
+                None,
+                PERMUTE_LEFT_EDGES,
+                None,
+            ),
+            Rotation::L2 => self.apply(
+                PERMUTE_LEFT_CORNERS_180,
+                None,
+                PERMUTE_LEFT_EDGES_180,
+                None,
+            ),
+            Rotation::LP => self.apply(
+                PERMUTE_LEFT_CORNERS_270,
+                None,
+                PERMUTE_LEFT_EDGES_270,
+                None,
+            ),
+            Rotation::R => self.apply(
+                PERMUTE_RIGHT_CORNERS,
+                None,
+                PERMUTE_RIGHT_EDGES,
+                None,
+            ),
+            Rotation::R2 => self.apply(
+                PERMUTE_RIGHT_CORNERS_180,
+                None,
+                PERMUTE_RIGHT_EDGES_180,
+                None,
+            ),
+            Rotation::RP => self.apply(
+                PERMUTE_RIGHT_CORNERS_270,
+                None,
+                PERMUTE_RIGHT_EDGES_270,
+                None,
+            ),
+            Rotation::U => self.apply(
+                PERMUTE_UP_CORNERS,
+                Some(ORIENT_UP_CORNERS),
+                PERMUTE_UP_EDGES,
+                Some(ORIENT_UP_EDGES),
+            ),
+            Rotation::U2 => self.apply(
+                PERMUTE_UP_CORNERS_180,
+                Some(ORIENT_UP_CORNERS_180),
+                PERMUTE_UP_EDGES_180,
+                Some(ORIENT_UP_EDGES_180),
+            ),
+            Rotation::UP => self.apply(
+                PERMUTE_UP_CORNERS_270,
+                Some(ORIENT_UP_CORNERS_270),
+                PERMUTE_UP_EDGES_270,
+                Some(ORIENT_UP_EDGES_270),
+            ),
+            Rotation::D => self.apply(
+                PERMUTE_DOWN_CORNERS,
+                Some(ORIENT_DOWN_CORNERS),
+                PERMUTE_DOWN_EDGES,
+                Some(ORIENT_DOWN_EDGES),
+            ),
+            Rotation::D2 => self.apply(
+                PERMUTE_DOWN_CORNERS_180,
+                Some(ORIENT_DOWN_CORNERS_180),
+                PERMUTE_DOWN_EDGES_180,
+                Some(ORIENT_DOWN_EDGES_180),
+            ),
+            Rotation::DP => self.apply(
+                PERMUTE_DOWN_CORNERS_270,
+                Some(ORIENT_DOWN_CORNERS_270),
+                PERMUTE_DOWN_EDGES_270,
+                Some(ORIENT_DOWN_EDGES_270),
+            ),
         };
 
         self.last = Some(m);
@@ -327,10 +418,7 @@ pub(crate) fn permute<const N: usize>(src: [u8; N], rot: [u8; N]) -> [u8; N] {
     }
 
     // The summation of the pieces should not have changed, they should have just been permuted
-    debug_assert_eq!(
-        cop.iter().map(|&x| x as usize).sum::<usize>(),
-        (0..N).sum::<usize>()
-    );
+    debug_assert_eq!(cop.iter().map(|&x| x as usize).sum::<usize>(), (0..N).sum::<usize>());
 
     cop
 }

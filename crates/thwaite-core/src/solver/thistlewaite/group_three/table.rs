@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 use crate::cube::Cube;
-use crate::solver::search::bfs;
 use crate::solver::group::Group;
 use crate::solver::maths::factorial;
+use crate::solver::search::bfs;
 
 /// The size of the G3 pruning table, which is a one dimensional array.
 const SIZE: usize = 663552;

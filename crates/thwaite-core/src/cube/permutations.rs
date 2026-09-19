@@ -133,4 +133,3 @@ const fn compose<const N: usize>(rot: [u8; N], times: usize) -> [u8; N] {
 
     out
 }
-

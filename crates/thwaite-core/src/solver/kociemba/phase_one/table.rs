@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 use crate::cube::{Cube, CORNER_ORIENTATIONS, EDGE_ORIENTATIONS, NUM_CORNERS, NUM_EDGES};
-use crate::solver::search::bfs;
 use crate::solver::kociemba::phase::PHASE_ONE_VALID_MOVES;
 use crate::solver::maths::combinations;
+use crate::solver::search::bfs;
 
 /// The number of combinations of the four LR-slice (no L/R facelet, piece ids 8-11) edge pieces amongst all
 /// twelve edge slots.

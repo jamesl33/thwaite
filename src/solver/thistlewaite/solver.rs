@@ -10,26 +10,42 @@ use thwaite_core::solver::thistlewaite::{group_one, group_three, group_two, grou
 /// The pre-compute pattern database for traversing to G1.
 ///
 /// Generated at build time; see `tables::read`.
-static G0: LazyLock<group_zero::Table> =
-    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/thistlewaite/group_zero/table.db"))));
+static G0: LazyLock<group_zero::Table> = LazyLock::new(|| {
+    tables::read(include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/thistlewaite/group_zero/table.db"
+    )))
+});
 
 /// The pre-compute pattern database for traversing to G2.
 ///
 /// Generated at build time; see `tables::read`.
-static G1: LazyLock<group_one::Table> =
-    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/thistlewaite/group_one/table.db"))));
+static G1: LazyLock<group_one::Table> = LazyLock::new(|| {
+    tables::read(include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/thistlewaite/group_one/table.db"
+    )))
+});
 
 /// The pre-compute pattern database for traversing to G3.
 ///
 /// Generated at build time; see `tables::read`.
-static G2: LazyLock<group_two::Table> =
-    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/thistlewaite/group_two/table.db"))));
+static G2: LazyLock<group_two::Table> = LazyLock::new(|| {
+    tables::read(include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/thistlewaite/group_two/table.db"
+    )))
+});
 
 /// The pre-compute pattern database for traversing to G4.
 ///
 /// Generated at build time; see `tables::read`.
-static G3: LazyLock<group_three::Table> =
-    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/thistlewaite/group_three/table.db"))));
+static G3: LazyLock<group_three::Table> = LazyLock::new(|| {
+    tables::read(include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/thistlewaite/group_three/table.db"
+    )))
+});
 
 /// Exposes an API to solve the Rubik's Cube using the Thistlewaite-45 method.
 #[derive(Debug)]

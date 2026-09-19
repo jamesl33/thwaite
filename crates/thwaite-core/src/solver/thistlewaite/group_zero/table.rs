@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 use crate::cube::{Cube, NUM_EDGES};
-use crate::solver::search::bfs;
 use crate::solver::group::Group;
 use crate::solver::maths::ptoidx;
+use crate::solver::search::bfs;
 
 /// The size of the pruning table for G0.
 const SIZE: usize = usize::pow(2, 11);

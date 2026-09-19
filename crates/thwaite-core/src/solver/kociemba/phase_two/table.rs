@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 use crate::cube::{Cube, Symmetry, NUM_CORNERS, NUM_EDGES, SYMMETRIES};
-use crate::solver::search::bfs;
 use crate::solver::kociemba::phase::PHASE_TWO_VALID_MOVES;
 use crate::solver::maths::{factorial, idxtoperm, ptoidx};
+use crate::solver::search::bfs;
 
 use super::symmetry::{CORNER_SYM, NUM_CORNER_CLASSES, REP_CORNER};
 

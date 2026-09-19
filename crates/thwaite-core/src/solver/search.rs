@@ -23,7 +23,10 @@ where
         // dfs builds the path in reverse (deepest move first), each level appending rather than prepending its own
         // move, to keep path reconstruction O(depth) instead of O(depth^2). Restore solution order.
         if let Some(mut path) = path {
-            return Some({ path.reverse(); path });
+            return Some({
+                path.reverse();
+                path
+            });
         }
 
         if t == u8::MAX {
@@ -66,7 +69,13 @@ where
         let (cost, path) = idas_dfs(cube, g + 1, limit, valid, hueristic);
 
         if let Some(mut path) = path {
-            return (0, Some({ path.push(*mv); path }));
+            return (
+                0,
+                Some({
+                    path.push(*mv);
+                    path
+                }),
+            );
         }
 
         min = cmp::min(min, cost);

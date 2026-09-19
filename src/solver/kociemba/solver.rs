@@ -11,14 +11,24 @@ use thwaite_core::solver::tables;
 /// for the group's generators, and why they differ from the textbook `<U, D, L2, R2, F2, B2>`).
 ///
 /// Generated at build time; see `tables::read`.
-static P1: LazyLock<phase_one::Table> =
-    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/kociemba/phase_one/table.db"))));
+#[rustfmt::skip]
+static P1: LazyLock<phase_one::Table> = LazyLock::new(|| {
+    tables::read(include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/kociemba/phase_one/table.db"
+    )))
+});
 
 /// The pre-computed pattern database for solving the cube, once already in phase one's target group.
 ///
 /// Generated at build time; see `tables::read`.
-static P2: LazyLock<phase_two::Table> =
-    LazyLock::new(|| tables::read(include_bytes!(concat!(env!("OUT_DIR"), "/kociemba/phase_two/table.db"))));
+#[rustfmt::skip]
+static P2: LazyLock<phase_two::Table> = LazyLock::new(|| {
+    tables::read(include_bytes!(concat!(
+        env!("OUT_DIR"),
+        "/kociemba/phase_two/table.db"
+    )))
+});
 
 /// Exposes an API to solve the Rubik's Cube using Kociemba's two-phase method.
 ///

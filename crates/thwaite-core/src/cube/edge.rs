@@ -124,8 +124,8 @@ impl Edge {
 /// Returns a canonical, order-independent key for the given color pair.
 fn key(a: Color, b: Color) -> String {
     if a < b {
-        return format!("{:?}:{:?}", a, b)
+        return format!("{:?}:{:?}", a, b);
     }
 
-    return format!("{:?}:{:?}", b, a)
+    return format!("{:?}:{:?}", b, a);
 }
