@@ -17,6 +17,7 @@ thwaite-core = { path = "crates/thwaite-core" }
 
 [dev-dependencies]
 criterion = { version = "0.8.2", features = ["html_reports"] }
+proptest = "1.11.0"
 
 [profile.release]
 lto = true
