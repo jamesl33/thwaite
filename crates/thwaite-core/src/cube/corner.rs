@@ -134,3 +134,33 @@ impl Corner {
         unreachable!()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_maps_every_valid_color_triplet_to_a_distinct_corner() {
+        for corner in CORNERS {
+            let colors = corner.axis();
+
+            let found = Corner::new(colors[0].face.color(), colors[1].face.color(), colors[2].face.color());
+
+            assert_eq!(found, corner);
+        }
+    }
+
+    #[test]
+    fn id_matches_the_corners_position_in_the_table() {
+        for (idx, corner) in CORNERS.iter().enumerate() {
+            assert_eq!(corner.id(), idx);
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "invalid corner colors")]
+    fn new_rejects_a_color_triplet_that_is_not_a_corner() {
+        // Two facelets of the same color can never form a real corner.
+        let _ = Corner::new(Color::Yellow, Color::Yellow, Color::Yellow);
+    }
+}

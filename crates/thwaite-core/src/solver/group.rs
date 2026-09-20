@@ -84,3 +84,49 @@ impl Group {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::collections::BTreeSet;
+
+    use super::*;
+
+    #[test]
+    fn each_group_is_nested_within_the_last() {
+        let zero: BTreeSet<_> = Group::Zero.moves().iter().collect();
+        let one: BTreeSet<_> = Group::One.moves().iter().collect();
+        let two: BTreeSet<_> = Group::Two.moves().iter().collect();
+        let three: BTreeSet<_> = Group::Three.moves().iter().collect();
+
+        assert!(one.is_subset(&zero));
+        assert!(two.is_subset(&one));
+        assert!(three.is_subset(&two));
+    }
+
+    #[test]
+    fn each_group_has_no_duplicate_moves() {
+        for group in [Group::Zero, Group::One, Group::Two, Group::Three] {
+            let moves = group.moves();
+            let unique: BTreeSet<_> = moves.iter().collect();
+
+            assert_eq!(unique.len(), moves.len(), "{group:?} has duplicate moves");
+        }
+    }
+
+    #[test]
+    fn group_three_is_only_the_180_degree_turns() {
+        let expected: BTreeSet<_> = [
+            Rotation::F2,
+            Rotation::B2,
+            Rotation::L2,
+            Rotation::R2,
+            Rotation::U2,
+            Rotation::D2,
+        ]
+        .iter()
+        .collect();
+        let actual: BTreeSet<_> = Group::Three.moves().iter().collect();
+
+        assert_eq!(actual, expected);
+    }
+}

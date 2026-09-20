@@ -129,3 +129,33 @@ fn key(a: Color, b: Color) -> String {
 
     return format!("{:?}:{:?}", b, a);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_maps_every_valid_color_pair_to_a_distinct_edge_regardless_of_order() {
+        for edge in EDGES {
+            let a = edge.a.face.color();
+            let b = edge.b.face.color();
+
+            assert_eq!(Edge::new(a, b), edge);
+            assert_eq!(Edge::new(b, a), edge);
+        }
+    }
+
+    #[test]
+    fn id_matches_the_edges_position_in_the_table() {
+        for (idx, edge) in EDGES.iter().enumerate() {
+            assert_eq!(edge.id(), idx);
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "invalid edge colors")]
+    fn new_rejects_a_color_pair_that_is_not_an_edge() {
+        // Two facelets of the same color can never form a real edge.
+        let _ = Edge::new(Color::Yellow, Color::Yellow);
+    }
+}

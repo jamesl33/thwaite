@@ -49,3 +49,27 @@ const fn fact(n: usize) -> usize {
 pub const fn factorial(n: usize) -> usize {
     FACTORIALS[n]
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn returns_factorials_of_small_numbers() {
+        assert_eq!(factorial(0), 1);
+        assert_eq!(factorial(1), 1);
+        assert_eq!(factorial(2), 2);
+        assert_eq!(factorial(3), 6);
+        assert_eq!(factorial(4), 24);
+        assert_eq!(factorial(5), 120);
+    }
+
+    #[test]
+    fn matches_naive_factorial_for_every_precalculated_entry() {
+        for n in 0..FACTORIALS.len() {
+            let naive: usize = (1..=n).product();
+
+            assert_eq!(factorial(n), naive, "factorial({n}) mismatch");
+        }
+    }
+}

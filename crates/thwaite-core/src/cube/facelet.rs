@@ -42,3 +42,49 @@ impl Facelet {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::cube::{Column, Row};
+
+    #[test]
+    fn new_computes_grid_index_from_row_and_column() {
+        assert_eq!(Facelet::new(Face::Up, Row::Up, Column::Left).idx, 0);
+        assert_eq!(Facelet::new(Face::Up, Row::Up, Column::Right).idx, 2);
+        assert_eq!(Facelet::new(Face::Up, Row::Middle, Column::Middle).idx, 4);
+        assert_eq!(Facelet::new(Face::Up, Row::Down, Column::Right).idx, 8);
+    }
+
+    #[test]
+    fn front_and_back_facelets_are_never_blue() {
+        for face in [Face::Front, Face::Back] {
+            for idx in 0..9 {
+                assert!(!(Facelet { face, idx }).blue(), "face {face:?} idx {idx}");
+            }
+        }
+    }
+
+    #[test]
+    fn left_and_right_facelets_are_always_blue() {
+        for face in [Face::Left, Face::Right] {
+            for idx in 0..9 {
+                assert!((Facelet { face, idx }).blue(), "face {face:?} idx {idx}");
+            }
+        }
+    }
+
+    #[test]
+    fn up_and_down_facelets_are_blue_except_at_the_middle_left_and_right() {
+        let middle_left = Row::Middle as usize + Column::Left as usize;
+        let middle_right = Row::Middle as usize + Column::Right as usize;
+
+        for face in [Face::Up, Face::Down] {
+            for idx in 0..9 {
+                let expect_blue = idx != middle_left && idx != middle_right;
+
+                assert_eq!((Facelet { face, idx }).blue(), expect_blue, "face {face:?} idx {idx}");
+            }
+        }
+    }
+}

@@ -116,3 +116,64 @@ impl Distribution<Rotation> for StandardUniform {
         Rotation::iter().choose(rng).unwrap()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn inverse_is_an_involution_for_every_rotation() {
+        for m in Rotation::iter() {
+            assert_eq!(m.inverse().inverse(), m, "{m:?}");
+        }
+    }
+
+    #[test]
+    fn inverse_of_a_half_turn_is_itself() {
+        for m in [
+            Rotation::F2,
+            Rotation::B2,
+            Rotation::L2,
+            Rotation::R2,
+            Rotation::U2,
+            Rotation::D2,
+        ] {
+            assert_eq!(m.inverse(), m);
+        }
+    }
+
+    #[test]
+    fn face_is_consistent_across_a_faces_three_turns() {
+        for (quarter, counter, half) in [
+            (Rotation::F, Rotation::FP, Rotation::F2),
+            (Rotation::B, Rotation::BP, Rotation::B2),
+            (Rotation::L, Rotation::LP, Rotation::L2),
+            (Rotation::R, Rotation::RP, Rotation::R2),
+            (Rotation::U, Rotation::UP, Rotation::U2),
+            (Rotation::D, Rotation::DP, Rotation::D2),
+        ] {
+            assert_eq!(quarter.face(), quarter);
+            assert_eq!(counter.face(), quarter);
+            assert_eq!(half.face(), quarter);
+        }
+    }
+
+    #[test]
+    fn sampling_always_produces_a_valid_rotation() {
+        let mut rng = rand::rng();
+
+        for _ in 0..100 {
+            let m: Rotation = rng.random();
+
+            assert!(Rotation::iter().any(|r| r == m));
+        }
+    }
+
+    #[test]
+    fn opposite_is_an_involution_and_never_the_same_face() {
+        for m in Rotation::iter() {
+            assert_eq!(m.opposite().opposite(), m.face(), "{m:?}");
+            assert_ne!(m.opposite(), m.face(), "{m:?}");
+        }
+    }
+}

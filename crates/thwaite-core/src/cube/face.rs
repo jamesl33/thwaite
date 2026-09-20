@@ -34,3 +34,30 @@ impl Face {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn axis_pairs_opposite_faces_together() {
+        assert_eq!(Face::Left.axis(), Axis::X);
+        assert_eq!(Face::Right.axis(), Axis::X);
+        assert_eq!(Face::Up.axis(), Axis::Y);
+        assert_eq!(Face::Down.axis(), Axis::Y);
+        assert_eq!(Face::Front.axis(), Axis::Z);
+        assert_eq!(Face::Back.axis(), Axis::Z);
+    }
+
+    #[test]
+    fn color_gives_every_face_a_distinct_solved_color() {
+        let faces = [Face::Up, Face::Right, Face::Front, Face::Down, Face::Left, Face::Back];
+        let colors: Vec<Color> = faces.iter().map(|f| f.color()).collect();
+
+        for i in 0..colors.len() {
+            for j in (i + 1)..colors.len() {
+                assert_ne!(colors[i], colors[j], "{:?} and {:?} share a color", faces[i], faces[j]);
+            }
+        }
+    }
+}

@@ -437,3 +437,94 @@ fn orient<const N: usize>(orien: [u8; N], perms: [u8; N], rot: [i8; N], rem: usi
 
     cop
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn scrambled_returns_twenty_non_redundant_moves_matching_the_returned_cube() {
+        let mut rng = rand::rng();
+        let (scrambled, moves) = Cube::scrambled(&mut rng);
+
+        assert_eq!(moves.len(), 20);
+
+        let mut c = Cube::new();
+        let mut last: Option<Rotation> = None;
+
+        for m in &moves {
+            if let Some(last) = last {
+                assert!(
+                    last.face() != m.face() && last.face() != m.opposite(),
+                    "{last:?} followed by {m:?}"
+                );
+            }
+
+            c.rotate(*m);
+            last = Some(*m);
+        }
+
+        assert_eq!(c.corner_permutations(), scrambled.corner_permutations());
+        assert_eq!(c.corner_orientations(), scrambled.corner_orientations());
+        assert_eq!(c.edge_permutations(), scrambled.edge_permutations());
+        assert_eq!(c.edge_orientations(), scrambled.edge_orientations());
+    }
+
+    #[test]
+    fn new_cube_is_solved_with_no_last_move() {
+        let c = Cube::new();
+
+        assert!(c.solved());
+        assert_eq!(c.last(), None);
+    }
+
+    #[test]
+    fn redundant_is_false_before_any_move_is_made() {
+        let c = Cube::new();
+
+        assert!(!c.redundant(&Rotation::F));
+    }
+
+    #[test]
+    fn redundant_is_true_for_the_same_or_opposite_face() {
+        let mut c = Cube::new();
+        c.rotate(Rotation::F);
+
+        assert!(c.redundant(&Rotation::F));
+        assert!(c.redundant(&Rotation::FP));
+        assert!(c.redundant(&Rotation::F2));
+        assert!(c.redundant(&Rotation::B));
+        assert!(c.redundant(&Rotation::BP));
+        assert!(c.redundant(&Rotation::B2));
+    }
+
+    #[test]
+    fn redundant_is_false_for_a_different_axis() {
+        let mut c = Cube::new();
+        c.rotate(Rotation::F);
+
+        assert!(!c.redundant(&Rotation::L));
+        assert!(!c.redundant(&Rotation::U));
+    }
+
+    #[test]
+    fn rotate_records_the_last_move() {
+        let mut c = Cube::new();
+        c.rotate(Rotation::R);
+
+        assert_eq!(c.last(), Some(Rotation::R));
+    }
+
+    #[test]
+    fn parses_a_solved_cube_string() {
+        let cs = "Y".repeat(9) + &"R".repeat(9) + &"B".repeat(9) + &"W".repeat(9) + &"O".repeat(9) + &"G".repeat(9);
+
+        assert!(Cube::from(cs.as_str()).solved());
+    }
+
+    #[test]
+    #[should_panic(expected = "cube string must be exactly 54 characters")]
+    fn parsing_rejects_the_wrong_length() {
+        let _ = Cube::from("too short");
+    }
+}

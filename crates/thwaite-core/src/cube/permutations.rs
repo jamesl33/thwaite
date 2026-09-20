@@ -133,3 +133,88 @@ const fn compose<const N: usize>(rot: [u8; N], times: usize) -> [u8; N] {
 
     out
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn is_permutation<const N: usize>(p: &[u8; N]) -> bool {
+        let mut seen = [false; N];
+
+        for &v in p {
+            if v as usize >= N || seen[v as usize] {
+                return false;
+            }
+
+            seen[v as usize] = true;
+        }
+
+        true
+    }
+
+    #[test]
+    fn is_permutation_rejects_a_repeated_value() {
+        assert!(!is_permutation(&[0, 0, 2, 3, 4, 5, 6, 7]));
+    }
+
+    #[test]
+    fn every_base_permutation_is_a_valid_bijection() {
+        for p in [
+            PERMUTE_FRONT_CORNERS,
+            PERMUTE_BACK_CORNERS,
+            PERMUTE_LEFT_CORNERS,
+            PERMUTE_RIGHT_CORNERS,
+            PERMUTE_UP_CORNERS,
+            PERMUTE_DOWN_CORNERS,
+        ] {
+            assert!(is_permutation(&p), "{p:?} is not a valid permutation");
+        }
+
+        for p in [
+            PERMUTE_FRONT_EDGES,
+            PERMUTE_BACK_EDGES,
+            PERMUTE_LEFT_EDGES,
+            PERMUTE_RIGHT_EDGES,
+            PERMUTE_UP_EDGES,
+            PERMUTE_DOWN_EDGES,
+        ] {
+            assert!(is_permutation(&p), "{p:?} is not a valid permutation");
+        }
+    }
+
+    /// A physical quarter turn, applied four times, returns every piece to where it started - regardless of the
+    /// (arbitrary) convention `permute()` uses to read these tables.
+    #[test]
+    fn every_base_quarter_turn_has_order_four() {
+        for p in [
+            PERMUTE_FRONT_CORNERS,
+            PERMUTE_BACK_CORNERS,
+            PERMUTE_LEFT_CORNERS,
+            PERMUTE_RIGHT_CORNERS,
+            PERMUTE_UP_CORNERS,
+            PERMUTE_DOWN_CORNERS,
+        ] {
+            assert_eq!(compose(p, 4), [0, 1, 2, 3, 4, 5, 6, 7], "{p:?} does not have order 4");
+        }
+
+        for p in [
+            PERMUTE_FRONT_EDGES,
+            PERMUTE_BACK_EDGES,
+            PERMUTE_LEFT_EDGES,
+            PERMUTE_RIGHT_EDGES,
+            PERMUTE_UP_EDGES,
+            PERMUTE_DOWN_EDGES,
+        ] {
+            assert_eq!(
+                compose(p, 4),
+                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                "{p:?} does not have order 4"
+            );
+        }
+    }
+
+    #[test]
+    fn composing_a_single_application_is_a_no_op() {
+        assert_eq!(compose(PERMUTE_FRONT_CORNERS, 1), PERMUTE_FRONT_CORNERS);
+    }
+}
