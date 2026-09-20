@@ -74,6 +74,30 @@ impl Rotation {
         }
     }
 
+    /// Returns the rotation that undoes this one.
+    pub fn inverse(&self) -> Rotation {
+        match self {
+            Rotation::F => Rotation::FP,
+            Rotation::FP => Rotation::F,
+            Rotation::F2 => Rotation::F2,
+            Rotation::B => Rotation::BP,
+            Rotation::BP => Rotation::B,
+            Rotation::B2 => Rotation::B2,
+            Rotation::L => Rotation::LP,
+            Rotation::LP => Rotation::L,
+            Rotation::L2 => Rotation::L2,
+            Rotation::R => Rotation::RP,
+            Rotation::RP => Rotation::R,
+            Rotation::R2 => Rotation::R2,
+            Rotation::U => Rotation::UP,
+            Rotation::UP => Rotation::U,
+            Rotation::U2 => Rotation::U2,
+            Rotation::D => Rotation::DP,
+            Rotation::DP => Rotation::D,
+            Rotation::D2 => Rotation::D2,
+        }
+    }
+
     /// Returns opposite of the face being turned (e.g. front, back).
     pub fn opposite(&self) -> Rotation {
         match self {
